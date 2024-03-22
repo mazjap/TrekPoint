@@ -1,10 +1,3 @@
-//
-//  MakeAMapApp.swift
-//  MakeAMap
-//
-//  Created by Jordan Christensen on 2/29/24.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,7 +5,7 @@ import SwiftData
 struct MakeAMapApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            AnnotationData.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
