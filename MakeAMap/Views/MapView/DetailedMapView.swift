@@ -4,8 +4,8 @@ import MapKit
 
 // Tasks:
 // - [x] Get user's location working
-// - [ ] Get DraggablePin to relocate correctly on drag gesture
-//    - [ ] (it's getting set to slightly above the drop location)
+// - [x] Get DraggablePin to relocate correctly on drag gesture
+//    - [x] (it's getting set to slightly above the drop location)
 // - [ ] Confirm newly created annotation
 //    - [ ] Add tap gesture to confirm location
 //    - [ ] Create AnnotationData for given coordinate and clear newAnnotationLocation
@@ -52,20 +52,20 @@ struct DetailedMapView: View {
                                     return
                                 }
                                 
-                                self.newAnnotationLocation = Coordinate(newCoordinate)
+                                annotation.coordinate = Coordinate(newCoordinate)
                             }
                             .foregroundStyle(.red, .green)
                         } label: {
                             Text(annotation.title)
                         }
-                        .tag(annotation.id)
+                        .tag(annotation.id.uuidString)
                     }
                     
                     if let newAnnotationLocation {
                         let clCoordinate = CLLocationCoordinate2D(newAnnotationLocation)
                         
                         Annotation(coordinate: clCoordinate, anchor: .bottom) {
-                            DraggablePin(shouldJiggle: true) { newPosition in
+                            DraggablePin(shouldJiggle: true, anchor: .bottom) { newPosition in
                                 guard let newCoordinate = proxy.convert(
                                     newPosition,
                                     from: .global
@@ -109,6 +109,7 @@ struct DetailedMapView: View {
                             .onDelete(perform: deleteItems)
                         }
                     }
+                    .padding(.top, -20)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             EditButton()

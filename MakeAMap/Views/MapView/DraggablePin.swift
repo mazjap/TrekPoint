@@ -6,6 +6,8 @@ struct DraggablePin: View {
     @State private var translation: CGSize = .zero
     @State private var isActive: Bool = false
     
+    @ScaledMetric(relativeTo: .title) private var iconSize: Double = 32
+    
     private let movementEnabled: Bool
     private let shouldJiggle: Bool
     private let anchor: UnitPoint
@@ -21,31 +23,26 @@ struct DraggablePin: View {
     var body: some View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
+            let isJiggling = (shouldJiggle && !isActive)
             
             Image(systemName: "mappin.and.ellipse")
-                .font(.title)
-                .animation(.snappy) { content in
-                    content
-                        .scaleEffect(isActive ? 1.3 : 1, anchor: .bottom)
-                }
+                .resizable()
+                .scaledToFit()
                 .phaseAnimator([false, true]) { content, state in
                     content
-                        .rotationEffect((shouldJiggle && !isActive) ? .degrees(state ? -5 : 5) : .zero, anchor: .bottom)
+                        .rotationEffect(isJiggling ? .degrees(state ? -5 : 5) : .zero, anchor: anchor)
                 } animation: { state in
-                    guard shouldJiggle, !isActive else { return nil }
-                    
-                    let duration = 0.2
-                    let animation: Animation
-                    
-                    if state {
-                        animation = .easeOut(duration: duration)
-                    } else {
-                        animation = .easeIn(duration: duration)
-                    }
-                    
-                    return animation.repeatForever(autoreverses: true)
+                    return .easeInOut(duration: 0.2).repeatForever(autoreverses: true)
                 }
-                .frame(width: frame.width, height: frame.height)
+                .transaction { transaction in
+                    if !isJiggling {
+                        transaction.animation = .default
+                    }
+                }
+                .animation(.snappy) { content in
+                    content
+                        .scaleEffect(isActive ? 1.3 : 1, anchor: anchor)
+                }
                 .onChange(of: isActive) {
                     let maxX = frame.maxX - frame.minX
                     let maxY = frame.maxY - frame.minY
@@ -56,8 +53,9 @@ struct DraggablePin: View {
                     applyNewPosition(CGPoint(x: x, y: y))
                     translation = .zero
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        .frame(width: 30, height: 30)
+        .frame(width: iconSize, height: iconSize)
         .contentShape(.rect)
         .offset(translation)
         .gesture(LongPressGesture(minimumDuration: 0.15)
@@ -81,3 +79,66 @@ struct DraggablePin: View {
         )
     }
 }
+
+#if DEBUG
+import MapKit
+
+#Preview {
+    struct PinPreview: View {
+        @State private var isJiggling = true
+        
+        let coordinate = CLLocationCoordinate2D.random
+        
+        var otherCoordinate: CLLocationCoordinate2D {
+            CLLocationCoordinate2D(
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude > 179.5 ? coordinate.longitude - 0.5 : coordinate.longitude + 0.5
+            )
+        }
+        
+        var body: some View {
+            Map {
+                Annotation("No Jiggle", coordinate: coordinate, anchor: .bottom) {
+                    DraggablePin(
+                        shouldJiggle: false,
+                        anchor: .bottom,
+                        applyNewPosition: {_ in}
+                    )
+                    .foregroundStyle(.orange)
+                }
+                
+                Annotation("Jiggle", coordinate: otherCoordinate, anchor: .bottom) {
+                    DraggablePin(
+                        shouldJiggle: isJiggling,
+                        anchor: .bottom,
+                        applyNewPosition: {_ in}
+                    )
+                    .foregroundStyle(.purple, .yellow)
+                }
+            }
+            .overlay(alignment: .bottom) {
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        isJiggling.toggle()
+                        print("is jiggling:", isJiggling)
+                    } label: {
+                        Text("Toggle Jiggle")
+                            .padding()
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.bottom, 25)
+                .background {
+                    Color.white
+                }
+            }
+            .ignoresSafeArea()
+        }
+    }
+    
+    return PinPreview()
+}
+#endif
