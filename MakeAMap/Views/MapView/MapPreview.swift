@@ -16,35 +16,19 @@ struct MapPreview: View {
             
             return .region(region)
         case let .polyline(polyline):
-            var maxLat: Double = -90
-            var minLat: Double = 90
-            var maxLng: Double = -180
-            var minLng: Double = 180
+            let boundingBox = MKMapRect(coordinates: polyline.clCoordinates)
+            let expandedWidth = boundingBox.width * 1.3
+            let widthDelta = expandedWidth - boundingBox.width
             
-            for point in polyline.coordinates {
-                if point.latitude > maxLat {
-                    maxLat = point.latitude
-                }
-                if point.latitude < minLat {
-                    minLat = point.latitude
-                }
-                
-                if point.longitude > maxLat {
-                    maxLng = point.longitude
-                }
-                if point.longitude < minLat {
-                    minLng = point.longitude
-                }
-            }
+            let expandedHeight = boundingBox.height * 1.3
+            let heightDelta = expandedHeight - boundingBox.height
             
-            let boundingBox = MKMapRect(
-                origin: MKMapPoint(
-                x: (maxLat + minLat) / 2,
-                y: (maxLng + minLng) / 2),
-                size: MKMapSize(width: maxLat - minLat, height: maxLng - minLng)
-            )
+            let origin = MKMapPoint(x: boundingBox.minX - widthDelta / 2, y: boundingBox.minY - heightDelta / 2)
+            let size = MKMapSize(width: expandedWidth, height: expandedHeight)
             
-            return .rect(boundingBox)
+            let expandedBox = MKMapRect(origin: origin, size: size)
+            
+            return .rect(expandedBox)
         }
     }
     

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527A2D7107030079479A /* MapFeatureNavigator.swift */; };
 		0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */; };
+		0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527F2D711AC00079479A /* CreatePolylineView.swift */; };
+		0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2952812D711B0F0079479A /* ModifyPolylineView.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -38,6 +40,8 @@
 /* Begin PBXFileReference section */
 		0E29527A2D7107030079479A /* MapFeatureNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeatureNavigator.swift; sourceTree = "<group>"; };
 		0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapRect+CoordinateArray.swift"; sourceTree = "<group>"; };
+		0E29527F2D711AC00079479A /* CreatePolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePolylineView.swift; sourceTree = "<group>"; };
+		0E2952812D711B0F0079479A /* ModifyPolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyPolylineView.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -76,6 +80,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E29527E2D711A930079479A /* PolylineView */ = {
+			isa = PBXGroup;
+			children = (
+				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
+				0E29527F2D711AC00079479A /* CreatePolylineView.swift */,
+				0E2952812D711B0F0079479A /* ModifyPolylineView.swift */,
+			);
+			path = PolylineView;
+			sourceTree = "<group>";
+		};
 		0EA4BD3A2B9151AF005259B4 = {
 			isa = PBXGroup;
 			children = (
@@ -149,9 +163,9 @@
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
-				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
 				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
+				0E29527E2D711A930079479A /* PolylineView */,
 				0EA4BD632B93F819005259B4 /* AnnotationView */,
 			);
 			path = Views;
@@ -253,8 +267,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
+				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,

@@ -8,6 +8,7 @@ struct MapFeatureNavigator: View {
     let onDeletePolylines: (IndexSet) -> Void
     
     var body: some View {
+        // TODO: - Add sorting options (sort by date, sort by type of feature, etc.)
         NavigationStack {
             List {
                 if annotations.isEmpty && polylines.isEmpty {
@@ -39,8 +40,7 @@ struct MapFeatureNavigator: View {
                     Section("Paths") {
                         ForEach(polylines) { item in
                             NavigationLink {
-                                // TODO: - Add ModifyPolylineView here
-                                Color.white
+                                ModifyPolylineView(polyline: item)
                                     .onAppear {
                                         onSelection(.polyline(item))
                                     }
