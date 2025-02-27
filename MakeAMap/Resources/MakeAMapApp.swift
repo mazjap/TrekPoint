@@ -4,11 +4,9 @@ import SwiftData
 @main
 struct MakeAMapApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            AnnotationData.self,
-        ])
+        let schema = Schema(CurrentModelVersion.models, version: CurrentModelVersion.versionIdentifier)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+        
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {

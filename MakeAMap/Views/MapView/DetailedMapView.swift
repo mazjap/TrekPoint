@@ -38,6 +38,25 @@ enum MapFeatureTag: Hashable, Identifiable {
     }
 }
 
+enum MapFeatureGeometry: Equatable {
+    case annotation(CLLocationCoordinate2D)
+    case polyline([CLLocationCoordinate2D])
+}
+
+enum CameraTrigger: Equatable {
+    case geometry(MapFeatureGeometry)
+    case userLocation(Bool)
+    
+    mutating func toggleUserLocation() {
+        switch self {
+        case let .userLocation(value):
+            self = .userLocation(!value)
+        default:
+            self = .userLocation(true)
+        }
+    }
+}
+
 struct DetailedMapView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var annotations: [AnnotationData]
@@ -49,7 +68,7 @@ struct DetailedMapView: View {
     
     @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var cameraTransitionTrigger = false
+    @State private var cameraTransitionTrigger: CameraTrigger?
     @State private var selectedMapItemTag: MapFeatureTag?
     
     @State private var selectedDetent = PresentationDetent.small
@@ -78,11 +97,42 @@ struct DetailedMapView: View {
                 .mapControlVisibility(.hidden)
                 .mapCameraKeyframeAnimator(trigger: cameraTransitionTrigger) { camera in
                     KeyframeTrack(\MapCamera.centerCoordinate) {
-                        LinearKeyframe(Self.locationManager.location!.coordinate, duration: 2, timingCurve: .easeOut)
+                        let coordinate: CLLocationCoordinate2D = {
+                            switch cameraTransitionTrigger {
+                            case let .geometry(.annotation(coord)):
+                                return coord
+                            case let .geometry(.polyline(coords)):
+                                // Create an MKMapRect that encompasses all coordinates
+                                let center = MKMapRect(coordinates: coords).center
+                                
+                                // Get the center coordinate of the map rect
+                                return CLLocationCoordinate2D(latitude: center.coordinate.latitude, longitude: center.coordinate.longitude)
+                            case .userLocation:
+                                return Self.locationManager.location!.coordinate
+                            case nil:
+                                return camera.centerCoordinate
+                            }
+                        }()
+                        
+                        LinearKeyframe(coordinate, duration: 2, timingCurve: .easeOut)
                     }
                     
                     KeyframeTrack(\MapCamera.distance) {
-                        LinearKeyframe(camera.distance, duration: 2)
+                        let newDistance: CLLocationDistance = {
+                            switch cameraTransitionTrigger {
+                            case .geometry(.annotation):
+                                // Some default distance for annotations
+                                return 15_000
+                            case let .geometry(.polyline(coords)):
+                                let mapRect = MKMapRect(coordinates: coords)
+                                
+                                return max(mapRect.width, mapRect.height) * 1.1
+                            case .userLocation, nil:
+                                return max(30_000, camera.distance)
+                            }
+                        }()
+                        
+                        LinearKeyframe(newDistance, duration: 2)
                     }
                 }
                 .overlay(alignment: .topTrailing) {
@@ -92,21 +142,32 @@ struct DetailedMapView: View {
         }
         .mapScope(nspace)
         .sheet(isPresented: .constant(true)) {
-            sheetContent
-                .sheet(item: $selectedMapItemTag) { tag in
-                    nestedSheetContent(tag: tag)
-                        .presentationDetents(detents, selection: $selectedDetent)
-                        .presentationBackgroundInteraction(.enabled)
-                        .interactiveDismissDisabled()
-                }
-                .presentationDetents(detents, selection: $selectedDetent)
-                .presentationBackgroundInteraction(.enabled)
-                .interactiveDismissDisabled()
+            MapFeatureNavigator(
+                annotations: annotations,
+                polylines: polylines,
+                onSelection: {
+                    selectedMapItemTag = $0.tag
+                    cameraTransitionTrigger = .geometry($0.geometry)
+                },
+                onDeleteAnnotations: deleteAnnotations(offsets:),
+                onDeletePolylines: deletePolylines(offsets:)
+            )
+            .sheet(item: $selectedMapItemTag) { tag in
+                nestedSheetContent(tag: tag)
+                    .presentationDetents(detents, selection: $selectedDetent)
+                    .presentationBackgroundInteraction(.enabled)
+                    .interactiveDismissDisabled()
+            }
+            .presentationDetents(detents, selection: $selectedDetent)
+            .presentationBackgroundInteraction(.enabled)
         }
         .onChange(of: selectedMapItemTag) {
             print(selectedMapItemTag ?? "No selection")
             
-            guard let selectedMapItemTag else { return }
+            guard let selectedMapItemTag else {
+                cameraTransitionTrigger = nil
+                return
+            }
             
             if let annotation = annotations.first(where: { selectedMapItemTag == .annotation($0.id) }) {
                 // TODO: - Present ModifyAnnotationView in sheet
@@ -119,7 +180,11 @@ struct DetailedMapView: View {
         }
         .task {
             if showUserLocation && Self.locationManager.location != nil {
-                cameraTransitionTrigger.toggle()
+                if cameraTransitionTrigger != nil {
+                    cameraTransitionTrigger?.toggleUserLocation()
+                } else {
+                    cameraTransitionTrigger = .userLocation(true)
+                }
             }
         }
     }
@@ -191,6 +256,7 @@ struct DetailedMapView: View {
                 
                 MapCompass(scope: nspace)
             }
+            .mapControlVisibility(.visible) // TODO: - Use a setting to determine whether controls are visible
             
             VStack(spacing: 0) {
                 let padding = buttonSize / 4
@@ -338,59 +404,6 @@ struct DetailedMapView: View {
         .padding(.horizontal)
     }
     
-    private var sheetContent: some View {
-        NavigationStack {
-            List {
-                if annotations.isEmpty && polylines.isEmpty {
-                    Text("No content")
-                }
-                
-                if !annotations.isEmpty {
-                    Section("Annotations") {
-                        ForEach(annotations) { item in
-                            NavigationLink {
-                                ModifyAnnotationView(annotation: item)
-                            } label: {
-                                HStack {
-                                    Image(systemName: "mappin.and.ellipse")
-                                        .foregroundStyle(.red, .green)
-                                    
-                                    Text(item.title)
-                                }
-                            }
-                        }
-                        .onDelete(perform: deleteAnnotations)
-                    }
-                }
-                
-                if !polylines.isEmpty {
-                    Section("Paths") {
-                        ForEach(polylines) { item in
-                            NavigationLink {
-                                // TODO: - Add ModifyPolylineView here
-                            } label: {
-                                HStack {
-                                    Image(systemName: "point.topleft.down.to.point.bottomright.curvepath.fill")
-                                    
-                                    Text(item.title)
-                                }
-                            }
-                        }
-                        .onDelete(perform: deletePolylines)
-                    }
-                }
-            }
-            .padding(.top, -20)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-            }
-            .navigationTitle("My Items")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-    
     @ViewBuilder
     private func nestedSheetContent(tag: MapFeatureTag) -> some View {
         switch tag {
@@ -438,7 +451,11 @@ struct DetailedMapView: View {
             }
             
             if Self.locationManager.location != nil {
-                cameraTransitionTrigger.toggle()
+                if cameraTransitionTrigger != nil {
+                    cameraTransitionTrigger?.toggleUserLocation()
+                } else {
+                    cameraTransitionTrigger = .userLocation(true)
+                }
             }
         }
     }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527A2D7107030079479A /* MapFeatureNavigator.swift */; };
+		0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -34,6 +36,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E29527A2D7107030079479A /* MapFeatureNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeatureNavigator.swift; sourceTree = "<group>"; };
+		0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapRect+CoordinateArray.swift"; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -146,6 +150,7 @@
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
 				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
+				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
 				0EA4BD632B93F819005259B4 /* AnnotationView */,
 			);
@@ -160,6 +165,7 @@
 				0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */,
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
+				0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -253,6 +259,7 @@
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
+				0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */,
 				0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
@@ -260,6 +267,7 @@
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
+				0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
