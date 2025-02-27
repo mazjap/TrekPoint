@@ -8,12 +8,13 @@ enum MigrationPlan: SchemaMigrationPlan {
     static var stages: [MigrationStage] = []
 }
 
-typealias ModelVersion = ModelVersion1_0_0
+typealias CurrentModelVersion = ModelVersion1_0_0
 
 enum ModelVersion1_0_0: VersionedSchema {
     static let versionIdentifier = Schema.Version(1, 0, 0)
     
     static var models: [any PersistentModel.Type] = [
         AnnotationData.self,
+        PolylineData.self
     ]
 }

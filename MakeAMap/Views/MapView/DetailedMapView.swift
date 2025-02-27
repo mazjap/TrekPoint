@@ -12,18 +12,36 @@ import MapKit
 // - [ ] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
 //    - [ ] Add some sort of toast alert system or package
-// - [ ] Add path support
-//    - [ ] "Following user location" type path
-//    - [ ] "Tap to draw" type path
+// - [ ] Add polyline support
+//    - [ ] "Following user location" type polyline
+//    - [ ] "Tap to draw" type polyline
 
 enum PresentedAnnotation {
     case prototype
     case annotation(AnnotationData)
 }
 
+enum MapFeatureTag: Hashable, Identifiable {
+    case annotation(UUID)
+    case polyline(UUID)
+    case newFeature
+    
+    var id: String {
+        switch self {
+        case let .annotation(id):
+            id.uuidString
+        case let .polyline(id):
+            id.uuidString
+        case .newFeature:
+            "new_feature"
+        }
+    }
+}
+
 struct DetailedMapView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var annotations: [AnnotationData]
+    @Query private var polylines: [PolylineData]
     
     @Namespace private var nspace
     
@@ -32,7 +50,7 @@ struct DetailedMapView: View {
     @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var cameraTransitionTrigger = false
-    @State private var selectedMapItemTag: String?
+    @State private var selectedMapItemTag: MapFeatureTag?
     
     @State private var selectedDetent = PresentationDetent.small
     
@@ -44,58 +62,17 @@ struct DetailedMapView: View {
     var body: some View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
-            
             MapReader { proxy in
                 Map(position: $cameraPosition, selection: $selectedMapItemTag, scope: nspace) {
                     if showUserLocation {
                         UserAnnotation()
                     }
                     
-                    ForEach(annotations) { annotation in
-                        Annotation(coordinate: CLLocationCoordinate2D(annotation.coordinate), anchor: .bottom) {
-                            DraggablePin(anchor: .bottom) { newPosition in
-                                guard let newCoordinate = proxy.convert(
-                                    newPosition,
-                                    from: .global
-                                ) else {
-                                    // TODO: - Handle error by:
-                                    // - showing toast to user
-                                    // - sending log through analytics service with details on map proxy and provided position
-                                    return
-                                }
-                                
-                                annotation.coordinate = Coordinate(newCoordinate)
-                            }
-                            .foregroundStyle(.red, .green)
-                        } label: {
-                            Text(annotation.title)
-                        }
-                        .tag(annotation.id.uuidString)
-                    }
+                    annotationViews(proxy: proxy)
                     
-                    if let newAnnotationLocation = newAnnotation.workingAnnotation?.coordinate {
-                        let clCoordinate = CLLocationCoordinate2D(newAnnotationLocation)
-                        
-                        Annotation(coordinate: clCoordinate, anchor: .bottom) {
-                            DraggablePin(shouldJiggle: !newAnnotation.isShowingOptions, anchor: .bottom) { newPosition in
-                                guard let newCoordinate = proxy.convert(
-                                    newPosition,
-                                    from: .global
-                                ) else {
-                                    // TODO: - Handle error by:
-                                    // - showing toast to user
-                                    // - sending log through analytics service with details on map proxy and provided position
-                                    return
-                                }
-                                
-                                self.newAnnotation.apply(coordinate: newCoordinate)
-                            }
-                            .foregroundStyle(.blue)
-                        } label: {
-                            
-                        }
-                        .tag(newAnnotation.tag)
-                    }
+                    polylineViews(proxy: proxy)
+                    
+                    inProgressPin(proxy: proxy)
                 }
                 .mapStyle(.hybrid(elevation: .realistic))
                 .mapControlVisibility(.hidden)
@@ -115,83 +92,95 @@ struct DetailedMapView: View {
         }
         .mapScope(nspace)
         .sheet(isPresented: .constant(true)) {
-            VStack {
-                NavigationStack {
-                    List {
-                        if annotations.isEmpty {
-                            Text("No content")
-                        } else {
-                            ForEach(annotations) { item in
-                                NavigationLink {
-                                    ModifyAnnotationView(annotation: item)
-                                } label: {
-                                    Text(item.title)
-                                }
-                            }
-                            .onDelete(perform: deleteItems)
-                        }
-                    }
-                    .padding(.top, -20)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            EditButton()
-                        }
-                    }
-                    .navigationTitle("My Items")
-                    .navigationBarTitleDisplayMode(.inline)
-                }
+            sheetContent
                 .sheet(item: $selectedMapItemTag) { tag in
-                    let (coordinate, title): (Binding<Coordinate>, Binding<String>) = {
-                        switch tag {
-                        case newAnnotation.tag:
-                            let protoAnnotationBinding = $newAnnotation.workingAnnotation.safelyUnwrapped(.init(coordinate: .random))
-                            
-                            return (protoAnnotationBinding.coordinate, protoAnnotationBinding.title)
-                        default:
-                            let annotation = annotations.first(where: { $0.id.uuidString == tag })!
-                            let annotationBinding = Bindable(annotation)
-                            
-                            return (annotationBinding.coordinate, annotationBinding.title)
-                        }
-                    }()
-                    
-                    AnnotationDetailView(coordinate: coordinate, title: title)
+                    nestedSheetContent(tag: tag)
                         .presentationDetents(detents, selection: $selectedDetent)
                         .presentationBackgroundInteraction(.enabled)
                         .interactiveDismissDisabled()
                 }
-            }
-            .presentationDetents(detents, selection: $selectedDetent)
-            .presentationBackgroundInteraction(.enabled)
-            .interactiveDismissDisabled()
+                .presentationDetents(detents, selection: $selectedDetent)
+                .presentationBackgroundInteraction(.enabled)
+                .interactiveDismissDisabled()
         }
         .onChange(of: selectedMapItemTag) {
             print(selectedMapItemTag ?? "No selection")
             
-            if let selectedMapItemTag,
-               let annotation = annotations.first(where: { $0.id.uuidString == selectedMapItemTag }) {
+            guard let selectedMapItemTag else { return }
+            
+            if let annotation = annotations.first(where: { selectedMapItemTag == .annotation($0.id) }) {
                 // TODO: - Present ModifyAnnotationView in sheet
+            } else if let polyline = polylines.first(where: { selectedMapItemTag == .polyline($0.id) }) {
+                // TODO: - Present ModifyPolylineView in sheet
             }
         }
         .onChange(of: showUserLocation) {
-            if showUserLocation {
-                Self.locationManager.requestWhenInUseAuthorization()
-                
-                switch Self.locationManager.authorizationStatus {
-                case .authorizedAlways, .authorizedWhenInUse: break
-                case .restricted, .denied, .notDetermined: fallthrough
-                @unknown default: showUserLocation = false
-                }
-                
-                if Self.locationManager.location != nil {
-                    cameraTransitionTrigger.toggle()
-                }
-            }
+            userLocationToggled()
         }
         .task {
             if showUserLocation && Self.locationManager.location != nil {
                 cameraTransitionTrigger.toggle()
             }
+        }
+    }
+    
+    private func annotationViews(proxy: MapProxy) -> some MapContent {
+        ForEach(annotations) { annotation in
+            Annotation(coordinate: CLLocationCoordinate2D(annotation.coordinate), anchor: .bottom) {
+                DraggablePin(anchor: .bottom) { newPosition in
+                    guard let newCoordinate = proxy.convert(
+                        newPosition,
+                        from: .global
+                    ) else {
+                        // TODO: - Handle error by:
+                        // - showing toast to user
+                        // - sending log through analytics service with details on map proxy and provided position
+                        return
+                    }
+                    
+                    annotation.coordinate = Coordinate(newCoordinate)
+                }
+                .foregroundStyle(.red, .green)
+            } label: {
+                Text(annotation.title)
+            }
+            .tag(MapFeatureTag.annotation(annotation.id))
+        }
+    }
+    
+    @MapContentBuilder
+    private func polylineViews(proxy: MapProxy) -> some MapContent {
+        ForEach(polylines) { polyline in
+            MapPolyline(coordinates: polyline.clCoordinates)
+                .stroke(.red, lineWidth: 5)
+                .tag(MapFeatureTag.polyline(polyline.id))
+        }
+    }
+    
+    @MapContentBuilder
+    private func inProgressPin(proxy: MapProxy) -> some MapContent {
+        if let newAnnotationLocation = newAnnotation.workingAnnotation?.coordinate {
+            let clCoordinate = CLLocationCoordinate2D(newAnnotationLocation)
+            
+            Annotation(coordinate: clCoordinate, anchor: .bottom) {
+                DraggablePin(shouldJiggle: !newAnnotation.isShowingOptions, anchor: .bottom) { newPosition in
+                    guard let newCoordinate = proxy.convert(
+                        newPosition,
+                        from: .global
+                    ) else {
+                        // TODO: - Handle error by:
+                        // - showing toast to user
+                        // - sending log through analytics service with details on map proxy and provided position
+                        return
+                    }
+                    
+                    self.newAnnotation.apply(coordinate: newCoordinate)
+                }
+                .foregroundStyle(.blue)
+            } label: {
+                
+            }
+            .tag(newAnnotation.tag)
         }
     }
     
@@ -269,7 +258,7 @@ struct DetailedMapView: View {
                         }
                         
                         newAnnotation.apply(coordinate: coordinate)
-                        selectedMapItemTag = newAnnotation.tag
+                        selectedMapItemTag = .newFeature
                     } label: {
                         Image(systemName: "mappin")
                             .resizable()
@@ -321,7 +310,7 @@ struct DetailedMapView: View {
                         Spacer()
                         
                         Button {
-                            // TODO: - Periodically add path points while active (background notifications)
+                            // TODO: - Periodically add polyline points while active (background notifications)
                             //  - Cull points that are too close or have an angle change of less than some delta
                         } label: {
                             Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
@@ -349,10 +338,107 @@ struct DetailedMapView: View {
         .padding(.horizontal)
     }
     
-    private func deleteItems(offsets: IndexSet) {
+    private var sheetContent: some View {
+        NavigationStack {
+            List {
+                if annotations.isEmpty && polylines.isEmpty {
+                    Text("No content")
+                }
+                
+                if !annotations.isEmpty {
+                    Section("Annotations") {
+                        ForEach(annotations) { item in
+                            NavigationLink {
+                                ModifyAnnotationView(annotation: item)
+                            } label: {
+                                HStack {
+                                    Image(systemName: "mappin.and.ellipse")
+                                        .foregroundStyle(.red, .green)
+                                    
+                                    Text(item.title)
+                                }
+                            }
+                        }
+                        .onDelete(perform: deleteAnnotations)
+                    }
+                }
+                
+                if !polylines.isEmpty {
+                    Section("Paths") {
+                        ForEach(polylines) { item in
+                            NavigationLink {
+                                // TODO: - Add ModifyPolylineView here
+                            } label: {
+                                HStack {
+                                    Image(systemName: "point.topleft.down.to.point.bottomright.curvepath.fill")
+                                    
+                                    Text(item.title)
+                                }
+                            }
+                        }
+                        .onDelete(perform: deletePolylines)
+                    }
+                }
+            }
+            .padding(.top, -20)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+            }
+            .navigationTitle("My Items")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+    
+    @ViewBuilder
+    private func nestedSheetContent(tag: MapFeatureTag) -> some View {
+        switch tag {
+        case .newFeature:
+            let protoAnnotationBinding = $newAnnotation.workingAnnotation.safelyUnwrapped(.init(coordinate: .random))
+            
+            AnnotationDetailView(coordinate: protoAnnotationBinding.coordinate, title: protoAnnotationBinding.title)
+        case let .annotation(id):
+            let annotation = annotations.first(where: { $0.id == id })!
+            let annotationBinding = Bindable(annotation)
+            
+            AnnotationDetailView(coordinate: annotationBinding.coordinate, title: annotationBinding.title)
+        case let .polyline(id):
+            let polyline = polylines.first(where: { $0.id == id })!
+            let polylineBinding = Bindable(polyline)
+            
+            PolylineDetailView(coordinates: polylineBinding.coordinates, title: polylineBinding.title)
+        }
+    }
+    
+    private func deleteAnnotations(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
                 modelContext.delete(annotations[index])
+            }
+        }
+    }
+    
+    private func deletePolylines(offsets: IndexSet) {
+        withAnimation {
+            for index in offsets {
+                modelContext.delete(polylines[index])
+            }
+        }
+    }
+    
+    private func userLocationToggled() {
+        if showUserLocation {
+            Self.locationManager.requestWhenInUseAuthorization()
+            
+            switch Self.locationManager.authorizationStatus {
+            case .authorizedAlways, .authorizedWhenInUse: break
+            case .restricted, .denied, .notDetermined: fallthrough
+            @unknown default: showUserLocation = false
+            }
+            
+            if Self.locationManager.location != nil {
+                cameraTransitionTrigger.toggle()
             }
         }
     }
@@ -360,17 +446,14 @@ struct DetailedMapView: View {
 
 #Preview {
     DetailedMapView()
-        .modelContainer(for: ModelVersion.models, inMemory: true) { result in
+        .modelContainer(for: CurrentModelVersion.models, inMemory: true) { result in
             switch result {
             case let .success(container):
                 let context = ModelContext(container)
                 context.insert(AnnotationData(title: "Random Location", coordinate: .random))
+                context.insert(PolylineData.example)
             case let .failure(error):
                 print(error)
             }
         }
-}
-
-extension String: Identifiable {
-    public var id: String { self }
 }

@@ -1,4 +1,4 @@
 enum MapFeature {
     case annotation(AnnotationData)
-//    case path()
+    case polyline(PolylineData)
 }

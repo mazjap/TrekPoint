@@ -1,11 +1,11 @@
 import Foundation
 import SwiftData
 
-typealias AnnotationData = ModelVersion.AnnotationData
+typealias AnnotationData = CurrentModelVersion.AnnotationData
 
 extension ModelVersion1_0_0 {
     @Model
-    final class AnnotationData: Identifiable {
+    final class AnnotationData: PersistentEditableModel, Identifiable {
         var id: UUID
         var createdAt: Date
         var lastEditedAt: Date

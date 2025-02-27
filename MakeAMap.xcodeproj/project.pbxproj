@@ -7,11 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
+		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
+		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
+		0E8EF0612D706BC1006145C0 /* TestMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF0602D706BC1006145C0 /* TestMap.swift */; };
 		0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */; };
-		0E9512C72BB532FC00E9CA83 /* ModelVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C62BB532FC00E9CA83 /* ModelVersion.swift */; };
+		0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */; };
 		0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */; };
 		0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */; };
 		0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512CC2BB5342D00E9CA83 /* Triangle.swift */; };
+		0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */; };
 		0EA4BD472B9151AF005259B4 /* MakeAMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */; };
 		0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD482B9151AF005259B4 /* ContentView.swift */; };
 		0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */; };
@@ -30,11 +35,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
+		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
+		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
+		0E8EF0602D706BC1006145C0 /* TestMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestMap.swift; sourceTree = "<group>"; };
 		0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAnnotationManager.swift; sourceTree = "<group>"; };
-		0E9512C62BB532FC00E9CA83 /* ModelVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelVersion.swift; sourceTree = "<group>"; };
+		0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentModelVersion.swift; sourceTree = "<group>"; };
 		0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationData+CoreLocation.swift"; sourceTree = "<group>"; };
 		0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
 		0E9512CC2BB5342D00E9CA83 /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
+		0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentEditableModel.swift; sourceTree = "<group>"; };
 		0EA4BD432B9151AF005259B4 /* MakeAMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MakeAMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeAMapApp.swift; sourceTree = "<group>"; };
 		0EA4BD482B9151AF005259B4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -103,8 +113,10 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
+				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
-				0E9512C62BB532FC00E9CA83 /* ModelVersion.swift */,
+				0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */,
+				0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */,
 				0EE4530A2BAD619E007C40DE /* MapFeature.swift */,
 			);
 			path = Models;
@@ -135,6 +147,7 @@
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
+				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
 				0EA4BD632B93F819005259B4 /* AnnotationView */,
 			);
@@ -146,6 +159,7 @@
 			children = (
 				0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */,
 				0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */,
+				0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */,
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
 			);
@@ -159,6 +173,7 @@
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
 				0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
+				0E8EF0602D706BC1006145C0 /* TestMap.swift */,
 			);
 			path = MapView;
 			sourceTree = "<group>";
@@ -207,6 +222,8 @@
 				Base,
 			);
 			mainGroup = 0EA4BD3A2B9151AF005259B4;
+			packageReferences = (
+			);
 			productRefGroup = 0EA4BD442B9151AF005259B4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -235,12 +252,15 @@
 			files = (
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
+				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
+				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
 				0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */,
-				0E9512C72BB532FC00E9CA83 /* ModelVersion.swift in Sources */,
+				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
+				0E8EF0612D706BC1006145C0 /* TestMap.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
@@ -248,6 +268,8 @@
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
 				0EA4BD472B9151AF005259B4 /* MakeAMapApp.swift in Sources */,
+				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
+				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
