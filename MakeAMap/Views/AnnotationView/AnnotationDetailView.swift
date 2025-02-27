@@ -14,7 +14,7 @@ struct AnnotationDetailView: View {
             MapPreview(feature: .annotation(AnnotationData(title: title, coordinate: coordinate)))
                 .frame(height: 260)
             
-            VStack {
+            Form {
                 TextField("Name this marker", text: $title)
                     .font(.title2.bold())
                 
@@ -25,10 +25,7 @@ struct AnnotationDetailView: View {
                 LabeledContent("Longitude") {
                     TextField("", value: $coordinate.longitude, format: .number)
                 }
-                
-                Spacer()
             }
-            .padding([.horizontal, .top])
             .background {
                 Color.white
                     .ignoresSafeArea(edges: .bottom)

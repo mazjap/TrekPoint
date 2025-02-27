@@ -18,15 +18,45 @@ struct PolylineDetailView: View {
                 TextField("Name this path", text: $title)
                     .font(.title2.bold())
                 
-//                ForEach($coordinates) { $coordinate in
-//                    LabeledContent("Latitude") {
-//                        TextField("", value: $coordinate.latitude, format: .number)
-//                    }
-//                    
-//                    LabeledContent("Longitude") {
-//                        TextField("", value: $coordinate.longitude, format: .number)
-//                    }
-//                }
+                DisclosureGroup("Coordinates") {
+                    
+                    Grid(alignment: .leading) {
+                        GridRow {
+                            Text("#")
+                            
+                            Text("Latitude:")
+                            
+                            Text("Longitude:")
+                        }
+                        
+                        ForEach(Array(coordinates.enumerated()), id: \.1.id) { (index, coordinate) in
+                            GridRow {
+                                Text("\(index + 1)")
+                                
+                                let latBinding = Binding {
+                                    coordinate.latitude
+                                } set: {
+                                    coordinates[index].latitude = $0
+                                }
+                                
+                                let lngBinding = Binding {
+                                    coordinate.longitude
+                                } set: {
+                                    coordinates[index].longitude = $0
+                                }
+                                
+                                TextField("", value: latBinding, format: .number)
+                                
+                                TextField("", value: lngBinding, format: .number)
+                            }
+                            .textFieldStyle(.roundedBorder)
+                            
+                            if index != coordinates.count - 1 {
+                                Divider()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

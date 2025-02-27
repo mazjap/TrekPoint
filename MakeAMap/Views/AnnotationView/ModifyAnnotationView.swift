@@ -25,3 +25,7 @@ struct ModifyAnnotationView: View {
         }
     }
 }
+
+#Preview {
+    ModifyAnnotationView(annotation: .init(title: "Test", coordinate: .init(latitude: 0, longitude: 0)))
+}

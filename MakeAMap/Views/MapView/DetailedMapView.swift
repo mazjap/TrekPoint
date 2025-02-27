@@ -452,6 +452,7 @@ struct DetailedMapView: View {
                 let context = ModelContext(container)
                 context.insert(AnnotationData(title: "Random Location", coordinate: .random))
                 context.insert(PolylineData.example)
+                try! context.save()
             case let .failure(error):
                 print(error)
             }

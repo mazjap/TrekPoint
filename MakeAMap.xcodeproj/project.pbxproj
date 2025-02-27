@@ -10,7 +10,6 @@
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
-		0E8EF0612D706BC1006145C0 /* TestMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF0602D706BC1006145C0 /* TestMap.swift */; };
 		0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */; };
 		0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */; };
 		0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */; };
@@ -38,7 +37,6 @@
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
-		0E8EF0602D706BC1006145C0 /* TestMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestMap.swift; sourceTree = "<group>"; };
 		0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAnnotationManager.swift; sourceTree = "<group>"; };
 		0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentModelVersion.swift; sourceTree = "<group>"; };
 		0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -173,7 +171,6 @@
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
 				0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
-				0E8EF0602D706BC1006145C0 /* TestMap.swift */,
 			);
 			path = MapView;
 			sourceTree = "<group>";
@@ -260,7 +257,6 @@
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
-				0E8EF0612D706BC1006145C0 /* TestMap.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
