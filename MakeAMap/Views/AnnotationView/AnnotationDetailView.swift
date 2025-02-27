@@ -18,12 +18,19 @@ struct AnnotationDetailView: View {
                 TextField("Name this marker", text: $title)
                     .font(.title2.bold())
                 
-                LabeledContent("Latitude") {
-                    TextField("", value: $coordinate.latitude, format: .number)
-                }
-                
-                LabeledContent("Longitude") {
-                    TextField("", value: $coordinate.longitude, format: .number)
+                Grid(alignment: .leading) {
+                    GridRow {
+                        Text("Latitude:")
+                        
+                        Text("Longitude:")
+                    }
+                    
+                    GridRow {
+                        TextField("", value: $coordinate.latitude, format: .number)
+                        
+                        TextField("", value: $coordinate.longitude, format: .number)
+                    }
+                    .textFieldStyle(.roundedBorder)
                 }
             }
             .background {
