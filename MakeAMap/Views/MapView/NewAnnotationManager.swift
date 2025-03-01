@@ -5,21 +5,9 @@ enum AnnotationFinalizationError: Error {
     case emptyTitle
 }
 
-struct ProtoAnnotation {
-    var coordinate: Coordinate
-    var title: String
-    var subtitle: String
-    
-    init(coordinate: Coordinate, title: String = "", subtitle: String = "") {
-        self.coordinate = coordinate
-        self.title = title
-        self.subtitle = subtitle
-    }
-}
-
 @Observable
 class NewAnnotationManager {
-    var workingAnnotation: ProtoAnnotation?
+    var workingAnnotation: WorkingAnnotation?
     var isShowingOptions = false
     var isEditingDetails = false
     
@@ -35,7 +23,7 @@ class NewAnnotationManager {
         if workingAnnotation != nil {
             workingAnnotation!.coordinate = coordinate
         } else {
-            self.workingAnnotation = ProtoAnnotation(coordinate: coordinate)
+            self.workingAnnotation = WorkingAnnotation(coordinate: coordinate, title: "")
         }
         
         isShowingOptions = true
@@ -56,8 +44,7 @@ class NewAnnotationManager {
         
         return AnnotationData(
             title: workingAnnotation.title,
-            subtitle: workingAnnotation.subtitle,
-            coordinate: workingAnnotation.coordinate
+            coordinate: workingAnnotation.clCoordinate
         )
     }
 }

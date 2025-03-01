@@ -1,13 +1,13 @@
 enum MapFeature {
-    case annotation(AnnotationData)
-    case polyline(PolylineData)
+    case annotation(any AnnotationProvider)
+    case polyline(any PolylineProvider)
     
     var tag: MapFeatureTag {
         switch self {
         case let .annotation(annotation):
-            return .annotation(annotation.id)
+            return annotation.tag
         case let .polyline(polyline):
-            return .polyline(polyline.id)
+            return polyline.tag
         }
     }
     

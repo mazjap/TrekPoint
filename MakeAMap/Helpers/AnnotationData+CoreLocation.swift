@@ -11,7 +11,7 @@ extension AnnotationData {
     }
     
     var clCoordinate: CLLocationCoordinate2D {
-        CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        CLLocationCoordinate2D(coordinate)
     }
 }
 #endif

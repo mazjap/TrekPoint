@@ -1,17 +1,47 @@
 import SwiftUI
 
 struct AnnotationDetailView: View {
+    private enum Storage {
+        case annotationData(AnnotationData)
+        case workingAnnotation(Binding<WorkingAnnotation>)
+    }
+    
+    private let storage: Storage
+    
+    init(annotation: AnnotationData) {
+        self.storage = .annotationData(annotation)
+    }
+    
+    init(annotation: Binding<WorkingAnnotation>) {
+        self.storage = .workingAnnotation(annotation)
+    }
+    
+    var body: some View {
+        switch storage {
+        case let .annotationData(annotation):
+            let bindable = Bindable(annotation)
+            AnnotationDetailViewImplementation(annotation: annotation, coordinate: bindable.coordinate, title: bindable.title)
+        case let .workingAnnotation(annotation):
+            AnnotationDetailViewImplementation(annotation: annotation.wrappedValue, coordinate: annotation.coordinate, title: annotation.title)
+        }
+    }
+}
+
+fileprivate struct AnnotationDetailViewImplementation: View {
     @Binding private var coordinate: Coordinate
     @Binding private var title: String
     
-    init(coordinate: Binding<Coordinate>, title: Binding<String>) {
+    private let feature: MapFeature
+    
+    init(annotation: any AnnotationProvider, coordinate: Binding<Coordinate>, title: Binding<String>) {
+        self.feature = .annotation(annotation)
         self._coordinate = coordinate
         self._title = title
     }
     
     var body: some View {
         VStack(spacing: 0) {
-            MapPreview(feature: .annotation(AnnotationData(title: title, coordinate: coordinate)))
+            MapPreview(feature: feature)
                 .frame(height: 260)
             
             Form {
@@ -43,14 +73,7 @@ struct AnnotationDetailView: View {
 }
 
 #Preview {
-    struct AnnotationDetailPreview: View {
-        @State private var coordinate = Coordinate(latitude: 40.05, longitude: -111.67)
-        @State private var title = "This is the title"
-        
-        var body: some View {
-            AnnotationDetailView(coordinate: $coordinate, title: $title)
-        }
-    }
+    @Previewable @State var annotation = WorkingAnnotation.example
     
-    return AnnotationDetailPreview()
+    AnnotationDetailView(annotation: $annotation)
 }

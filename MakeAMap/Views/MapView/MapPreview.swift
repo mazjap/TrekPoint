@@ -36,19 +36,15 @@ struct MapPreview: View {
     private var content: some MapContent {
         switch feature {
         case let .annotation(annotation):
-            Annotation(coordinate: CLLocationCoordinate2D(annotation.coordinate)) {
-                DraggablePin(movementEnabled: false, applyNewPosition: {_ in})
-                    .foregroundStyle(.red, .blue)
-            } label: {
-                Text(annotation.title)
-            }
-            .tag(annotation.id)
-        case let .polyline(polyline):
-            MapPolyline(
-                coordinates: polyline.clCoordinates,
-                contourStyle: .geodesic
+            AnnotationMapOverlay(
+                annotation: annotation,
+                movementEnabled: false,
+                foregroundColor: .orange,
+                fillColor: type(of: annotation) == AnnotationData.self ? .white : .blue,
+                applyNewPosition: {_ in}
             )
-            .stroke(.red, lineWidth: 5)
+        case let .polyline(polyline):
+            PolylineMapOverlay(polyline: polyline, strokeColor: .red)
         }
     }
     
@@ -65,7 +61,7 @@ struct MapPreview: View {
             .frame(width: 150, height: 150)
             .clipShape(.rect(cornerRadius: 20))
         
-        MapPreview(feature: .polyline(PolylineData.example))
+        MapPreview(feature: .polyline(WorkingPolyline.example))
             .frame(width: 150, height: 150)
             .clipShape(.rect(cornerRadius: 20))
     }

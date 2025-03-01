@@ -1,23 +1,23 @@
 import SwiftUI
 import SwiftData
+import struct CoreLocation.CLLocationCoordinate2D
 
 struct CreateAnnotationView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Binding private var coordinate: Coordinate
-    @State private var title = ""
+    @Binding private var annotation: WorkingAnnotation
     
-    init(coordinate: Binding<Coordinate>) {
-        self._coordinate = coordinate
+    init(workingAnnotation: Binding<WorkingAnnotation>) {
+        self._annotation = workingAnnotation
     }
     
     var body: some View {
         NavigationStack {
-            AnnotationDetailView(coordinate: $coordinate, title: $title)
+            AnnotationDetailView(annotation: $annotation)
                 .toolbar {
                     Button("Create") {
                         modelContext.insert(
-                            AnnotationData(title: title, coordinate: coordinate)
+                            AnnotationData(title: annotation.title, coordinate: annotation.coordinate)
                         )
                         
                         do {
@@ -34,10 +34,16 @@ struct CreateAnnotationView: View {
 
 #Preview {
     struct CreateAnnotationPreview: View {
-        @State private var coordinate = Coordinate(latitude: .random(in: -90...90), longitude: .random(in: -180...180))
+        @State private var annotation = WorkingAnnotation(
+            coordinate: Coordinate(
+                latitude: .random(in: -90...90),
+                longitude: .random(in: -180...180)
+            ),
+            title: ""
+        )
         
         var body: some View {
-            CreateAnnotationView(coordinate: $coordinate)
+            CreateAnnotationView(workingAnnotation: $annotation)
         }
     }
     

@@ -1,17 +1,46 @@
 import SwiftUI
 
 struct PolylineDetailView: View {
+    private enum Storage {
+        case polylineData(PolylineData)
+        case workingPolyline(Binding<WorkingPolyline>)
+    }
+    
+    private let storage: Storage
+    
+    init(polyline: PolylineData) {
+        self.storage = .polylineData(polyline)
+    }
+    
+    init(polyline: Binding<WorkingPolyline>) {
+        self.storage = .workingPolyline(polyline)
+    }
+    
+    var body: some View {
+        switch storage {
+        case let .polylineData(polyline):
+            let bindable = Bindable(polyline)
+            PolylineDetailViewImplementation(polyline: polyline, coordinates: bindable.coordinates, title: bindable.title)
+        case let .workingPolyline(polyline):
+            PolylineDetailViewImplementation(polyline: polyline.wrappedValue, coordinates: polyline.coordinates, title: polyline.title)
+        }
+    }
+}
+
+fileprivate struct PolylineDetailViewImplementation: View {
+    private let feature: MapFeature
     @Binding private var coordinates: [Coordinate]
     @Binding private var title: String
     
-    init(coordinates: Binding<[Coordinate]>, title: Binding<String>) {
+    init(polyline: any PolylineProvider, coordinates: Binding<[Coordinate]>, title: Binding<String>) {
+        self.feature = .polyline(polyline)
         self._coordinates = coordinates
         self._title = title
     }
     
     var body: some View {
         VStack(spacing: 0) {
-            MapPreview(feature: .polyline(PolylineData(title: title, coordinates: coordinates)))
+            MapPreview(feature: feature)
                 .frame(height: 240)
             
             Form {
@@ -63,14 +92,7 @@ struct PolylineDetailView: View {
 }
 
 #Preview {
-    struct PolylineDetailPreview: View {
-        @State private var coordinates = PolylineData.example.coordinates
-        @State private var title = "This is the title"
-        
-        var body: some View {
-            PolylineDetailView(coordinates: $coordinates, title: $title)
-        }
-    }
+    @Previewable @State var polyline = WorkingPolyline.example
     
-    return PolylineDetailPreview()
+    PolylineDetailView(polyline: $polyline)
 }

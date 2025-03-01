@@ -3,15 +3,15 @@ import SwiftUI
 struct ModifyPolylineView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var polyline: PolylineData
+    private let polyline: PolylineData
     
     init(polyline: PolylineData) {
-        self._polyline = State(wrappedValue: polyline)
+        self.polyline = polyline
     }
     
     var body: some View {
         NavigationStack {
-            PolylineDetailView(coordinates: $polyline.coordinates, title: $polyline.title)
+            PolylineDetailView(polyline: polyline)
                 .toolbar {
                     Button("Save") {
                         do {
@@ -27,6 +27,6 @@ struct ModifyPolylineView: View {
 }
 
 #Preview {
-    ModifyPolylineView(polyline: .example)
+    ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates))
 }
 

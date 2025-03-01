@@ -8,4 +8,12 @@ extension Binding {
             wrappedValue = $0
         }
     }
+    
+    func forceUnwrapped<T>() -> Binding<T> where Value == Optional<T> {
+        Binding<T> {
+            wrappedValue!
+        } set: {
+            wrappedValue = $0
+        }
+    }
 }

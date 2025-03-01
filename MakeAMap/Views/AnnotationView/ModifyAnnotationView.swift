@@ -3,15 +3,15 @@ import SwiftUI
 struct ModifyAnnotationView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var annotation: AnnotationData
+    private let annotation: AnnotationData
     
     init(annotation: AnnotationData) {
-        self._annotation = State(wrappedValue: annotation)
+        self.annotation = annotation
     }
     
     var body: some View {
         NavigationStack {
-            AnnotationDetailView(coordinate: $annotation.coordinate, title: $annotation.title)
+            AnnotationDetailView(annotation: annotation)
                 .toolbar {
                     Button("Save") {
                         do {
@@ -27,5 +27,5 @@ struct ModifyAnnotationView: View {
 }
 
 #Preview {
-    ModifyAnnotationView(annotation: .init(title: "Test", coordinate: .init(latitude: 0, longitude: 0)))
+    ModifyAnnotationView(annotation: AnnotationData(title: WorkingAnnotation.example.title, coordinate: WorkingAnnotation.example.coordinate))
 }

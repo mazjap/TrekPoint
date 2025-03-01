@@ -160,6 +160,7 @@ struct DetailedMapView: View {
             }
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled)
+            .interactiveDismissDisabled()
         }
         .onChange(of: selectedMapItemTag) {
             print(selectedMapItemTag ?? "No selection")
@@ -191,61 +192,53 @@ struct DetailedMapView: View {
     
     private func annotationViews(proxy: MapProxy) -> some MapContent {
         ForEach(annotations) { annotation in
-            Annotation(coordinate: CLLocationCoordinate2D(annotation.coordinate), anchor: .bottom) {
-                DraggablePin(anchor: .bottom) { newPosition in
-                    guard let newCoordinate = proxy.convert(
-                        newPosition,
-                        from: .global
-                    ) else {
-                        // TODO: - Handle error by:
-                        // - showing toast to user
-                        // - sending log through analytics service with details on map proxy and provided position
-                        return
-                    }
-                    
-                    annotation.coordinate = Coordinate(newCoordinate)
+            AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, foregroundColor: .orange) { newPosition in
+                guard let newCoordinate = proxy.convert(
+                    newPosition,
+                    from: .global
+                ) else {
+                    // TODO: - Handle error by:
+                    // - showing toast to user
+                    // - sending log through analytics service with details on map proxy and provided position
+                    return
                 }
-                .foregroundStyle(.red, .green)
-            } label: {
-                Text(annotation.title)
+                
+                annotation.coordinate = Coordinate(newCoordinate)
             }
-            .tag(MapFeatureTag.annotation(annotation.id))
         }
     }
     
     @MapContentBuilder
     private func polylineViews(proxy: MapProxy) -> some MapContent {
         ForEach(polylines) { polyline in
-            MapPolyline(coordinates: polyline.clCoordinates)
-                .stroke(.red, lineWidth: 5)
-                .tag(MapFeatureTag.polyline(polyline.id))
+            PolylineMapOverlay(polyline: polyline, strokeColor: .red)
         }
     }
     
     @MapContentBuilder
     private func inProgressPin(proxy: MapProxy) -> some MapContent {
         if let newAnnotationLocation = newAnnotation.workingAnnotation?.coordinate {
-            let clCoordinate = CLLocationCoordinate2D(newAnnotationLocation)
-            
-            Annotation(coordinate: clCoordinate, anchor: .bottom) {
-                DraggablePin(shouldJiggle: !newAnnotation.isShowingOptions, anchor: .bottom) { newPosition in
-                    guard let newCoordinate = proxy.convert(
-                        newPosition,
-                        from: .global
-                    ) else {
-                        // TODO: - Handle error by:
-                        // - showing toast to user
-                        // - sending log through analytics service with details on map proxy and provided position
-                        return
-                    }
-                    
-                    self.newAnnotation.apply(coordinate: newCoordinate)
+            AnnotationMapOverlay(
+                annotation: WorkingAnnotation(
+                    coordinate: newAnnotationLocation,
+                    title: newAnnotation.workingAnnotation?.title ?? ""
+                ),
+                shouldJiggle: newAnnotation.isShowingOptions,
+                foregroundColor: .orange,
+                fillColor: .blue
+            ) { newPosition in
+                guard let newCoordinate = proxy.convert(
+                    newPosition,
+                    from: .global
+                ) else {
+                    // TODO: - Handle error by:
+                    // - showing toast to user
+                    // - sending log through analytics service with details on map proxy and provided position
+                    return
                 }
-                .foregroundStyle(.blue)
-            } label: {
                 
+                newAnnotation.apply(coordinate: Coordinate(newCoordinate))
             }
-            .tag(MapFeatureTag.newFeature)
         }
     }
     
@@ -336,7 +329,7 @@ struct DetailedMapView: View {
                             .accessibilityLabel("Create New Marker")
                     }
                     .frame(width: buttonSize)
-                    .foregroundStyle(newAnnotation.workingAnnotation?.coordinate == nil ? Color(uiColor: .darkGray) : .blue)
+                    .foregroundStyle(newAnnotation.isShowingOptions ? .blue : Color(uiColor: .darkGray))
                     .background {
                         UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius)
                             .fill(.background)
@@ -403,21 +396,30 @@ struct DetailedMapView: View {
     
     @ViewBuilder
     private func nestedSheetContent(tag: MapFeatureTag) -> some View {
+        let goAwayView = EmptyView()
+            .onAppear {
+                selectedMapItemTag = nil
+            }
+        
         switch tag {
         case .newFeature:
-            let protoAnnotationBinding = $newAnnotation.workingAnnotation.safelyUnwrapped(.init(coordinate: .random))
-            
-            AnnotationDetailView(coordinate: protoAnnotationBinding.coordinate, title: protoAnnotationBinding.title)
+            if newAnnotation.workingAnnotation == nil {
+                goAwayView
+            } else {
+                AnnotationDetailView(annotation: $newAnnotation.workingAnnotation.forceUnwrapped())
+            }
         case let .annotation(id):
-            let annotation = annotations.first(where: { $0.id == id })!
-            let annotationBinding = Bindable(annotation)
-            
-            AnnotationDetailView(coordinate: annotationBinding.coordinate, title: annotationBinding.title)
+            if let annotation = annotations.first(where: { $0.id == id }) {
+                AnnotationDetailView(annotation: annotation)
+            } else {
+                goAwayView
+            }
         case let .polyline(id):
-            let polyline = polylines.first(where: { $0.id == id })!
-            let polylineBinding = Bindable(polyline)
-            
-            PolylineDetailView(coordinates: polylineBinding.coordinates, title: polylineBinding.title)
+            if let polyline = polylines.first(where: { $0.id == id }) {
+                PolylineDetailView(polyline: polyline)
+            } else {
+                goAwayView
+            }
         }
     }
     
@@ -464,8 +466,15 @@ struct DetailedMapView: View {
             switch result {
             case let .success(container):
                 let context = ModelContext(container)
-                context.insert(AnnotationData.example)
-                context.insert(PolylineData.example)
+                
+                context.insert(AnnotationData(
+                    title: WorkingAnnotation.example.title,
+                    coordinate: WorkingAnnotation.example.coordinate)
+                )
+                context.insert(PolylineData(
+                    title: WorkingPolyline.example.title,
+                    coordinates: WorkingPolyline.example.coordinates)
+                )
                 try! context.save()
             case let .failure(error):
                 print(error)

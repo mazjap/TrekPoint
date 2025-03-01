@@ -3,20 +3,19 @@ import SwiftUI
 struct CreatePolylineView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Binding private var coordinates: [Coordinate]
-    @State private var title = ""
+    @Binding private var polyline: WorkingPolyline
     
-    init(coordinates: Binding<[Coordinate]>) {
-        self._coordinates = coordinates
+    init(workingPolyline: Binding<WorkingPolyline>) {
+        self._polyline = workingPolyline
     }
     
     var body: some View {
         NavigationStack {
-            PolylineDetailView(coordinates: $coordinates, title: $title)
+            PolylineDetailView(polyline: $polyline)
                 .toolbar {
                     Button("Create") {
                         modelContext.insert(
-                            PolylineData(title: title, coordinates: coordinates)
+                            PolylineData(title: polyline.title, coordinates: polyline.coordinates)
                         )
                         
                         do {
@@ -32,7 +31,7 @@ struct CreatePolylineView: View {
 }
 
 #Preview {
-    @Previewable @State var coordinates = PolylineData.example.coordinates
+    @Previewable @State var polyline = WorkingPolyline.example
     
-    CreatePolylineView(coordinates: $coordinates)
+    CreatePolylineView(workingPolyline: $polyline)
 }

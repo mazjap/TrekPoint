@@ -11,6 +11,10 @@
 		0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */; };
 		0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527F2D711AC00079479A /* CreatePolylineView.swift */; };
 		0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2952812D711B0F0079479A /* ModifyPolylineView.swift */; };
+		0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529D2D72EBA50079479A /* PolylineMapOverlay.swift */; };
+		0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */; };
+		0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */; };
+		0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -42,6 +46,10 @@
 		0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapRect+CoordinateArray.swift"; sourceTree = "<group>"; };
 		0E29527F2D711AC00079479A /* CreatePolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePolylineView.swift; sourceTree = "<group>"; };
 		0E2952812D711B0F0079479A /* ModifyPolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyPolylineView.swift; sourceTree = "<group>"; };
+		0E29529D2D72EBA50079479A /* PolylineMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineMapOverlay.swift; sourceTree = "<group>"; };
+		0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationMapOverlay.swift; sourceTree = "<group>"; };
+		0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationProvider.swift; sourceTree = "<group>"; };
+		0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineProvider.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -86,6 +94,7 @@
 				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
 				0E29527F2D711AC00079479A /* CreatePolylineView.swift */,
 				0E2952812D711B0F0079479A /* ModifyPolylineView.swift */,
+				0E29529D2D72EBA50079479A /* PolylineMapOverlay.swift */,
 			);
 			path = PolylineView;
 			sourceTree = "<group>";
@@ -130,6 +139,8 @@
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
 				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
+				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
+				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
 				0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */,
 				0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */,
@@ -144,6 +155,7 @@
 				0EA4BD582B91C848005259B4 /* AnnotationDetailView.swift */,
 				0EA4BD5A2B91CD3B005259B4 /* CreateAnnotationView.swift */,
 				0EA4BD612B93F487005259B4 /* ModifyAnnotationView.swift */,
+				0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */,
 			);
 			path = AnnotationView;
 			sourceTree = "<group>";
@@ -267,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */,
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
@@ -284,6 +297,7 @@
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
 				0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */,
+				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
@@ -291,6 +305,8 @@
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
 				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
+				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
+				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
 			);

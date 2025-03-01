@@ -21,7 +21,5 @@ extension ModelVersion1_0_0 {
             self.createdAt = createdAt
             self.lastEditedAt = lastEditedAt
         }
-        
-        static let example = AnnotationData(title: "Home", coordinate: Coordinate(latitude: 40.049478, longitude: -111.670115))
     }
 }
