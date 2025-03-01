@@ -31,8 +31,6 @@ class NewAnnotationManager {
         }
     }
     
-    let tag = "annotation in the making"
-    
     func apply(coordinate: Coordinate) {
         if workingAnnotation != nil {
             workingAnnotation!.coordinate = coordinate

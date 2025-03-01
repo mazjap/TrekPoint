@@ -245,34 +245,37 @@ struct DetailedMapView: View {
             } label: {
                 
             }
-            .tag(newAnnotation.tag)
+            .tag(MapFeatureTag.newFeature)
         }
     }
     
     private func mapButtons(proxy: MapProxy, frame: CGRect) -> some View {
-        ZStack(alignment: .topLeading) {
-            VStack(alignment: .leading, spacing: 40) {
-                MapScaleView(scope: nspace)
+        ZStack(alignment: .topTrailing) {
+            HStack {
+                VStack(alignment: .leading, spacing: 40) {
+                    MapScaleView(scope: nspace)
+                    
+                    MapCompass(scope: nspace)
+                }
+                .mapControlVisibility(.visible) // TODO: - Use a setting to determine whether controls are visible
                 
-                MapCompass(scope: nspace)
+                Spacer()
             }
-            .mapControlVisibility(.visible) // TODO: - Use a setting to determine whether controls are visible
             
-            VStack(spacing: 0) {
+            VStack(alignment: .trailing, spacing: 0) {
                 let padding = buttonSize / 4
                 let activeColor = Color.blue
                 let inactiveColor = Color(uiColor: .darkGray)
                 let cornerRadius = buttonSize / 3
                 
                 HStack(spacing: 0) {
-                    Spacer()
-                    
                     if newAnnotation.isShowingOptions {
                         HStack {
                             Button {
                                 do {
                                     let annotation = try newAnnotation.finalize()
                                     modelContext.insert(annotation)
+                                    
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
                                 } catch {
@@ -342,55 +345,49 @@ struct DetailedMapView: View {
                 .frame(height: buttonSize)
                 
                 Divider()
-                
-                HStack {
-                    Spacer()
-                    
-                    Button {
-                        showUserLocation.toggle()
-                    } label: {
-                        Image(systemName: showUserLocation ? "location.north.circle.fill" : "location.north.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .padding(padding)
-                            .accessibilityLabel((showUserLocation ? "Hide" : "Show") + " Current Location")
-                    }
                     .frame(width: buttonSize)
-                    .foregroundStyle(showUserLocation ? .blue : Color(uiColor: .darkGray))
-                    .background {
-                        if showUserLocation {
-                            Rectangle()
-                                .fill(.background)
-                        } else {
-                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                                .fill(.background)
-                        }
+            
+                Button {
+                    showUserLocation.toggle()
+                } label: {
+                    Image(systemName: showUserLocation ? "location.north.circle.fill" : "location.north.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .padding(padding)
+                        .accessibilityLabel((showUserLocation ? "Hide" : "Show") + " Current Location")
+                }
+                .frame(width: buttonSize)
+                .foregroundStyle(showUserLocation ? .blue : Color(uiColor: .darkGray))
+                .background {
+                    if showUserLocation {
+                        Rectangle()
+                            .fill(.background)
+                    } else {
+                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+                            .fill(.background)
                     }
                 }
                 .frame(height: buttonSize)
                 
                 if showUserLocation {
                     Divider()
-                    
-                    HStack {
-                        Spacer()
-                        
-                        Button {
-                            // TODO: - Periodically add polyline points while active (background notifications)
-                            //  - Cull points that are too close or have an angle change of less than some delta
-                        } label: {
-                            Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .padding(padding)
-                                .accessibilityLabel("Track Location as a Path")
-                        }
                         .frame(width: buttonSize)
-                        .foregroundStyle(false ? activeColor : inactiveColor)
-                        .background {
-                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                                .fill(.background)
-                        }
+                    
+                    Button {
+                        // TODO: - Periodically add polyline points while active (background notifications)
+                        //  - Cull points that are too close or have an angle change of less than some delta
+                    } label: {
+                        Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .padding(padding)
+                            .accessibilityLabel("Track Location as a Path")
+                    }
+                    .frame(width: buttonSize)
+                    .foregroundStyle(false ? activeColor : inactiveColor)
+                    .background {
+                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+                            .fill(.background)
                     }
                     .frame(height: buttonSize)
                 }
@@ -467,7 +464,7 @@ struct DetailedMapView: View {
             switch result {
             case let .success(container):
                 let context = ModelContext(container)
-                context.insert(AnnotationData(title: "Random Location", coordinate: .random))
+                context.insert(AnnotationData.example)
                 context.insert(PolylineData.example)
                 try! context.save()
             case let .failure(error):
