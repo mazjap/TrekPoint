@@ -9,53 +9,44 @@ import MapKit
 // - [x] Confirm newly created annotation
 //    - [x] Add ~~tap gesture~~ button to confirm location
 //    - [x] Create AnnotationData for given coordinate and clear newAnnotationLocation
-// - [ ] Better (or any) error handling
-//    - [ ] Add red border to annotation title when user presses confirm and title is empty
-//    - [ ] Add some sort of toast alert system or package
 // - [ ] Add polyline support
 //    - [ ] "Following user location" type polyline
 //    - [ ] "Tap to draw" type polyline
+// - [ ] Better (or any) error handling
+//    - [ ] Add red border to annotation title when user presses confirm and title is empty
+//    - [ ] Add some sort of toast alert system or package
+// - [ ] Refactor architecture to decouple views and business logic
 
-enum PresentedAnnotation {
-    case prototype
-    case annotation(AnnotationData)
-}
 
-enum MapFeatureTag: Hashable, Identifiable {
-    case annotation(UUID)
-    case polyline(UUID)
-    case newFeature
-    
-    var id: String {
-        switch self {
-        case let .annotation(id):
-            id.uuidString
-        case let .polyline(id):
-            id.uuidString
-        case .newFeature:
-            "new_feature"
-        }
-    }
-}
-
-enum MapFeatureGeometry: Equatable {
-    case annotation(CLLocationCoordinate2D)
-    case polyline([CLLocationCoordinate2D])
-}
-
-enum CameraTrigger: Equatable {
-    case geometry(MapFeatureGeometry)
-    case userLocation(Bool)
-    
-    mutating func toggleUserLocation() {
-        switch self {
-        case let .userLocation(value):
-            self = .userLocation(!value)
-        default:
-            self = .userLocation(true)
-        }
-    }
-}
+// - Stretch Goals:
+//   - [ ] Cache tiles for offline use
+//   - [ ] Settings page:
+//     - [ ] Map style (standard, satellite, hybrid, topographic)
+//     - [ ] Annotation style (pin color, icon type)
+//     - [ ] Polyline style (color, width, pattern)
+//     - [ ] Distance units (miles/kilometers)
+//     - [ ] Coordinate format (decimal, DMS)
+//     - [ ] GPS tracking sensitivity/battery optimization
+//     - [ ] Map overlay buttons visibility (Compass and scale)
+//     - [ ] Dark/Light mode or system
+//     - [ ] Background tracking permissions
+//     - [ ] Offline mode settings/management
+//   - [ ] Search functionality for annotations and polylines
+//   - [ ] Photo/Video attachments for annotations (for documenting
+//   finds)
+//   - [ ] iCloud sync for cross-device usage
+//   - [ ] Categorized annotations (antler finds, trail cameras, bedding
+//   areas, etc.)
+// -------------------------------Unlikely-------------------------------
+//   - [ ] Basic stats dashboard (miles walked, stairs climed, finds
+//   this season, etc.)
+//   - [ ] Import/export data (GPX format for compatibility)
+//   - [ ] Area calculation tool (measure acreage of drawn polygons)
+//   - [ ] Share maps/locations via standard iOS share sheet
+// -----------------------------Very unlikely----------------------------
+//   - [ ] Elevation data display
+//   - [ ] Weather integration
+//   - [ ] Public land boundaries overlay
 
 struct DetailedMapView: View {
     @Environment(\.modelContext) private var modelContext
@@ -108,7 +99,12 @@ struct DetailedMapView: View {
                                 // Get the center coordinate of the map rect
                                 return CLLocationCoordinate2D(latitude: center.coordinate.latitude, longitude: center.coordinate.longitude)
                             case .userLocation:
-                                return Self.locationManager.location!.coordinate
+                                if let userLocation = Self.locationManager.location {
+                                    return userLocation.coordinate
+                                } else {
+                                    // TODO: - Show toast
+                                    fallthrough
+                                }
                             case nil:
                                 return camera.centerCoordinate
                             }
@@ -155,11 +151,11 @@ struct DetailedMapView: View {
             .sheet(item: $selectedMapItemTag) { tag in
                 nestedSheetContent(tag: tag)
                     .presentationDetents(detents, selection: $selectedDetent)
-                    .presentationBackgroundInteraction(.enabled)
+                    .presentationBackgroundInteraction(.enabled(upThrough: .medium))
                     .interactiveDismissDisabled()
             }
             .presentationDetents(detents, selection: $selectedDetent)
-            .presentationBackgroundInteraction(.enabled)
+            .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .interactiveDismissDisabled()
         }
         .onChange(of: selectedMapItemTag) {
@@ -396,7 +392,7 @@ struct DetailedMapView: View {
     
     @ViewBuilder
     private func nestedSheetContent(tag: MapFeatureTag) -> some View {
-        let goAwayView = EmptyView()
+        let goAwayView = Color.clear
             .onAppear {
                 selectedMapItemTag = nil
             }

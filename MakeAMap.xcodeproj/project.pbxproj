@@ -15,6 +15,7 @@
 		0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */; };
 		0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */; };
 		0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */; };
+		0E36EA892D73B86600C163E9 /* CameraTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA882D73B86600C163E9 /* CameraTrigger.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -50,6 +51,7 @@
 		0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationMapOverlay.swift; sourceTree = "<group>"; };
 		0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationProvider.swift; sourceTree = "<group>"; };
 		0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineProvider.swift; sourceTree = "<group>"; };
+		0E36EA882D73B86600C163E9 /* CameraTrigger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTrigger.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
+				0E36EA882D73B86600C163E9 /* CameraTrigger.swift */,
 				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
@@ -285,6 +288,7 @@
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
+				0E36EA892D73B86600C163E9 /* CameraTrigger.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
