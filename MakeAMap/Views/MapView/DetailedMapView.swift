@@ -31,7 +31,7 @@ import MapKit
 //     - [ ] Dark/Light mode or system
 //     - [ ] Background tracking permissions
 //     - [ ] Offline mode settings/management
-//   - [ ] Search functionality for annotations and polylines
+//   - [ ] Search & sort functionality for annotations and polylines
 //   - [ ] Photo/Video attachments for annotations (for documenting
 //   finds)
 //   - [ ] iCloud sync for cross-device usage
@@ -61,6 +61,7 @@ struct DetailedMapView: View {
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var cameraTransitionTrigger: CameraTrigger?
     @State private var selectedMapItemTag: MapFeatureTag?
+    @State private var presentedMapFeature: MapFeatureToPresent?
     
     @State private var selectedDetent = PresentationDetent.small
     
@@ -138,21 +139,16 @@ struct DetailedMapView: View {
         }
         .mapScope(nspace)
         .sheet(isPresented: .constant(true)) {
-            MapFeatureNavigator(
-                annotations: annotations,
-                polylines: polylines,
-                onSelection: {
-                    selectedMapItemTag = $0.tag
-                    cameraTransitionTrigger = .geometry($0.geometry)
-                },
-                onDeleteAnnotations: deleteAnnotations(offsets:),
-                onDeletePolylines: deletePolylines(offsets:)
-            )
-            .sheet(item: $selectedMapItemTag) { tag in
-                nestedSheetContent(tag: tag)
-                    .presentationDetents(detents, selection: $selectedDetent)
-                    .presentationBackgroundInteraction(.enabled(upThrough: .medium))
-                    .interactiveDismissDisabled()
+            MapFeatureNavigator(selection: $presentedMapFeature, newAnnotation: newAnnotation) { newSelection in
+                if let newSelection {
+                    selectedMapItemTag = newSelection.tag
+                    cameraTransitionTrigger = .geometry(newSelection.geometry)
+                } else {
+                    selectedMapItemTag = nil
+                    cameraTransitionTrigger = nil
+                }
+                
+                newAnnotation.clearProgress()
             }
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
@@ -161,15 +157,27 @@ struct DetailedMapView: View {
         .onChange(of: selectedMapItemTag) {
             print(selectedMapItemTag ?? "No selection")
             
-            guard let selectedMapItemTag else {
+            switch selectedMapItemTag {
+            case let .annotation(id):
+                if let annotation = annotations.first(where: { id == $0.id }) {
+                    presentedMapFeature = .annotation(annotation)
+                } else {
+                    // TODO: - Error handling (an annotation presentation was requested, but the annotation cannot be found)
+                }
+            case let .polyline(id):
+                if let polyline = polylines.first(where: { id == $0.id }) {
+                    presentedMapFeature = .polyline(polyline)
+                } else {
+                    // TODO: - Error handling (a polyline presentation was requested, but the polyline cannot be found)
+                }
+            case .newFeature:
+                if newAnnotation.workingAnnotation != nil {
+                    presentedMapFeature = .workingAnnotation
+                } else {
+                    // TODO: - Handle working polyline once implemented
+                }
+            case .none:
                 cameraTransitionTrigger = nil
-                return
-            }
-            
-            if let annotation = annotations.first(where: { selectedMapItemTag == .annotation($0.id) }) {
-                // TODO: - Present ModifyAnnotationView in sheet
-            } else if let polyline = polylines.first(where: { selectedMapItemTag == .polyline($0.id) }) {
-                // TODO: - Present ModifyPolylineView in sheet
             }
         }
         .onChange(of: showUserLocation) {
@@ -388,51 +396,6 @@ struct DetailedMapView: View {
             .animation(.easeInOut(duration: 0.2), value: showUserLocation)
         }
         .padding(.horizontal)
-    }
-    
-    @ViewBuilder
-    private func nestedSheetContent(tag: MapFeatureTag) -> some View {
-        let goAwayView = Color.clear
-            .onAppear {
-                selectedMapItemTag = nil
-            }
-        
-        switch tag {
-        case .newFeature:
-            if newAnnotation.workingAnnotation == nil {
-                goAwayView
-            } else {
-                AnnotationDetailView(annotation: $newAnnotation.workingAnnotation.forceUnwrapped())
-            }
-        case let .annotation(id):
-            if let annotation = annotations.first(where: { $0.id == id }) {
-                AnnotationDetailView(annotation: annotation)
-            } else {
-                goAwayView
-            }
-        case let .polyline(id):
-            if let polyline = polylines.first(where: { $0.id == id }) {
-                PolylineDetailView(polyline: polyline)
-            } else {
-                goAwayView
-            }
-        }
-    }
-    
-    private func deleteAnnotations(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(annotations[index])
-            }
-        }
-    }
-    
-    private func deletePolylines(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(polylines[index])
-            }
-        }
     }
     
     private func userLocationToggled() {

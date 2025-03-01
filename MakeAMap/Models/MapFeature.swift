@@ -19,6 +19,15 @@ enum MapFeature {
             return .polyline(polyline.clCoordinates)
         }
     }
+    
+    var title: String {
+        switch self {
+        case let .annotation(annotation):
+            return annotation.title
+        case let .polyline(polyline):
+            return polyline.title
+        }
+    }
 }
 
 import struct CoreLocation.CLLocationCoordinate2D

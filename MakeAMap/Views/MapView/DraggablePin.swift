@@ -117,8 +117,7 @@ import MapKit
 #Preview {
     @Previewable @State var isJiggling = true
     let coordinate = CLLocationCoordinate2D.random
-    
-    var otherCoordinate: CLLocationCoordinate2D = {
+    let otherCoordinate: CLLocationCoordinate2D = {
         CLLocationCoordinate2D(
             latitude: coordinate.latitude,
             longitude: coordinate.longitude > 179.5 ? coordinate.longitude - 0.5 : coordinate.longitude + 0.5

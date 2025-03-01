@@ -10,19 +10,17 @@ struct ModifyPolylineView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            PolylineDetailView(polyline: polyline)
-                .toolbar {
-                    Button("Save") {
-                        do {
-                            try modelContext.save()
-                            dismiss()
-                        } catch {
-                            print(error as NSError)
-                        }
+        PolylineDetailView(polyline: polyline)
+            .toolbar {
+                Button("Save") {
+                    do {
+                        try modelContext.save()
+                        dismiss()
+                    } catch {
+                        print(error as NSError)
                     }
                 }
-        }
+            }
     }
 }
 
