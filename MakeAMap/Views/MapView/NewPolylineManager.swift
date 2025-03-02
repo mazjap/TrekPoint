@@ -9,12 +9,24 @@ enum PolylineFinalizationError: Error {
 
 @Observable
 class NewPolylineManager {
+    private class UndoManager {
+        enum Action {
+            case move(index: Int, previousCoordinate: Coordinate)
+            case append(coordCount: Int)
+        }
+        
+        var actions = [Action]()
+    }
+    
     var workingPolyline: WorkingPolyline?
     var isShowingOptions = false
+    var canUndo: Bool { !undoManager.actions.isEmpty }
+    private var undoManager = UndoManager()
     
     func append(_ coordinates: [Coordinate]) {
         if workingPolyline != nil {
             workingPolyline!.coordinates += coordinates
+            undoManager.actions.append(.append(coordCount: coordinates.count))
         } else {
             self.workingPolyline = WorkingPolyline(coordinates: coordinates, title: "")
         }
@@ -36,9 +48,34 @@ class NewPolylineManager {
         append([coordinate])
     }
     
+    func move(index: Int, to coordinate: Coordinate) {
+        guard workingPolyline != nil else { return }
+        guard index >= 0 && index < workingPolyline!.coordinates.count else { return }
+        
+        let oldCoordinate = workingPolyline!.coordinates[index]
+        workingPolyline?.coordinates[index] = coordinate
+        undoManager.actions.append(.move(index: index, previousCoordinate: oldCoordinate))
+    }
+    
+    func move(index: Int, to coordinate: CLLocationCoordinate2D) {
+        move(index: index, to: Coordinate(coordinate))
+    }
+    
+    func undo() {
+        switch undoManager.actions.popLast() {
+        case let .append(coordCount):
+            workingPolyline?.coordinates.removeLast(coordCount)
+        case let .move(index, previousCoordinate):
+            workingPolyline?.coordinates[index] = previousCoordinate
+        default:
+            break
+        }
+    }
+    
     func clearProgress() {
         isShowingOptions = false
         workingPolyline = nil
+        undoManager.actions = []
     }
     
     func finalize() throws -> PolylineData {

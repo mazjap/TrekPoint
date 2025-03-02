@@ -256,8 +256,7 @@ struct DetailedMapView: View {
                             return
                         }
                         
-                        // Update the coordinate at this index
-                        newPolyline.workingPolyline?.coordinates[index] = Coordinate(newCoordinate)
+                        newPolyline.move(index: index, to: newCoordinate)
                     }
                 }
                 .foregroundStyle(.blue)
@@ -309,12 +308,11 @@ struct DetailedMapView: View {
                             Divider()
                             
                             Button {
-                                newAnnotation.clearProgress()
-                                selectedMapItemTag = nil
-                                selectedDetent = .small
+                                newAnnotation.undo()
                             } label: {
-                                Text("Cancel")
+                                Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             }
+                            .disabled(!newAnnotation.canUndo)
                         }
                         .padding(.horizontal)
                         .background {
@@ -329,22 +327,28 @@ struct DetailedMapView: View {
                     }
                     
                     Button {
-                        guard let coordinate = proxy.convert(
-                            CGPoint(
-                                x: frame.midX,
-                                y: frame.midY
-                            ),
-                            from: .global
-                        ) else {
-                            print("No center, yo")
-                            // TODO: - Handle Error by:
-                            // - showing toast to user
-                            // - sending log through analytics service with details on map proxy
-                            return
+                        if newAnnotation.workingAnnotation == nil {
+                            guard let coordinate = proxy.convert(
+                                CGPoint(
+                                    x: frame.midX,
+                                    y: frame.midY
+                                ),
+                                from: .global
+                            ) else {
+                                print("No center, yo")
+                                // TODO: - Handle Error by:
+                                // - showing toast to user
+                                // - sending log through analytics service with details on map proxy
+                                return
+                            }
+                            
+                            newAnnotation.apply(coordinate: coordinate)
+                            selectedMapItemTag = .newFeature
+                        } else {
+                            newAnnotation.clearProgress()
+                            selectedMapItemTag = nil
+                            selectedDetent = .small
                         }
-                        
-                        newAnnotation.apply(coordinate: coordinate)
-                        selectedMapItemTag = .newFeature
                     } label: {
                         Image(systemName: "mappin")
                             .resizable()
@@ -408,12 +412,11 @@ struct DetailedMapView: View {
                             Divider()
                             
                             Button {
-                                newPolyline.clearProgress()
-                                selectedMapItemTag = nil
-                                selectedDetent = .small
+                                newPolyline.undo()
                             } label: {
-                                Text("Cancel")
+                                Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             }
+                            .disabled(!newPolyline.canUndo)
                         }
                         .padding(.horizontal)
                         .background {
@@ -430,6 +433,9 @@ struct DetailedMapView: View {
                     Button {
                         if editingMode == .drawPolyline {
                             editingMode = .view
+                            newPolyline.clearProgress()
+                            selectedMapItemTag = nil
+                            selectedDetent = .small
                         } else {
                             editingMode = .drawPolyline
                             

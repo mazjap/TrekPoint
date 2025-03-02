@@ -8,12 +8,24 @@ enum AnnotationFinalizationError: Error {
 
 @Observable
 class NewAnnotationManager {
+    private class UndoManager {
+        enum Action {
+            case move(previousCoordinate: Coordinate)
+        }
+        
+        var actions = [Action]()
+    }
+    
     var workingAnnotation: WorkingAnnotation?
     var isShowingOptions = false
+    var canUndo: Bool { !undoManager.actions.isEmpty }
+    private let undoManager = UndoManager()
     
     func apply(coordinate: Coordinate) {
         if workingAnnotation != nil {
+            let oldCoordinate = workingAnnotation!.coordinate
             workingAnnotation!.coordinate = coordinate
+            undoManager.actions.append(.move(previousCoordinate: oldCoordinate))
         } else {
             self.workingAnnotation = WorkingAnnotation(coordinate: coordinate, title: "")
         }
@@ -25,9 +37,19 @@ class NewAnnotationManager {
         self.apply(coordinate: Coordinate(coordinate))
     }
     
+    func undo() {
+        switch undoManager.actions.popLast() {
+        case let .move(previousCoordinate):
+            workingAnnotation?.coordinate = previousCoordinate
+        case .none:
+            break
+        }
+    }
+    
     func clearProgress() {
         isShowingOptions = false
         workingAnnotation = nil
+        undoManager.actions = []
     }
     
     func finalize() throws -> AnnotationData {
