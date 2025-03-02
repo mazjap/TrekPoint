@@ -246,7 +246,7 @@ struct DetailedMapView: View {
                 Annotation(
                     "Point \(index + 1)",
                     coordinate: CLLocationCoordinate2D(coordinate),
-                    anchor: .bottom
+                    anchor: .center
                 ) {
                     DraggablePolylinePoint { newPosition in
                         guard let newCoordinate = proxy.convert(
