@@ -1,4 +1,5 @@
 import SwiftUI
+import struct CoreLocation.CLLocationCoordinate2D
 
 enum AnnotationFinalizationError: Error {
     case noCoordinate
@@ -9,15 +10,6 @@ enum AnnotationFinalizationError: Error {
 class NewAnnotationManager {
     var workingAnnotation: WorkingAnnotation?
     var isShowingOptions = false
-    var isEditingDetails = false
-    
-    var editDetailsBinding: Binding<Bool> {
-        Binding {
-            self.isEditingDetails && self.workingAnnotation != nil
-        } set: {
-            self.isEditingDetails = $0
-        }
-    }
     
     func apply(coordinate: Coordinate) {
         if workingAnnotation != nil {
@@ -27,12 +19,14 @@ class NewAnnotationManager {
         }
         
         isShowingOptions = true
-        isEditingDetails = true
+    }
+    
+    func apply(coordinate: CLLocationCoordinate2D) {
+        self.apply(coordinate: Coordinate(coordinate))
     }
     
     func clearProgress() {
         isShowingOptions = false
-        isEditingDetails = false
         workingAnnotation = nil
     }
     
@@ -44,15 +38,7 @@ class NewAnnotationManager {
         
         return AnnotationData(
             title: workingAnnotation.title,
-            coordinate: workingAnnotation.clCoordinate
+            coordinate: workingAnnotation.coordinate
         )
-    }
-}
-
-import CoreLocation.CLLocation
-
-extension NewAnnotationManager {
-    func apply(coordinate: CLLocationCoordinate2D) {
-        self.apply(coordinate: Coordinate(coordinate))
     }
 }

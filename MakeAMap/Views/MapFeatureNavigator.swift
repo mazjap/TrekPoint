@@ -14,17 +14,23 @@ struct MapFeatureNavigator: View {
     @Query private var polylines: [PolylineData]
     
     @Binding private var selection: MapFeatureToPresent?
+    @Binding private var isInEditingMode: Bool
     private let newAnnotation: NewAnnotationManager
+    private let newPolyline: NewPolylineManager
     
     private let onSelection: (MapFeature?) -> Void
     
     init(
         selection: Binding<MapFeatureToPresent?>,
+        isInEditingMode: Binding<Bool>,
         newAnnotation: NewAnnotationManager,
+        newPolyline: NewPolylineManager,
         onSelection: @escaping (MapFeature?) -> Void
     ) {
         self._selection = selection
+        self._isInEditingMode = isInEditingMode
         self.newAnnotation = newAnnotation
+        self.newPolyline = newPolyline
         self.onSelection = onSelection
     }
     
@@ -45,7 +51,7 @@ struct MapFeatureNavigator: View {
                             } label: {
                                 HStack {
                                     Image(systemName: "mappin.and.ellipse")
-                                        .foregroundStyle(.red, .green)
+                                        .foregroundStyle(.orange, .green)
                                     
                                     Text(item.title)
                                 }
@@ -63,7 +69,8 @@ struct MapFeatureNavigator: View {
                                 onSelection(.polyline(item))
                             } label: {
                                 HStack {
-                                    Image(systemName: "point.topleft.down.to.point.bottomright.curvepath.fill")
+                                    Image(systemName: "scribble")
+                                        .foregroundStyle(.red)
                                     
                                     Text(item.title)
                                 }
@@ -89,26 +96,48 @@ struct MapFeatureNavigator: View {
                         if newAnnotation.workingAnnotation == nil {
                             goAwayView
                         } else {
-                            CreateAnnotationView(workingAnnotation: Bindable(newAnnotation).workingAnnotation.forceUnwrapped())
+                            CreateAnnotationView(workingAnnotation: Bindable(newAnnotation).workingAnnotation) {
+                                
+                                do {
+                                    try modelContext.insert(newAnnotation.finalize())
+                                    
+//                                    try modelContext.save()
+                                    return true
+                                } catch {
+                                    print(error)
+                                    // TODO: - Error handling
+                                    
+                                    return false
+                                }
+                            } onDiscarded: {
+                                newAnnotation.clearProgress()
+                            }
                         }
                     case .workingPolyline:
-                        if true { // TODO: - Handle polyline case once implemented
+                        if newPolyline.workingPolyline == nil {
                             goAwayView
                         } else {
-                            CreatePolylineView(
-                                workingPolyline: State(
-                                    initialValue: WorkingPolyline(
-                                        coordinates: [],
-                                        title: ""
-                                    )
-                                ).projectedValue
-                            )
+                            CreatePolylineView(workingPolyline: Bindable(newPolyline).workingPolyline) {
+                                do {
+                                    try modelContext.insert(newPolyline.finalize())
+                                    
+//                                    try modelContext.save()
+                                    return true
+                                } catch {
+                                    print(error)
+                                    // TODO: - Error handling
+                                    return false
+                                }
+                            } onDiscarded: {
+                                newPolyline.clearProgress()
+                            }
                         }
                     }
                 }
                 .onDisappear {
                     selection = nil
                     onSelection(nil)
+                    isInEditingMode = false
                 }
             }
             .padding(.top, -20)
@@ -140,6 +169,18 @@ struct MapFeatureNavigator: View {
 }
 
 #Preview {
-    MapFeatureNavigator(selection: .constant(nil), newAnnotation: .init(), onSelection: {_ in})
-        .modelContainer(for: CurrentModelVersion.models, inMemory: true)
+    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in})
+        .modelContainer(for: CurrentModelVersion.models, inMemory: true) { phase in
+            switch phase {
+            case let .success(container):
+                let context = ModelContext(container)
+                
+                context.insert(AnnotationData(title: "annotation", coordinate: WorkingAnnotation.example.coordinate))
+                context.insert(PolylineData(title: "path", coordinates: WorkingPolyline.example.coordinates))
+                
+                try! context.save()
+            case let .failure(error):
+                print(error)
+            }
+        }
 }

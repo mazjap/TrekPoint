@@ -1,37 +1,50 @@
 import SwiftUI
 
 struct CreatePolylineView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Binding private var polyline: WorkingPolyline
+    @Binding private var polyline: WorkingPolyline?
+    @State private var wasCreated = false
+    private let onCreated: () -> Bool
+    private let onDiscarded: () -> Void
     
-    init(workingPolyline: Binding<WorkingPolyline>) {
+    init(workingPolyline: Binding<WorkingPolyline>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
+        self.init(workingPolyline: Binding<WorkingPolyline?> {
+            workingPolyline.wrappedValue
+        } set: {
+            if let newValue = $0 {
+                workingPolyline.wrappedValue = newValue
+            }
+        }, onCreated: onCreated, onDiscarded: onDiscarded)
+    }
+    
+    init(workingPolyline: Binding<WorkingPolyline?>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
         self._polyline = workingPolyline
+        self.onCreated = onCreated
+        self.onDiscarded = onDiscarded
     }
     
     var body: some View {
-        NavigationStack {
-            PolylineDetailView(polyline: $polyline)
-                .toolbar {
-                    Button("Create") {
-                        modelContext.insert(
-                            PolylineData(title: polyline.title, coordinates: polyline.coordinates)
-                        )
-                        
-                        do {
-                            try modelContext.save()
-                            dismiss()
-                        } catch {
-                            print(error as NSError)
-                        }
+        let polylineBinding = $polyline.safelyUnwrapped(.init(coordinates: [], title: ""))
+        
+        PolylineDetailView(polyline: polylineBinding)
+            .toolbar {
+                Button("Create") {
+                    if onCreated() {
+                        wasCreated = true
+                        dismiss()
                     }
                 }
-        }
+            }
+            .onDisappear {
+                if !wasCreated {
+                    onDiscarded()
+                }
+            }
     }
 }
 
 #Preview {
     @Previewable @State var polyline = WorkingPolyline.example
     
-    CreatePolylineView(workingPolyline: $polyline)
+    CreatePolylineView(workingPolyline: $polyline) {true} onDiscarded: {}
 }

@@ -3,29 +3,39 @@ import SwiftData
 import struct CoreLocation.CLLocationCoordinate2D
 
 struct CreateAnnotationView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Binding private var annotation: WorkingAnnotation
+    @State private var wasCreated = false
+    @Binding private var annotation: WorkingAnnotation?
     
-    init(workingAnnotation: Binding<WorkingAnnotation>) {
+    private let onCreated: () -> Bool
+    private let onDiscarded: () -> Void
+    
+    init(workingAnnotation: Binding<WorkingAnnotation>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
+        self.init(workingAnnotation: Binding<WorkingAnnotation?> { workingAnnotation.wrappedValue } set: { if let newValue = $0 { workingAnnotation.wrappedValue = newValue } }, onCreated: onCreated, onDiscarded: onDiscarded)
+    }
+    
+    init(workingAnnotation: Binding<WorkingAnnotation?>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
         self._annotation = workingAnnotation
+        self.onCreated = onCreated
+        self.onDiscarded = onDiscarded
     }
     
     var body: some View {
         NavigationStack {
-            AnnotationDetailView(annotation: $annotation)
+            let annotationBinding = $annotation.safelyUnwrapped(.init(coordinate: .random, title: ""))
+            
+            AnnotationDetailView(annotation: annotationBinding)
                 .toolbar {
                     Button("Create") {
-                        modelContext.insert(
-                            AnnotationData(title: annotation.title, coordinate: annotation.coordinate)
-                        )
-                        
-                        do {
-                            try modelContext.save()
+                        if onCreated() {
+                            wasCreated = true
                             dismiss()
-                        } catch {
-                            print(error as NSError)
                         }
+                    }
+                }
+                .onDisappear {
+                    if !wasCreated {
+                        onDiscarded()
                     }
                 }
         }
@@ -43,7 +53,7 @@ struct CreateAnnotationView: View {
         )
         
         var body: some View {
-            CreateAnnotationView(workingAnnotation: $annotation)
+            CreateAnnotationView(workingAnnotation: $annotation) {true} onDiscarded: {}
         }
     }
     

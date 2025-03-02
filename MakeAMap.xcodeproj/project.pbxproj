@@ -15,6 +15,9 @@
 		0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */; };
 		0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */; };
 		0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */; };
+		0E36EA8B2D73F53400C163E9 /* NewPolylineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */; };
+		0E36EA8D2D73F8EB00C163E9 /* MapEditingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */; };
+		0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -50,6 +53,9 @@
 		0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationMapOverlay.swift; sourceTree = "<group>"; };
 		0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationProvider.swift; sourceTree = "<group>"; };
 		0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineProvider.swift; sourceTree = "<group>"; };
+		0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPolylineManager.swift; sourceTree = "<group>"; };
+		0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEditingMode.swift; sourceTree = "<group>"; };
+		0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePolylinePoint.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -139,6 +145,7 @@
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
 				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
+				0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
@@ -200,8 +207,10 @@
 			isa = PBXGroup;
 			children = (
 				0EE453062BAD5639007C40DE /* DraggablePin.swift */,
+				0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */,
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
 				0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */,
+				0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
 			path = MapView;
@@ -290,6 +299,7 @@
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
 				0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */,
 				0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */,
+				0E36EA8D2D73F8EB00C163E9 /* MapEditingMode.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
@@ -303,8 +313,10 @@
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
 				0EA4BD472B9151AF005259B4 /* MakeAMapApp.swift in Sources */,
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
+				0E36EA8B2D73F53400C163E9 /* NewPolylineManager.swift in Sources */,
 				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
+				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
 				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,

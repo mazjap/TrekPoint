@@ -7,7 +7,7 @@ struct DraggablePin: View {
     @State private var isActive: Bool = false
     @State private var isJigglingActive: Bool = false
     
-    @ScaledMetric(relativeTo: .title) private var iconSize: Double = 32
+    @ScaledMetric(relativeTo: .title) private var iconSize: Double = 48
     
     private let movementEnabled: Bool
     private let shouldJiggle: Bool
@@ -16,7 +16,7 @@ struct DraggablePin: View {
     private let anchor: UnitPoint
     private let applyNewPosition: (CGPoint) -> Void
     
-    init(movementEnabled: Bool, shouldJiggle: Bool, fillColor: Color?, accentColor: Color?, anchor: UnitPoint = .center, applyNewPosition: @escaping (CGPoint) -> Void) {
+    init(movementEnabled: Bool, shouldJiggle: Bool, fillColor: Color?, accentColor: Color?, anchor: UnitPoint, applyNewPosition: @escaping (CGPoint) -> Void) {
         self.movementEnabled = movementEnabled
         self.shouldJiggle = shouldJiggle
         self.fillColor = fillColor ?? .white
@@ -39,20 +39,17 @@ struct DraggablePin: View {
                     Image(systemName: "star.fill")
                         .resizable()
                         .scaledToFit()
-                        .padding(.horizontal, 8)
-                        .padding(.bottom, 10)
                         .foregroundStyle(fillColor)
                     
                     Image(systemName: "star")
                         .resizable()
                         .scaledToFit()
-                        .padding(.horizontal, 8)
-                        .padding(.bottom, 10)
                         .foregroundStyle(accentColor)
+                        .padding(.horizontal, -2)
                 }
+                .padding(.horizontal, 13)
+                .padding(.bottom, 15)
             }
-            .scaleEffect(1.5)
-            .offset(y: -5)
             .rotationEffect(isJigglingActive && shouldJiggle && !isActive ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
             .animation(isJigglingActive && shouldJiggle && !isActive ? .easeInOut(duration: 0.2).repeatForever(autoreverses: true) : .default, value: isJigglingActive)
             .animation(.snappy, value: isActive)
@@ -172,7 +169,8 @@ import MapKit
                 movementEnabled: true,
                 shouldJiggle: false,
                 fillColor: .yellow,
-                accentColor: .blue
+                accentColor: .blue,
+                anchor: .bottom
             ) {_ in}
             .scaleEffect(2)
             .foregroundStyle(.red)

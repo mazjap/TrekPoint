@@ -11,7 +11,7 @@ import MapKit
 //    - [x] Create AnnotationData for given coordinate and clear newAnnotationLocation
 // - [ ] Add polyline support
 //    - [ ] "Following user location" type polyline
-//    - [ ] "Tap to draw" type polyline
+//    - [x] "Tap to draw" type polyline
 // - [ ] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
 //    - [ ] Add some sort of toast alert system or package
@@ -57,6 +57,8 @@ struct DetailedMapView: View {
     
     @AppStorage("is_user_location_active") private var showUserLocation: Bool = false
     
+    @State private var editingMode: MapEditingMode = .view
+    @State private var newPolyline = NewPolylineManager()
     @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedMapItemTag: MapFeatureTag?
@@ -82,10 +84,28 @@ struct DetailedMapView: View {
                     
                     polylineViews(proxy: proxy)
                     
+                    inProgressPolyline(proxy: proxy)
+                    
                     inProgressPin(proxy: proxy)
                 }
                 .mapStyle(.hybrid(elevation: .realistic))
                 .mapControlVisibility(.hidden)
+                .onTapGesture { location in
+                    if editingMode == .drawPolyline {
+                        guard let coordinate = proxy.convert(
+                            location,
+                            from: .local
+                        ) else {
+                            return
+                        }
+                        
+                        newPolyline.append(coordinate)
+                        // If this is the first point, show the options UI
+                        if newPolyline.workingPolyline?.coordinates.count == 1 {
+                            selectedMapItemTag = .newFeature
+                        }
+                    }
+                }
                 .overlay(alignment: .topTrailing) {
                     mapButtons(proxy: proxy, frame: frame)
                 }
@@ -93,7 +113,12 @@ struct DetailedMapView: View {
         }
         .mapScope(nspace)
         .sheet(isPresented: .constant(true)) {
-            MapFeatureNavigator(selection: $presentedMapFeature, newAnnotation: newAnnotation) { newSelection in
+            MapFeatureNavigator(
+                selection: $presentedMapFeature,
+                isInEditingMode: Binding { editingMode != .view } set: { _ in editingMode = .view },
+                newAnnotation: newAnnotation,
+                newPolyline: newPolyline
+            ) { newSelection in
                 newAnnotation.clearProgress()
                 
                 if let newSelection {
@@ -111,6 +136,7 @@ struct DetailedMapView: View {
                     selectedMapItemTag = nil
                 }
             }
+            .modelContext(modelContext)
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .interactiveDismissDisabled()
@@ -134,8 +160,8 @@ struct DetailedMapView: View {
             case .newFeature:
                 if newAnnotation.workingAnnotation != nil {
                     presentedMapFeature = .workingAnnotation
-                } else if false {
-                    // TODO: - Handle working polyline once implemented
+                } else if newPolyline.workingPolyline != nil {
+                    presentedMapFeature = .workingPolyline
                 } else {
                     // TODO: - Error handling (neither workingAnnotation nor workingPolyline exist, yet one was requested)
                 }
@@ -203,6 +229,39 @@ struct DetailedMapView: View {
                 }
                 
                 newAnnotation.apply(coordinate: Coordinate(newCoordinate))
+            }
+        }
+    }
+    
+    @MapContentBuilder
+    private func inProgressPolyline(proxy: MapProxy) -> some MapContent {
+        if let workingPolyline = newPolyline.workingPolyline, !workingPolyline.coordinates.isEmpty {
+            PolylineMapOverlay(
+                polyline: workingPolyline,
+                strokeColor: .blue
+            )
+            
+            // Add markers for each point
+            ForEach(Array(workingPolyline.coordinates.enumerated()), id: \.1.id) { index, coordinate in
+                Annotation(
+                    "Point \(index + 1)",
+                    coordinate: CLLocationCoordinate2D(coordinate),
+                    anchor: .bottom
+                ) {
+                    DraggablePolylinePoint { newPosition in
+                        guard let newCoordinate = proxy.convert(
+                            newPosition,
+                            from: .global
+                        ) else {
+                            return
+                        }
+                        
+                        // Update the coordinate at this index
+                        newPolyline.workingPolyline?.coordinates[index] = Coordinate(newCoordinate)
+                    }
+                }
+                .foregroundStyle(.blue)
+                .tag(MapFeatureTag.newFeature)
             }
         }
     }
@@ -294,7 +353,7 @@ struct DetailedMapView: View {
                             .accessibilityLabel("Create New Marker")
                     }
                     .frame(width: buttonSize)
-                    .foregroundStyle(newAnnotation.isShowingOptions ? .blue : Color(uiColor: .darkGray))
+                    .foregroundStyle(newAnnotation.isShowingOptions ? activeColor : inactiveColor)
                     .background {
                         UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius)
                             .fill(.background)
@@ -315,39 +374,109 @@ struct DetailedMapView: View {
                         .accessibilityLabel((showUserLocation ? "Hide" : "Show") + " Current Location")
                 }
                 .frame(width: buttonSize)
-                .foregroundStyle(showUserLocation ? .blue : Color(uiColor: .darkGray))
+                .foregroundStyle(showUserLocation ? activeColor : inactiveColor)
                 .background {
-                    if showUserLocation {
-                        Rectangle()
+                    Rectangle()
+                        .fill(.background)
+                }
+                .frame(height: buttonSize)
+                
+                Divider()
+                    .frame(width: buttonSize)
+                
+                HStack(spacing: 0) {
+                    if newPolyline.isShowingOptions {
+                        HStack {
+                            Button {
+                                do {
+                                    let polyline = try newPolyline.finalize()
+                                    modelContext.insert(polyline)
+                                    
+                                    selectedMapItemTag = nil
+                                    selectedDetent = .small
+                                } catch {
+                                    // TODO: - Handle errors by:
+                                    // - Determining if error was `PolylineFinalizationError` or some SwiftData error and handle accordingly
+                                    // - Showing toast to user
+                                    
+                                    print(error)
+                                }
+                            } label: {
+                                Text("Confirm")
+                            }
+                            
+                            Divider()
+                            
+                            Button {
+                                newPolyline.clearProgress()
+                                selectedMapItemTag = nil
+                                selectedDetent = .small
+                            } label: {
+                                Text("Cancel")
+                            }
+                        }
+                        .padding(.horizontal)
+                        .background {
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(.background)
+                        }
+                        
+                        Triangle(faceAlignment: .leading)
                             .fill(.background)
-                    } else {
-                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                            .fill(.background)
+                            .frame(width: 10, height: 20)
+                            .offset(x: -1)
+                    }
+                    
+                    Button {
+                        if editingMode == .drawPolyline {
+                            editingMode = .view
+                        } else {
+                            editingMode = .drawPolyline
+                            
+                            // Clear any in-progress polyline
+                            newPolyline.clearProgress()
+                            newPolyline.append([Coordinate]())
+                            selectedMapItemTag = .newFeature
+                        }
+                    } label: {
+                        Image(systemName: newPolyline.isShowingOptions ? "hand.draw.fill" : "hand.draw")
+                            .resizable()
+                            .scaledToFit()
+                            .padding(padding)
+                            .accessibilityLabel(editingMode == .drawPolyline ? "Stop Drawing Path" : "Draw Path")
+                    }
+                    .frame(width: buttonSize, height: buttonSize)
+                    .foregroundStyle(newPolyline.isShowingOptions ? activeColor : inactiveColor)
+                    .background {
+//                        if showUserLocation {
+//                            Rectangle()
+//                                .fill(.background)
+//                        } else {
+                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+                                .fill(.background)
+//                        }
                     }
                 }
                 .frame(height: buttonSize)
                 
                 if showUserLocation {
-                    Divider()
-                        .frame(width: buttonSize)
-                    
-                    Button {
-                        // TODO: - Periodically add polyline points while active (background notifications)
-                        //  - Cull points that are too close or have an angle change of less than some delta
-                    } label: {
-                        Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .padding(padding)
-                            .accessibilityLabel("Track Location as a Path")
-                    }
-                    .frame(width: buttonSize)
-                    .foregroundStyle(false ? activeColor : inactiveColor)
-                    .background {
-                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                            .fill(.background)
-                    }
-                    .frame(height: buttonSize)
+//                    Button {
+//                        // TODO: - Periodically add polyline points while active (background notifications)
+//                        //  - Cull points that are too close or have an angle change of less than some delta
+//                    } label: {
+//                        Image(systemName: false ? "location.north.line.fill" : "location.north.line")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .padding(padding)
+//                            .accessibilityLabel("Track Location as a Path")
+//                    }
+//                    .frame(width: buttonSize)
+//                    .foregroundStyle(false ? activeColor : inactiveColor)
+//                    .background {
+//                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+//                            .fill(.background)
+//                    }
+//                    .frame(height: buttonSize)
                 }
                 
                 Spacer()
