@@ -24,7 +24,7 @@ struct CreatePolylineView: View {
     }
     
     var body: some View {
-        let polylineBinding = $polyline.safelyUnwrapped(.init(coordinates: [], title: ""))
+        let polylineBinding = $polyline.safelyUnwrapped(.init(title: "", userDescription: "", coordinates: [], isLocationTracked: false))
         
         PolylineDetailView(polyline: polylineBinding)
             .toolbar {

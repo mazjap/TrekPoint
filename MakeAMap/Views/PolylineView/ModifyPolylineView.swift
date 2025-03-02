@@ -25,6 +25,6 @@ struct ModifyPolylineView: View {
 }
 
 #Preview {
-    ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates))
+    ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false))
 }
 

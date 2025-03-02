@@ -1,8 +1,11 @@
 import struct CoreLocation.CLLocationCoordinate2D
+import struct Foundation.Date
 
 protocol PolylineProvider {
     var clCoordinates: [CLLocationCoordinate2D] { get }
     var title: String { get }
+    var userDescription: String { get }
+    var isLocationTracked: Bool { get }
     var tag: MapFeatureTag { get }
 }
 
@@ -11,12 +14,17 @@ extension PolylineData: PolylineProvider {
 }
 
 struct WorkingPolyline: PolylineProvider {
-    var coordinates: [Coordinate]
     var title: String
+    var userDescription: String
+    var coordinates: [Coordinate]
+    var isLocationTracked: Bool
+    let startedAt: Date = .now
     let tag = MapFeatureTag.newFeature
     var clCoordinates: [CLLocationCoordinate2D] { coordinates.map { CLLocationCoordinate2D($0) } }
     
     static let example: WorkingPolyline = .init(
+        title: "Walking Path",
+        userDescription: "",
         coordinates: [
             Coordinate(latitude: 40.051493, longitude: -111.671492),
             Coordinate(latitude: 40.051484, longitude: -111.671493),
@@ -63,7 +71,7 @@ struct WorkingPolyline: PolylineProvider {
             Coordinate(latitude: 40.052978, longitude: -111.667434),
             Coordinate(latitude: 40.051468, longitude: -111.667437)
         ],
-        title: "Walking Path"
+        isLocationTracked: false
     )
 }
 

@@ -11,6 +11,8 @@ import MapKit
 //    - [x] Create AnnotationData for given coordinate and clear newAnnotationLocation
 // - [ ] Add polyline support
 //    - [ ] "Following user location" type polyline
+//      - [x] While using the app
+//      - [ ] While app is in background
 //    - [x] "Tap to draw" type polyline
 // - [ ] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
@@ -54,21 +56,17 @@ struct DetailedMapView: View {
     @Query private var polylines: [PolylineData]
     
     @Namespace private var nspace
+    @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @AppStorage("is_user_location_active") private var showUserLocation: Bool = false
-    
+    @State private var locationManager = LocationTrackingManager()
     @State private var editingMode: MapEditingMode = .view
     @State private var newPolyline = NewPolylineManager()
     @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
-    
     @State private var selectedDetent = PresentationDetent.small
     
-    @ScaledMetric(relativeTo: .title) private var buttonSize = 52
-    
-    static private let locationManager = CLLocationManager()
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
     
     var body: some View {
@@ -76,7 +74,7 @@ struct DetailedMapView: View {
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
                 Map(position: $cameraPosition, selection: $selectedMapItemTag, scope: nspace) {
-                    if showUserLocation {
+                    if locationManager.isUserLocationActive {
                         UserAnnotation()
                     }
                     
@@ -169,11 +167,22 @@ struct DetailedMapView: View {
                 break
             }
         }
-        .onChange(of: showUserLocation) {
-            userLocationToggled()
+        .onChange(of: locationManager.isUserLocationActive) {
+            if locationManager.isUserLocationActive {
+                withAnimation(.easeOut) {
+                    cameraPosition = .userLocation(fallback: .automatic)
+                }
+            }
+        }
+        .onChange(of: locationManager.lastLocation) {
+            guard newPolyline.isTrackingPolyline,
+                  let lastLocation = locationManager.lastLocation
+            else { return }
+            
+            newPolyline.appendCurrentLocation(lastLocation.coordinate)
         }
         .task {
-            if showUserLocation && Self.locationManager.location != nil {
+            if locationManager.isUserLocationActive {
                 withAnimation {
                     cameraPosition = .userLocation(fallback: .automatic)
                 }
@@ -202,7 +211,7 @@ struct DetailedMapView: View {
     @MapContentBuilder
     private func polylineViews(proxy: MapProxy) -> some MapContent {
         ForEach(polylines) { polyline in
-            PolylineMapOverlay(polyline: polyline, strokeColor: .red)
+            PolylineMapOverlay(polyline: polyline, strokeColor: polyline.isLocationTracked ? .orange : .red)
         }
     }
     
@@ -238,7 +247,7 @@ struct DetailedMapView: View {
         if let workingPolyline = newPolyline.workingPolyline, !workingPolyline.coordinates.isEmpty {
             PolylineMapOverlay(
                 polyline: workingPolyline,
-                strokeColor: .blue
+                strokeColor: newPolyline.isTrackingPolyline ? .purple : .blue
             )
             
             // Add markers for each point
@@ -248,7 +257,10 @@ struct DetailedMapView: View {
                     coordinate: CLLocationCoordinate2D(coordinate),
                     anchor: .center
                 ) {
-                    DraggablePolylinePoint { newPosition in
+                    DraggablePolylinePoint(
+                        movementEnabled: !workingPolyline.isLocationTracked,
+                        fillColor: newPolyline.isTrackingPolyline ? .purple : .blue
+                    ) { newPosition in
                         guard let newCoordinate = proxy.convert(
                             newPosition,
                             from: .global
@@ -259,7 +271,6 @@ struct DetailedMapView: View {
                         newPolyline.move(index: index, to: newCoordinate)
                     }
                 }
-                .foregroundStyle(.blue)
                 .tag(MapFeatureTag.newFeature)
             }
         }
@@ -367,29 +378,9 @@ struct DetailedMapView: View {
                 
                 Divider()
                     .frame(width: buttonSize)
-            
-                Button {
-                    showUserLocation.toggle()
-                } label: {
-                    Image(systemName: showUserLocation ? "location.north.circle.fill" : "location.north.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .padding(padding)
-                        .accessibilityLabel((showUserLocation ? "Hide" : "Show") + " Current Location")
-                }
-                .frame(width: buttonSize)
-                .foregroundStyle(showUserLocation ? activeColor : inactiveColor)
-                .background {
-                    Rectangle()
-                        .fill(.background)
-                }
-                .frame(height: buttonSize)
-                
-                Divider()
-                    .frame(width: buttonSize)
                 
                 HStack(spacing: 0) {
-                    if newPolyline.isShowingOptions {
+                    if newPolyline.isShowingOptions && newPolyline.isDrawingPolyline {
                         HStack {
                             Button {
                                 do {
@@ -445,71 +436,134 @@ struct DetailedMapView: View {
                             selectedMapItemTag = .newFeature
                         }
                     } label: {
-                        Image(systemName: newPolyline.isShowingOptions ? "hand.draw.fill" : "hand.draw")
+                        Image(systemName: newPolyline.isDrawingPolyline ? "hand.draw.fill" : "hand.draw")
                             .resizable()
                             .scaledToFit()
                             .padding(padding)
-                            .accessibilityLabel(editingMode == .drawPolyline ? "Stop Drawing Path" : "Draw Path")
+                            .accessibilityLabel(newPolyline.isDrawingPolyline ? "Stop Drawing Path" : "Draw Path")
                     }
                     .frame(width: buttonSize, height: buttonSize)
-                    .foregroundStyle(newPolyline.isShowingOptions ? activeColor : inactiveColor)
+                    .foregroundStyle(newPolyline.isDrawingPolyline ? activeColor : inactiveColor)
                     .background {
-//                        if showUserLocation {
-//                            Rectangle()
-//                                .fill(.background)
-//                        } else {
-                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                                .fill(.background)
-//                        }
+                        Rectangle()
+                            .fill(.background)
                     }
                 }
                 .frame(height: buttonSize)
                 
-                if showUserLocation {
-//                    Button {
-//                        // TODO: - Periodically add polyline points while active (background notifications)
-//                        //  - Cull points that are too close or have an angle change of less than some delta
-//                    } label: {
-//                        Image(systemName: false ? "location.north.line.fill" : "location.north.line")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .padding(padding)
-//                            .accessibilityLabel("Track Location as a Path")
-//                    }
-//                    .frame(width: buttonSize)
-//                    .foregroundStyle(false ? activeColor : inactiveColor)
-//                    .background {
-//                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-//                            .fill(.background)
-//                    }
-//                    .frame(height: buttonSize)
+                Divider()
+                    .frame(width: buttonSize)
+            
+                Button {
+                    if locationManager.isUserLocationActive {
+                        locationManager.hideUserLocation()
+                    } else {
+                        locationManager.showUserLocation()
+                    }
+                } label: {
+                    Image(systemName: locationManager.isUserLocationActive ? "location.north.circle.fill" : "location.north.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .padding(padding)
+                        .accessibilityLabel((locationManager.isUserLocationActive ? "Hide" : "Show") + " Current Location")
+                }
+                .frame(width: buttonSize)
+                .foregroundStyle(locationManager.isUserLocationActive ? activeColor : inactiveColor)
+                .background {
+                    if locationManager.isUserLocationActive {
+                        Rectangle()
+                            .fill(.background)
+                    } else {
+                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+                            .fill(.background)
+                    }
+                }
+                .frame(height: buttonSize)
+                
+                if locationManager.isUserLocationActive {
+                    Divider()
+                        .frame(width: buttonSize)
+                    
+                    HStack(spacing: 0) {
+                        if newPolyline.isTrackingPolyline {
+                            HStack {
+                                Text("R")
+                                    .font(.title)
+                                    .minimumScaleFactor(0.1)
+                                    .frame(width: buttonSize / 2, height: buttonSize / 2)
+                                    .padding(.vertical, 6)
+                                    .background {
+                                        Circle()
+                                            .fill(.red)
+                                    }
+                                
+                                HStack(spacing: 0) {
+                                    Button {
+                                        do {
+                                            let polyline = try newPolyline.finalize()
+                                            modelContext.insert(polyline)
+                                            
+                                            editingMode = .view
+                                            locationManager.stopTracking()
+                                        } catch {
+                                            print(error)
+                                            // Show error toast
+                                        }
+                                    } label: {
+                                        Text("Confirm")
+                                    }
+                                    .frame(height: buttonSize)
+                                    .padding(.horizontal)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: cornerRadius)
+                                            .fill(.background)
+                                    }
+                                    
+                                    Triangle(faceAlignment: .leading)
+                                        .fill(.background)
+                                        .frame(width: 10, height: 20)
+                                        .offset(x: -1)
+                                }
+                            }
+                        }
+                        
+                        Button {
+                            if editingMode == .locationTrackedPolyline {
+                                editingMode = .view
+                                newPolyline.clearProgress()
+                                selectedMapItemTag = nil
+                                selectedDetent = .small
+                            } else {
+                                editingMode = .locationTrackedPolyline
+                                newPolyline.clearProgress()
+                                newPolyline.startLocationTracking(currentLocation: locationManager.startTracking())
+                                selectedMapItemTag = .newFeature
+                            }
+                            // TODO: - Use background notifications to update polyline points when app is in the background
+                        } label: {
+                            Image(systemName: newPolyline.isTrackingPolyline ? "location.north.line.fill" : "location.north.line")
+                                .resizable()
+                                .scaledToFit()
+                                .padding(padding)
+                                .accessibilityLabel(newPolyline.isTrackingPolyline ? "Stop Tracking" : "Track My Path")
+                        }
+                        .frame(width: buttonSize)
+                        .foregroundStyle(newPolyline.isTrackingPolyline ? activeColor : inactiveColor)
+                        .background {
+                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
+                                .fill(.background)
+                        }
+                    }
+                    .frame(height: buttonSize)
                 }
                 
                 Spacer()
             }
             .opacity(selectedDetent == .largeWithoutScaleEffect ? 0 : 1)
             .animation(.easeOut(duration: 0.2), value: selectedDetent)
-            .animation(.easeInOut(duration: 0.2), value: showUserLocation)
+            .animation(.easeInOut(duration: 0.2), value: locationManager.isUserLocationActive)
         }
         .padding(.horizontal)
-    }
-    
-    private func userLocationToggled() {
-        if showUserLocation {
-            Self.locationManager.requestWhenInUseAuthorization()
-            
-            switch Self.locationManager.authorizationStatus {
-            case .authorizedAlways, .authorizedWhenInUse:
-                guard Self.locationManager.location != nil else { return }
-                
-                withAnimation(.easeOut) {
-                    cameraPosition = .userLocation(fallback: .automatic)
-                }
-            case .restricted, .denied, .notDetermined: fallthrough
-            @unknown default:
-                showUserLocation = false
-            }
-        }
     }
 }
 
@@ -526,8 +580,9 @@ struct DetailedMapView: View {
                 )
                 context.insert(PolylineData(
                     title: WorkingPolyline.example.title,
-                    coordinates: WorkingPolyline.example.coordinates)
-                )
+                    coordinates: WorkingPolyline.example.coordinates,
+                    isLocationTracked: false
+                ))
                 try! context.save()
             case let .failure(error):
                 print(error)

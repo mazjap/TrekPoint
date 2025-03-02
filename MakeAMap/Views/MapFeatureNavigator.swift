@@ -176,7 +176,7 @@ struct MapFeatureNavigator: View {
                 let context = ModelContext(container)
                 
                 context.insert(AnnotationData(title: "annotation", coordinate: WorkingAnnotation.example.coordinate))
-                context.insert(PolylineData(title: "path", coordinates: WorkingPolyline.example.coordinates))
+                context.insert(PolylineData(title: "path", coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false))
                 
                 try! context.save()
             case let .failure(error):
