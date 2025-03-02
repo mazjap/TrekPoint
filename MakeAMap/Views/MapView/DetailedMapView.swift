@@ -59,7 +59,6 @@ struct DetailedMapView: View {
     
     @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var cameraTransitionTrigger: CameraTrigger?
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     
@@ -87,51 +86,6 @@ struct DetailedMapView: View {
                 }
                 .mapStyle(.hybrid(elevation: .realistic))
                 .mapControlVisibility(.hidden)
-                .mapCameraKeyframeAnimator(trigger: cameraTransitionTrigger) { camera in
-                    KeyframeTrack(\MapCamera.centerCoordinate) {
-                        let coordinate: CLLocationCoordinate2D = {
-                            switch cameraTransitionTrigger {
-                            case let .geometry(.annotation(coord)):
-                                return coord
-                            case let .geometry(.polyline(coords)):
-                                // Create an MKMapRect that encompasses all coordinates
-                                let center = MKMapRect(coordinates: coords).center
-                                
-                                // Get the center coordinate of the map rect
-                                return CLLocationCoordinate2D(latitude: center.coordinate.latitude, longitude: center.coordinate.longitude)
-                            case .userLocation:
-                                if let userLocation = Self.locationManager.location {
-                                    return userLocation.coordinate
-                                } else {
-                                    // TODO: - Show toast
-                                    fallthrough
-                                }
-                            case nil:
-                                return camera.centerCoordinate
-                            }
-                        }()
-                        
-                        LinearKeyframe(coordinate, duration: 2, timingCurve: .easeOut)
-                    }
-                    
-                    KeyframeTrack(\MapCamera.distance) {
-                        let newDistance: CLLocationDistance = {
-                            switch cameraTransitionTrigger {
-                            case .geometry(.annotation):
-                                // Some default distance for annotations
-                                return 15_000
-                            case let .geometry(.polyline(coords)):
-                                let mapRect = MKMapRect(coordinates: coords)
-                                
-                                return max(mapRect.width, mapRect.height) * 1.1
-                            case .userLocation, nil:
-                                return max(30_000, camera.distance)
-                            }
-                        }()
-                        
-                        LinearKeyframe(newDistance, duration: 2)
-                    }
-                }
                 .overlay(alignment: .topTrailing) {
                     mapButtons(proxy: proxy, frame: frame)
                 }
@@ -140,15 +94,22 @@ struct DetailedMapView: View {
         .mapScope(nspace)
         .sheet(isPresented: .constant(true)) {
             MapFeatureNavigator(selection: $presentedMapFeature, newAnnotation: newAnnotation) { newSelection in
+                newAnnotation.clearProgress()
+                
                 if let newSelection {
                     selectedMapItemTag = newSelection.tag
-                    cameraTransitionTrigger = .geometry(newSelection.geometry)
+                    
+                    withAnimation(.easeOut) {
+                        switch newSelection {
+                        case let .annotation(annotation):
+                            cameraPosition = .region(MKCoordinateRegion(center: annotation.clCoordinate, latitudinalMeters: 15_000, longitudinalMeters: 15_000))
+                        case let .polyline(polyline):
+                            cameraPosition = .rect(MKMapRect(coordinates: polyline.clCoordinates))
+                        }
+                    }
                 } else {
                     selectedMapItemTag = nil
-                    cameraTransitionTrigger = nil
                 }
-                
-                newAnnotation.clearProgress()
             }
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
@@ -173,11 +134,13 @@ struct DetailedMapView: View {
             case .newFeature:
                 if newAnnotation.workingAnnotation != nil {
                     presentedMapFeature = .workingAnnotation
-                } else {
+                } else if false {
                     // TODO: - Handle working polyline once implemented
+                } else {
+                    // TODO: - Error handling (neither workingAnnotation nor workingPolyline exist, yet one was requested)
                 }
             case .none:
-                cameraTransitionTrigger = nil
+                break
             }
         }
         .onChange(of: showUserLocation) {
@@ -185,10 +148,8 @@ struct DetailedMapView: View {
         }
         .task {
             if showUserLocation && Self.locationManager.location != nil {
-                if cameraTransitionTrigger != nil {
-                    cameraTransitionTrigger?.toggleUserLocation()
-                } else {
-                    cameraTransitionTrigger = .userLocation(true)
+                withAnimation {
+                    cameraPosition = .userLocation(fallback: .automatic)
                 }
             }
         }
@@ -403,17 +364,15 @@ struct DetailedMapView: View {
             Self.locationManager.requestWhenInUseAuthorization()
             
             switch Self.locationManager.authorizationStatus {
-            case .authorizedAlways, .authorizedWhenInUse: break
-            case .restricted, .denied, .notDetermined: fallthrough
-            @unknown default: showUserLocation = false
-            }
-            
-            if Self.locationManager.location != nil {
-                if cameraTransitionTrigger != nil {
-                    cameraTransitionTrigger?.toggleUserLocation()
-                } else {
-                    cameraTransitionTrigger = .userLocation(true)
+            case .authorizedAlways, .authorizedWhenInUse:
+                guard Self.locationManager.location != nil else { return }
+                
+                withAnimation(.easeOut) {
+                    cameraPosition = .userLocation(fallback: .automatic)
                 }
+            case .restricted, .denied, .notDetermined: fallthrough
+            @unknown default:
+                showUserLocation = false
             }
         }
     }
