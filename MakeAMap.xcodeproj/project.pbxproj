@@ -20,6 +20,8 @@
 		0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */; };
 		0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */; };
 		0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */; };
+		0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */; };
+		0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF22D752EA600C163E9 /* AppDelegate.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -60,6 +62,9 @@
 		0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePolylinePoint.swift; sourceTree = "<group>"; };
 		0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StringInterpolation+format.swift"; sourceTree = "<group>"; };
 		0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTrackingManager.swift; sourceTree = "<group>"; };
+		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingLocation.swift; sourceTree = "<group>"; };
+		0E36EAF22D752EA600C163E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -139,6 +144,7 @@
 		0EA4BD452B9151AF005259B4 /* MakeAMap */ = {
 			isa = PBXGroup;
 			children = (
+				0E36EAEF2D7525F000C163E9 /* Info.plist */,
 				0EA4BD662B93FC18005259B4 /* Resources */,
 				0EA4BD672B93FC28005259B4 /* Views */,
 				0EA4BD682B93FC30005259B4 /* Helpers */,
@@ -161,6 +167,7 @@
 				0E36EA902D74F33100C163E9 /* SwiftData */,
 				0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
+				0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
 				0EE4530A2BAD619E007C40DE /* MapFeature.swift */,
@@ -183,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */,
+				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
 				0EA4BD4E2B9151B0005259B4 /* Preview Content */,
 			);
@@ -315,6 +323,7 @@
 				0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */,
 				0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */,
 				0E36EA8D2D73F8EB00C163E9 /* MapEditingMode.swift in Sources */,
+				0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
@@ -335,6 +344,7 @@
 				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
 				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
+				0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
 			);
@@ -473,7 +483,9 @@
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MakeAMap/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -505,7 +517,9 @@
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MakeAMap/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

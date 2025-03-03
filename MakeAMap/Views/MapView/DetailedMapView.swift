@@ -42,6 +42,8 @@ import MapKit
 // -------------------------------Unlikely-------------------------------
 //   - [ ] Basic stats dashboard (miles walked, stairs climed, finds
 //   this season, etc.)
+//   - [ ] Use ActivityKit to show a Live Activity on the lockscreen when
+//   path tracking
 //   - [ ] Import/export data (GPX format for compatibility)
 //   - [ ] Area calculation tool (measure acreage of drawn polygons)
 //   - [ ] Share maps/locations via standard iOS share sheet
@@ -51,6 +53,9 @@ import MapKit
 //   - [ ] Public land boundaries overlay
 
 struct DetailedMapView: View {
+    @Environment(LocationTrackingManager.self) private var locationManager
+    @Environment(NewPolylineManager.self) private var newPolyline
+    @Environment(NewAnnotationManager.self) private var newAnnotation
     @Environment(\.modelContext) private var modelContext
     @Query private var annotations: [AnnotationData]
     @Query private var polylines: [PolylineData]
@@ -58,10 +63,7 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @State private var locationManager = LocationTrackingManager()
     @State private var editingMode: MapEditingMode = .view
-    @State private var newPolyline = NewPolylineManager()
-    @State private var newAnnotation = NewAnnotationManager()
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
@@ -133,6 +135,9 @@ struct DetailedMapView: View {
                 } else {
                     selectedMapItemTag = nil
                 }
+            } onTrackingPolylineCreated: {
+                locationManager.stopTracking()
+                editingMode = .view
             }
             .modelContext(modelContext)
             .presentationDetents(detents, selection: $selectedDetent)
@@ -182,6 +187,17 @@ struct DetailedMapView: View {
             newPolyline.appendCurrentLocation(lastLocation.coordinate)
         }
         .task {
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("RestoreTrackingSession"),
+                object: nil,
+                queue: .main
+            ) { notification in
+                if let trackingID = notification.userInfo?["trackingID"] as? UUID {
+                    // Restore the tracking session
+                    self.restoreTrackingSession(trackingID: trackingID)
+                }
+            }
+            
             if locationManager.isUserLocationActive {
                 withAnimation {
                     cameraPosition = .userLocation(fallback: .automatic)
@@ -533,13 +549,13 @@ struct DetailedMapView: View {
                                 newPolyline.clearProgress()
                                 selectedMapItemTag = nil
                                 selectedDetent = .small
+                                locationManager.stopTracking()
                             } else {
                                 editingMode = .locationTrackedPolyline
                                 newPolyline.clearProgress()
                                 newPolyline.startLocationTracking(currentLocation: locationManager.startTracking())
                                 selectedMapItemTag = .newFeature
                             }
-                            // TODO: - Use background notifications to update polyline points when app is in the background
                         } label: {
                             Image(systemName: newPolyline.isTrackingPolyline ? "location.north.line.fill" : "location.north.line")
                                 .resizable()
@@ -564,6 +580,31 @@ struct DetailedMapView: View {
             .animation(.easeInOut(duration: 0.2), value: locationManager.isUserLocationActive)
         }
         .padding(.horizontal)
+    }
+    
+    private func restoreTrackingSession(trackingID: UUID) {
+        // Get all pending locations
+        let pendingLocations = PersistenceController.shared.getPendingLocations(for: trackingID)
+        
+        // Create a new polyline with these locations
+        if !pendingLocations.isEmpty {
+            // Start a new tracked polyline
+            editingMode = .locationTrackedPolyline
+            newPolyline.clearProgress()
+            newPolyline.startLocationTracking(currentLocation: pendingLocations.first)
+            
+            // Add all the pending locations
+            for location in pendingLocations {
+                newPolyline.appendCurrentLocation(location)
+            }
+            
+            // Clear the pending locations now that we've restored them
+            PersistenceController.shared.clearPendingLocations(for: trackingID)
+            
+            // Continue tracking
+            let _ = locationManager.startTracking()
+            selectedMapItemTag = .newFeature
+        }
     }
 }
 

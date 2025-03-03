@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct MakeAMapApp: App {
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema(CurrentModelVersion.models, version: CurrentModelVersion.versionIdentifier)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -17,6 +19,9 @@ struct MakeAMapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(appDelegate.locationManager)
+                .environment(appDelegate.annotationManager)
+                .environment(appDelegate.polylineManager)
         }
         .modelContainer(sharedModelContainer)
     }

@@ -19,19 +19,22 @@ struct MapFeatureNavigator: View {
     private let newPolyline: NewPolylineManager
     
     private let onSelection: (MapFeature?) -> Void
+    private let onTrackingPolylineCreated: () -> Void
     
     init(
         selection: Binding<MapFeatureToPresent?>,
         isInEditingMode: Binding<Bool>,
         newAnnotation: NewAnnotationManager,
         newPolyline: NewPolylineManager,
-        onSelection: @escaping (MapFeature?) -> Void
+        onSelection: @escaping (MapFeature?) -> Void,
+        onTrackingPolylineCreated: @escaping () -> Void
     ) {
         self._selection = selection
         self._isInEditingMode = isInEditingMode
         self.newAnnotation = newAnnotation
         self.newPolyline = newPolyline
         self.onSelection = onSelection
+        self.onTrackingPolylineCreated = onTrackingPolylineCreated
     }
     
     var body: some View {
@@ -101,7 +104,6 @@ struct MapFeatureNavigator: View {
                                 do {
                                     try modelContext.insert(newAnnotation.finalize())
                                     
-//                                    try modelContext.save()
                                     return true
                                 } catch {
                                     print(error)
@@ -119,9 +121,13 @@ struct MapFeatureNavigator: View {
                         } else {
                             CreatePolylineView(workingPolyline: Bindable(newPolyline).workingPolyline) {
                                 do {
+                                    let shouldPhoneHome = newPolyline.isTrackingPolyline
                                     try modelContext.insert(newPolyline.finalize())
                                     
-//                                    try modelContext.save()
+                                    if shouldPhoneHome {
+                                        onTrackingPolylineCreated()
+                                    }
+                                    
                                     return true
                                 } catch {
                                     print(error)
@@ -169,7 +175,7 @@ struct MapFeatureNavigator: View {
 }
 
 #Preview {
-    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in})
+    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in}, onTrackingPolylineCreated: {})
         .modelContainer(for: CurrentModelVersion.models, inMemory: true) { phase in
             switch phase {
             case let .success(container):
