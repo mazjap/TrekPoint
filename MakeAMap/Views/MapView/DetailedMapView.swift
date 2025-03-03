@@ -9,10 +9,10 @@ import MapKit
 // - [x] Confirm newly created annotation
 //    - [x] Add ~~tap gesture~~ button to confirm location
 //    - [x] Create AnnotationData for given coordinate and clear newAnnotationLocation
-// - [ ] Add polyline support
-//    - [ ] "Following user location" type polyline
+// - [x] Add polyline support
+//    - [x] "Following user location" type polyline
 //      - [x] While using the app
-//      - [ ] While app is in background
+//      - [x] While app is in background
 //    - [x] "Tap to draw" type polyline
 // - [ ] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
