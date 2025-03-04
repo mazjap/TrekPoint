@@ -1,13 +1,23 @@
 import SwiftUI
 import SwiftData
 
+enum RealReasonForSomethingGoingWrong {
+    case error(Error)
+    case message(String)
+}
+
+enum ToastReason {
+    case annotationCreationError(AnnotationFinalizationError)
+    case polylineCreationError(PolylineFinalizationError)
+    case somethingWentWrong(RealReasonForSomethingGoingWrong)
+}
+
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var annotations: [AnnotationData]
+    @State private var toastReasons = [ToastReason]()
 
     var body: some View {
         NavigationStack {
-            DetailedMapView()
+            DetailedMapView(toastReasons: $toastReasons)
                 .navigationTitle("Map")
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)
@@ -17,5 +27,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: AnnotationData.self, inMemory: true)
+        .modelContainer(for: CurrentModelVersion.models, inMemory: true)
 }

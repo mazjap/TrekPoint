@@ -15,6 +15,8 @@ struct MapFeatureNavigator: View {
     
     @Binding private var selection: MapFeatureToPresent?
     @Binding private var isInEditingMode: Bool
+    @Binding private var toastReasons: [ToastReason]
+    
     private let newAnnotation: NewAnnotationManager
     private let newPolyline: NewPolylineManager
     
@@ -24,6 +26,7 @@ struct MapFeatureNavigator: View {
     init(
         selection: Binding<MapFeatureToPresent?>,
         isInEditingMode: Binding<Bool>,
+        toastReasons: Binding<[ToastReason]>,
         newAnnotation: NewAnnotationManager,
         newPolyline: NewPolylineManager,
         onSelection: @escaping (MapFeature?) -> Void,
@@ -31,6 +34,7 @@ struct MapFeatureNavigator: View {
     ) {
         self._selection = selection
         self._isInEditingMode = isInEditingMode
+        self._toastReasons = toastReasons
         self.newAnnotation = newAnnotation
         self.newPolyline = newPolyline
         self.onSelection = onSelection
@@ -105,12 +109,14 @@ struct MapFeatureNavigator: View {
                                     try modelContext.insert(newAnnotation.finalize())
                                     
                                     return true
+                                } catch let annotationError as AnnotationFinalizationError {
+                                    toastReasons.append( .annotationCreationError(annotationError))
                                 } catch {
-                                    print(error)
-                                    // TODO: - Error handling
-                                    
-                                    return false
+                                    // TODO: - Send to some analytics service
+                                    toastReasons.append(.somethingWentWrong(.error(error)))
                                 }
+                                
+                                return false
                             } onDiscarded: {
                                 newAnnotation.clearProgress()
                             }
@@ -129,11 +135,14 @@ struct MapFeatureNavigator: View {
                                     }
                                     
                                     return true
+                                } catch let polylineError as PolylineFinalizationError {
+                                    toastReasons.append(.polylineCreationError(polylineError))
                                 } catch {
-                                    print(error)
-                                    // TODO: - Error handling
-                                    return false
+                                    // TODO: - Send to some analytics service
+                                    toastReasons.append(.somethingWentWrong(.error(error)))
                                 }
+                                
+                                return false
                             } onDiscarded: {
                                 newPolyline.clearProgress()
                             }
@@ -175,7 +184,7 @@ struct MapFeatureNavigator: View {
 }
 
 #Preview {
-    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in}, onTrackingPolylineCreated: {})
+    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), toastReasons: .constant([]), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in}, onTrackingPolylineCreated: {})
         .modelContainer(for: CurrentModelVersion.models, inMemory: true) { phase in
             switch phase {
             case let .success(container):

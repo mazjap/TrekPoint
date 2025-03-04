@@ -2,7 +2,6 @@ import SwiftUI
 import CoreLocation
 
 enum PolylineFinalizationError: Error {
-    case noCoordinate
     case emptyTitle
     case tooFewCoordinates(required: Int, have: Int)
 }
@@ -120,7 +119,7 @@ class NewPolylineManager {
     }
     
     func finalize() throws -> PolylineData {
-        guard let workingPolyline else { throw PolylineFinalizationError.noCoordinate }
+        guard let workingPolyline else { throw PolylineFinalizationError.tooFewCoordinates(required: 2, have: 0) }
         guard !workingPolyline.title.isEmpty else { throw PolylineFinalizationError.emptyTitle }
         guard workingPolyline.coordinates.count > 1 else { throw PolylineFinalizationError.tooFewCoordinates(required: 2, have: workingPolyline.coordinates.count) }
         

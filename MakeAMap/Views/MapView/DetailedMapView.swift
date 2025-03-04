@@ -16,7 +16,7 @@ import MapKit
 //    - [x] "Tap to draw" type polyline
 // - [ ] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
-//    - [ ] Add some sort of toast alert system or package
+//    - [x] Add some sort of toast alert system or package
 // - [ ] Refactor architecture to decouple views and business logic
 
 
@@ -68,8 +68,13 @@ struct DetailedMapView: View {
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
+    @Binding private var toastReasons: [ToastReason]
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
+    
+    init(toastReasons: Binding<[ToastReason]>) {
+        self._toastReasons = toastReasons
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -116,6 +121,7 @@ struct DetailedMapView: View {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
                 isInEditingMode: Binding { editingMode != .view } set: { _ in editingMode = .view },
+                toastReasons: $toastReasons,
                 newAnnotation: newAnnotation,
                 newPolyline: newPolyline
             ) { newSelection in
@@ -152,13 +158,15 @@ struct DetailedMapView: View {
                 if let annotation = annotations.first(where: { id == $0.id }) {
                     presentedMapFeature = .annotation(annotation)
                 } else {
-                    // TODO: - Error handling (an annotation presentation was requested, but the annotation cannot be found)
+                    // TODO: - Send to some analytics service
+                    toastReasons.append(.somethingWentWrong(.message("Presentation of annotation with id: \(id) was requested, but no such map feature exists")))
                 }
             case let .polyline(id):
                 if let polyline = polylines.first(where: { id == $0.id }) {
                     presentedMapFeature = .polyline(polyline)
                 } else {
-                    // TODO: - Error handling (a polyline presentation was requested, but the polyline cannot be found)
+                    // TODO: - Send to some analytics service
+                    toastReasons.append(.somethingWentWrong(.message("Presentation of polyline with id: \(id) was requested, but no such map feature exists")))
                 }
             case .newFeature:
                 if newAnnotation.workingAnnotation != nil {
@@ -166,7 +174,8 @@ struct DetailedMapView: View {
                 } else if newPolyline.workingPolyline != nil {
                     presentedMapFeature = .workingPolyline
                 } else {
-                    // TODO: - Error handling (neither workingAnnotation nor workingPolyline exist, yet one was requested)
+                    // TODO: - Send to some analytics service
+                    toastReasons.append(.somethingWentWrong(.message("Presentation of the currently working feature (either annotation or polyline) was requested, but none exist")))
                 }
             case .none:
                 break
@@ -213,9 +222,8 @@ struct DetailedMapView: View {
                     newPosition,
                     from: .global
                 ) else {
-                    // TODO: - Handle error by:
-                    // - showing toast to user
-                    // - sending log through analytics service with details on map proxy and provided position
+                    // TODO: - Send to some analytics service
+                    toastReasons.append(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
                 }
                 
@@ -247,9 +255,8 @@ struct DetailedMapView: View {
                     newPosition,
                     from: .global
                 ) else {
-                    // TODO: - Handle error by:
-                    // - showing toast to user
-                    // - sending log through analytics service with details on map proxy and provided position
+                    // TODO: - Send to some analytics service
+                    toastReasons.append(.somethingWentWrong(.message("Working annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
                 }
                 
@@ -281,6 +288,8 @@ struct DetailedMapView: View {
                             newPosition,
                             from: .global
                         ) else {
+                            // TODO: - Send to some analytics service
+                            toastReasons.append(.somethingWentWrong(.message("Working polyline point movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                             return
                         }
                         
@@ -321,12 +330,11 @@ struct DetailedMapView: View {
                                     
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
+                                } catch let annotationError as AnnotationFinalizationError {
+                                    toastReasons.append(.annotationCreationError(annotationError))
                                 } catch {
-                                    // TODO: - Handle errors by:
-                                    // - Determining if error was `AnnotationFinalizationError` or some SwiftData error and handle accordingly
-                                    // - Showing toast to user
-                                    
-                                    print(error)
+                                    // TODO: - Send to some analytics service
+                                    toastReasons.append(.somethingWentWrong(.error(error)))
                                 }
                             } label: {
                                 Text("Confirm")
@@ -355,17 +363,15 @@ struct DetailedMapView: View {
                     
                     Button {
                         if newAnnotation.workingAnnotation == nil {
+                            let midPoint = CGPoint(x: frame.midX, y: frame.midY)
+                            
                             guard let coordinate = proxy.convert(
-                                CGPoint(
-                                    x: frame.midX,
-                                    y: frame.midY
-                                ),
+                                midPoint,
                                 from: .global
                             ) else {
-                                print("No center, yo")
-                                // TODO: - Handle Error by:
-                                // - showing toast to user
-                                // - sending log through analytics service with details on map proxy
+                                // TODO: - Send to some analytics service
+                                toastReasons.append(.somethingWentWrong(.message("Annotation creation was not possible. (\(midPoint) could not be converted to a map coordinate")))
+                                
                                 return
                             }
                             
@@ -405,12 +411,11 @@ struct DetailedMapView: View {
                                     
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
+                                } catch let polylineError as PolylineFinalizationError {
+                                    toastReasons.append(.polylineCreationError(polylineError))
                                 } catch {
-                                    // TODO: - Handle errors by:
-                                    // - Determining if error was `PolylineFinalizationError` or some SwiftData error and handle accordingly
-                                    // - Showing toast to user
-                                    
-                                    print(error)
+                                    // TODO: - Send to some analytics service
+                                    toastReasons.append(.somethingWentWrong(.error(error)))
                                 }
                             } label: {
                                 Text("Confirm")
@@ -609,7 +614,7 @@ struct DetailedMapView: View {
 }
 
 #Preview {
-    DetailedMapView()
+    DetailedMapView(toastReasons: .constant([]))
         .modelContainer(for: CurrentModelVersion.models, inMemory: true) { result in
             switch result {
             case let .success(container):
