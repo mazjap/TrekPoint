@@ -1,10 +1,10 @@
-![TrekPoint App Icon](./src/icon.png)
+<img src="./src/icon.png" alt="TrekPoint App Icon" style="width: 16%" />
 
 # TrekPoint
 
-TrekPoint is an iOS mapping application focused on outdoor navigation and location tracking. It allows users to create and manage annotations (markers) and polylines (paths) on a map, with support for real-time location tracking.
+TrekPoint is an iOS mapping application focused on outdoor navigation and location tracking. It allows users to create and manage markers (annotations) and paths (polylines) on a map, with support for real-time location tracking.
 
-![TrekPoint landing screenshot](./src/landing.png)
+<img src="./src/landing.png" alt="TrekPoint landing screenshot" style="width: 240px" />
 
 ## Features
 
@@ -16,28 +16,28 @@ TrekPoint is an iOS mapping application focused on outdoor navigation and locati
 
 ### Marker Management
 
-- Create Markers (annotations): Drop pins at specific coordinates with custom titles
+- Create Markers: Drop pins at specific coordinates with custom titles
 - Edit Markers: Modify marker details and locations
 - Drag & Drop: Intuitive dragging interface for precise pin placement
 
-![Creating a marker](./src/creating_marker.gif)
+<img src="./src/creating_marker.gif" alt="Creating a marker" style="width: 240px" />
 
 ### Path Creation & Tracking
 
-- Manual Path (polyline) Drawing: Create paths by tapping points on the map
+- Manual Path Drawing: Create paths by tapping points on the map
 - Location Tracking: Record paths in real-time as you move
 - Background Tracking: Continue tracking paths even when the app is in the background
 - Session Recovery: Automatically restore tracking sessions if the app is closed
 
-![Creating a path](./src/creating_path.gif)
+<img src="./src/creating_path.gif" alt="Creating a path" style="width: 240px" />
 
 ### Data Management
 
-- Persistent Storage: All annotations and paths are saved using SwiftData
+- Persistent Storage: All markers and paths are saved using SwiftData
 - List View: Browse and manage all saved locations and paths
 - Edit & Delete: Modify or remove saved items as needed
 
-![List of saved map features](./src/my_items.png)
+<img src="./src/my_items.png" alt="List of saved map features" style="width: 240px" />
 
 ### User Experience
 
@@ -45,7 +45,7 @@ TrekPoint is an iOS mapping application focused on outdoor navigation and locati
 - Gesture Controls: Intuitive gestures for map interaction and item manipulation
 - Responsive UI: Adaptive interface that works across device sizes
 
-![Toast error being presented](./src/error_handling.png)
+<img src="./src/error_handling.png" alt="Toast error being presented" style="width: 240px" />
 
 ## Technical Details
 
@@ -70,18 +70,18 @@ Medium Priority:
 - Cache map tiles for offline use
 - Settings page with customization options:
   - Map style (standard, satellite, hybrid, topographic)
-  - Annotation and polyline styling options
+  - Marker and paths styling options
   - Distance units and coordinate format preferences
   - GPS tracking sensitivity/battery optimization settings
   - Map overlay visibility options
   - Theme settings
-- Search and sort functionality for annotations and polylines
+- Search and sort functionality for markers and paths
 
 Lower Priority:
 
-- Photo/Video attachments for annotations
+- Photo/Video attachments for markers
 - iCloud sync for cross-device usage
-- Categorized annotations (custom categories for different types of locations)
+- Categorized markers (custom categories for different types of locations)
 
 Unlikely to Implement (but interesting ideas):
 
