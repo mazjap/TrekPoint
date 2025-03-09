@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct MakeAMapApp: App {
+struct TrekPointApp: App {
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
     var sharedModelContainer: ModelContainer = {

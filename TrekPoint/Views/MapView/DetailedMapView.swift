@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import MapKit
+import WarmToast
 
 // Tasks:
 // - [x] Get user's location working
@@ -14,7 +15,7 @@ import MapKit
 //      - [x] While using the app
 //      - [x] While app is in background
 //    - [x] "Tap to draw" type polyline
-// - [ ] Better (or any) error handling
+// - [x] Better (or any) error handling
 //    - [ ] Add red border to annotation title when user presses confirm and title is empty
 //    - [x] Add some sort of toast alert system or package
 // - [ ] Refactor architecture to decouple views and business logic
@@ -149,6 +150,38 @@ struct DetailedMapView: View {
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .interactiveDismissDisabled()
+        }
+        .preheatToaster(
+            withLoaf: $toastReasons,
+            options: .toasterStrudel(type: .error)
+        ) { item in
+            HStack {
+                Image(systemName: "exclamationmark.circle")
+                
+                switch item {
+                case .annotationCreationError(.emptyTitle), .polylineCreationError(.emptyTitle):
+                    Text("Missing a title")
+                case .annotationCreationError(.noCoordinate):
+                    VStack(alignment: .leading) {
+                        Text("Missing a coordinate")
+                        
+                        Text("Try dragging the pin to place it on the map.")
+                            .font(.body)
+                    }
+                case .polylineCreationError(.tooFewCoordinates(let required, let have)):
+                    VStack(alignment: .leading) {
+                        Text("Paths need at least \(required) coordinates")
+                        
+                        Text("This polyline currently has \(have) coordinates. Try adding more points to complete the path.")
+                            .font(.body)
+                    }
+                case .somethingWentWrong:
+                    Text("Something went wrong")
+                }
+            }
+            .font(.title3.bold())
+            .foregroundStyle(.red)
+            .padding()
         }
         .onChange(of: selectedMapItemTag) {
             print(selectedMapItemTag ?? "No selection")

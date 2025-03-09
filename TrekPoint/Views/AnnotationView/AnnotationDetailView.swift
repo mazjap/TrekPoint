@@ -47,6 +47,15 @@ fileprivate struct AnnotationDetailViewImplementation: View {
             Form {
                 TextField("Name this marker", text: $title)
                     .font(.title2.bold())
+                    .overlay {
+                        if title.isEmpty {
+                            Color.red.opacity(0.2)
+                                .allowsHitTesting(false)
+                                // TODO: - Don't use magic number
+                                .padding(.horizontal, -20)
+                                .padding(.vertical, -10)
+                        }
+                    }
                 
                 Grid(alignment: .leading) {
                     GridRow {

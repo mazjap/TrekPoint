@@ -1,0 +1,15 @@
+{
+  "originHash" : "44eb3828cef35ede88e82f5ffada4f0b0a081a544b807ca4e704247ad712d3cd",
+  "pins" : [
+    {
+      "identity" : "warmtoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mazjap/warmtoast.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "cfbf2ccaee2aee842f81f767f8ac64d4119064f0"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -30,8 +30,9 @@
 		0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */; };
 		0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */; };
 		0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512CC2BB5342D00E9CA83 /* Triangle.swift */; };
+		0E98C6E32D777D700046115A /* WarmToast in Frameworks */ = {isa = PBXBuildFile; productRef = 0E98C6E22D777D700046115A /* WarmToast */; };
 		0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */; };
-		0EA4BD472B9151AF005259B4 /* MakeAMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */; };
+		0EA4BD472B9151AF005259B4 /* TrekPointApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */; };
 		0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD482B9151AF005259B4 /* ContentView.swift */; };
 		0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */; };
 		0EA4BD4D2B9151B0005259B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */; };
@@ -74,8 +75,8 @@
 		0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
 		0E9512CC2BB5342D00E9CA83 /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
 		0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentEditableModel.swift; sourceTree = "<group>"; };
-		0EA4BD432B9151AF005259B4 /* MakeAMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MakeAMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeAMapApp.swift; sourceTree = "<group>"; };
+		0EA4BD432B9151AF005259B4 /* TrekPoint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrekPoint.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrekPointApp.swift; sourceTree = "<group>"; };
 		0EA4BD482B9151AF005259B4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationData.swift; sourceTree = "<group>"; };
 		0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E98C6E32D777D700046115A /* WarmToast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,7 +130,7 @@
 		0EA4BD3A2B9151AF005259B4 = {
 			isa = PBXGroup;
 			children = (
-				0EA4BD452B9151AF005259B4 /* MakeAMap */,
+				0EA4BD452B9151AF005259B4 /* TrekPoint */,
 				0EA4BD442B9151AF005259B4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -136,12 +138,12 @@
 		0EA4BD442B9151AF005259B4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0EA4BD432B9151AF005259B4 /* MakeAMap.app */,
+				0EA4BD432B9151AF005259B4 /* TrekPoint.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0EA4BD452B9151AF005259B4 /* MakeAMap */ = {
+		0EA4BD452B9151AF005259B4 /* TrekPoint */ = {
 			isa = PBXGroup;
 			children = (
 				0E36EAEF2D7525F000C163E9 /* Info.plist */,
@@ -150,7 +152,7 @@
 				0EA4BD682B93FC30005259B4 /* Helpers */,
 				0EA4BD5E2B93D2B1005259B4 /* Models */,
 			);
-			path = MakeAMap;
+			path = TrekPoint;
 			sourceTree = "<group>";
 		};
 		0EA4BD4E2B9151B0005259B4 /* Preview Content */ = {
@@ -189,7 +191,7 @@
 		0EA4BD662B93FC18005259B4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0EA4BD462B9151AF005259B4 /* MakeAMapApp.swift */,
+				0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */,
 				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
 				0EA4BD4E2B9151B0005259B4 /* Preview Content */,
@@ -241,9 +243,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0EA4BD422B9151AF005259B4 /* MakeAMap */ = {
+		0EA4BD422B9151AF005259B4 /* TrekPoint */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0EA4BD532B9151B0005259B4 /* Build configuration list for PBXNativeTarget "MakeAMap" */;
+			buildConfigurationList = 0EA4BD532B9151B0005259B4 /* Build configuration list for PBXNativeTarget "TrekPoint" */;
 			buildPhases = (
 				0EA4BD3F2B9151AF005259B4 /* Sources */,
 				0EA4BD402B9151AF005259B4 /* Frameworks */,
@@ -253,9 +255,9 @@
 			);
 			dependencies = (
 			);
-			name = MakeAMap;
+			name = TrekPoint;
 			productName = MakeAMap;
-			productReference = 0EA4BD432B9151AF005259B4 /* MakeAMap.app */;
+			productReference = 0EA4BD432B9151AF005259B4 /* TrekPoint.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -273,7 +275,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0EA4BD3E2B9151AF005259B4 /* Build configuration list for PBXProject "MakeAMap" */;
+			buildConfigurationList = 0EA4BD3E2B9151AF005259B4 /* Build configuration list for PBXProject "TrekPoint" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -283,12 +285,13 @@
 			);
 			mainGroup = 0EA4BD3A2B9151AF005259B4;
 			packageReferences = (
+				0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */,
 			);
 			productRefGroup = 0EA4BD442B9151AF005259B4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0EA4BD422B9151AF005259B4 /* MakeAMap */,
+				0EA4BD422B9151AF005259B4 /* TrekPoint */,
 			);
 		};
 /* End PBXProject section */
@@ -335,7 +338,7 @@
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
-				0EA4BD472B9151AF005259B4 /* MakeAMapApp.swift in Sources */,
+				0EA4BD472B9151AF005259B4 /* TrekPointApp.swift in Sources */,
 				0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */,
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
 				0E36EA8B2D73F53400C163E9 /* NewPolylineManager.swift in Sources */,
@@ -479,14 +482,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MakeAMap/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TrekPoint/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MakeAMap/Info.plist;
+				INFOPLIST_FILE = TrekPoint/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -498,7 +501,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.MakeAMap;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.TrekPoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -513,14 +516,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MakeAMap/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TrekPoint/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MakeAMap/Info.plist;
+				INFOPLIST_FILE = TrekPoint/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MakeAMap requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -532,7 +535,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.MakeAMap;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.TrekPoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -543,7 +546,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0EA4BD3E2B9151AF005259B4 /* Build configuration list for PBXProject "MakeAMap" */ = {
+		0EA4BD3E2B9151AF005259B4 /* Build configuration list for PBXProject "TrekPoint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0EA4BD512B9151B0005259B4 /* Debug */,
@@ -552,7 +555,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0EA4BD532B9151B0005259B4 /* Build configuration list for PBXNativeTarget "MakeAMap" */ = {
+		0EA4BD532B9151B0005259B4 /* Build configuration list for PBXNativeTarget "TrekPoint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0EA4BD542B9151B0005259B4 /* Debug */,
@@ -562,6 +565,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mazjap/warmtoast.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0E98C6E22D777D700046115A /* WarmToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */;
+			productName = WarmToast;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0EA4BD3B2B9151AF005259B4 /* Project object */;
 }
