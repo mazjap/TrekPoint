@@ -31,11 +31,11 @@ struct LaunchAnimationView: View {
             ZStack {
                 Image("MountainLeft")
                     .resizable()
-                    .offset(x: -animationState.hOffset)
+                    .offset(x: -animationState.hOffset, y: animationState.hOffset)
                 
                 Image("MountainRight")
                     .resizable()
-                    .offset(x: animationState.hOffset)
+                    .offset(x: animationState.hOffset, y: animationState.hOffset)
                 
                 Image("Marker")
                     .resizable()
