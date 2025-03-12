@@ -69,11 +69,13 @@ struct DetailedMapView: View {
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
+    @Binding private var showSheet: Bool
     @Binding private var toastReasons: [ToastReason]
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
     
-    init(toastReasons: Binding<[ToastReason]>) {
+    init(showSheet: Binding<Bool>, toastReasons: Binding<[ToastReason]>) {
+        self._showSheet = showSheet
         self._toastReasons = toastReasons
     }
     
@@ -118,7 +120,7 @@ struct DetailedMapView: View {
             }
         }
         .mapScope(nspace)
-        .sheet(isPresented: .constant(true)) {
+        .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
                 isInEditingMode: Binding { editingMode != .view } set: { _ in editingMode = .view },
@@ -647,7 +649,7 @@ struct DetailedMapView: View {
 }
 
 #Preview {
-    DetailedMapView(toastReasons: .constant([]))
+    DetailedMapView(showSheet: .constant(true), toastReasons: .constant([]))
         .modelContainer(for: CurrentModelVersion.models, inMemory: true) { result in
             switch result {
             case let .success(container):

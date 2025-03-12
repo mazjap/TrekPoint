@@ -22,6 +22,9 @@
 		0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */; };
 		0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */; };
 		0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF22D752EA600C163E9 /* AppDelegate.swift */; };
+		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
+		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
+		0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00892D820BC80019A92A /* UIScreen+current.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -66,6 +69,9 @@
 		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingLocation.swift; sourceTree = "<group>"; };
 		0E36EAF22D752EA600C163E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
+		0E7E00892D820BC80019A92A /* UIScreen+current.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+current.swift"; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -192,7 +198,9 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */,
+				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
+				0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
 				0EA4BD4E2B9151B0005259B4 /* Preview Content */,
 			);
@@ -222,6 +230,7 @@
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
 				0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */,
+				0E7E00892D820BC80019A92A /* UIScreen+current.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -301,6 +310,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */,
 				0EA4BD502B9151B0005259B4 /* Preview Assets.xcassets in Resources */,
 				0EA4BD4D2B9151B0005259B4 /* Assets.xcassets in Resources */,
 			);
@@ -315,6 +325,7 @@
 			files = (
 				0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */,
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
+				0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
@@ -329,6 +340,7 @@
 				0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
+				0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
@@ -354,6 +366,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0E7E00852D81F1840019A92A /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0EA4BD512B9151B0005259B4 /* Debug */ = {
@@ -492,7 +515,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -526,7 +549,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

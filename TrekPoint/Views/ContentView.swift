@@ -14,10 +14,15 @@ enum ToastReason {
 
 struct ContentView: View {
     @State private var toastReasons = [ToastReason]()
+    @Binding private var showSheet: Bool
+    
+    init(showSheet: Binding<Bool>) {
+        self._showSheet = showSheet
+    }
 
     var body: some View {
         NavigationStack {
-            DetailedMapView(toastReasons: $toastReasons)
+            DetailedMapView(showSheet: $showSheet, toastReasons: $toastReasons)
                 .navigationTitle("Map")
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)
@@ -26,6 +31,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(showSheet: .constant(true))
         .modelContainer(for: CurrentModelVersion.models, inMemory: true)
 }

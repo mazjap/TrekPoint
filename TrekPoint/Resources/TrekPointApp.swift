@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct TrekPointApp: App {
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    @State private var isAnimationComplete = false
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema(CurrentModelVersion.models, version: CurrentModelVersion.versionIdentifier)
@@ -18,10 +19,16 @@ struct TrekPointApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appDelegate.locationManager)
-                .environment(appDelegate.annotationManager)
-                .environment(appDelegate.polylineManager)
+            ZStack {
+                ContentView(showSheet: Binding { isAnimationComplete } set: { _ in })
+                    .environment(appDelegate.locationManager)
+                    .environment(appDelegate.annotationManager)
+                    .environment(appDelegate.polylineManager)
+                
+                if !isAnimationComplete {
+                    LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }
