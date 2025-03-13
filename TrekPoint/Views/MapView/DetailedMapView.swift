@@ -16,7 +16,7 @@ import WarmToast
 //      - [x] While app is in background
 //    - [x] "Tap to draw" type polyline
 // - [x] Better (or any) error handling
-//    - [ ] Add red border to annotation title when user presses confirm and title is empty
+//    - [x] Add red border to annotation title when user presses confirm and title is empty
 //    - [x] Add some sort of toast alert system or package
 // - [ ] Refactor architecture to decouple views and business logic
 

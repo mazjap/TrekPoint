@@ -28,6 +28,7 @@ struct AnnotationDetailView: View {
 }
 
 fileprivate struct AnnotationDetailViewImplementation: View {
+    @State private var previewId = UUID()
     @Binding private var coordinate: Coordinate
     @Binding private var title: String
     
@@ -42,7 +43,11 @@ fileprivate struct AnnotationDetailViewImplementation: View {
     var body: some View {
         VStack(spacing: 0) {
             MapPreview(feature: feature)
-                .frame(height: 260)
+                .id(previewId)
+                .frame(height: 240)
+                .onChange(of: coordinate) {
+                    previewId = UUID()
+                }
             
             Form {
                 TextField("Name this marker", text: $title)

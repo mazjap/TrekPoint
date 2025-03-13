@@ -29,6 +29,7 @@ struct PolylineDetailView: View {
 
 fileprivate struct PolylineDetailViewImplementation: View {
     private let feature: MapFeature
+    @State private var previewId = UUID()
     @Binding private var coordinates: [Coordinate]
     @Binding private var title: String
     
@@ -41,7 +42,11 @@ fileprivate struct PolylineDetailViewImplementation: View {
     var body: some View {
         VStack(spacing: 0) {
             MapPreview(feature: feature)
+                .id(previewId)
                 .frame(height: 240)
+                .onChange(of: coordinates) {
+                    previewId = UUID()
+                }
             
             Form {
                 TextField("Name this path", text: $title)
