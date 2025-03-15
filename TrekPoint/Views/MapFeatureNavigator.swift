@@ -149,11 +149,6 @@ struct MapFeatureNavigator: View {
                         }
                     }
                 }
-                .onDisappear {
-                    selection = nil
-                    onSelection(nil)
-                    isInEditingMode = false
-                }
             }
             .padding(.top, -20)
             .toolbar {

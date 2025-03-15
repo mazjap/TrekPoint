@@ -7,11 +7,8 @@ struct TrekPointApp: App {
     @State private var isAnimationComplete = false
     
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema(CurrentModelVersion.models, version: CurrentModelVersion.versionIdentifier)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(makeConfiguration: { ModelConfiguration(schema: $0, isStoredInMemoryOnly: false) })
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -20,10 +17,11 @@ struct TrekPointApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                ContentView(showSheet: Binding { isAnimationComplete } set: { _ in })
+                ContentView(showSheet: $isAnimationComplete)
                     .environment(appDelegate.locationManager)
                     .environment(appDelegate.annotationManager)
                     .environment(appDelegate.polylineManager)
+                    .environment(AttachmentStore())
                 
                 if !isAnimationComplete {
                     LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
@@ -31,5 +29,27 @@ struct TrekPointApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+extension ModelContainer {
+    /// Initializes a new ModelContainer with `ModelInformation.currentSchema` & `ModelInformation.MigrationPlan`.
+    /// - Parameter makeConfigurations: A closure that passes in the currentSchema and expects an array of ModelConfiguration as the return type.
+    /// - Note: If only one ModelConfiguration is needed, initialize with `ModelContainer(makeConfiguration: (Schema) -> ModelConfiguration)` instead.
+    convenience init(makeConfigurations: (Schema) -> [ModelConfiguration]) throws {
+        let activeSchema = ModelInformation.currentSchema
+        
+        try self.init(
+            for: activeSchema,
+            migrationPlan: ModelInformation.MigrationPlan.self,
+            configurations: makeConfigurations(activeSchema)
+        )
+    }
+    
+    /// Initializes a new ModelContainer with `ModelInformation.currentSchema` & `ModelInformation.MigrationPlan`.
+    /// - Parameter makeConfiguration: A closure that passes in the currentSchema and expects a ModelConfiguration as the return type.
+    /// - Note: If only more than one ModelConfiguration is needed, initialize with `ModelContainer(makeConfigurations: (Schema) -> [ModelConfiguration])` instead.
+    convenience init(makeConfiguration: (Schema) -> ModelConfiguration) throws {
+        try self.init { [makeConfiguration($0)] }
     }
 }

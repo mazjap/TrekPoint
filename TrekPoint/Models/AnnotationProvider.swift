@@ -3,6 +3,8 @@ import struct CoreLocation.CLLocationCoordinate2D
 protocol AnnotationProvider {
     var clCoordinate: CLLocationCoordinate2D { get }
     var title: String { get }
+    var attachments: [Attachment] { get }
+    var userDescription: String { get }
     var tag: MapFeatureTag { get }
 }
 
@@ -13,6 +15,8 @@ extension AnnotationData: AnnotationProvider {
 struct WorkingAnnotation: AnnotationProvider {
     var coordinate: Coordinate
     var title: String
+    var attachments: [Attachment] = []
+    var userDescription: String = ""
     let tag = MapFeatureTag.newFeature
     var clCoordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(coordinate)

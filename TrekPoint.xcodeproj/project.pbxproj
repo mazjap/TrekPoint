@@ -25,6 +25,10 @@
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00892D820BC80019A92A /* UIScreen+current.swift */; };
+		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
+		0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */; };
+		0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00912D823EC80019A92A /* AttachmentsView.swift */; };
+		0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00932D82516A0019A92A /* AttachmentPicker.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -72,6 +76,10 @@
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E00892D820BC80019A92A /* UIScreen+current.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+current.swift"; sourceTree = "<group>"; };
+		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
+		0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
+		0E7E00912D823EC80019A92A /* AttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentsView.swift; sourceTree = "<group>"; };
+		0E7E00932D82516A0019A92A /* AttachmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPicker.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -126,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
+				0E7E008D2D820F7E0019A92A /* Attachment.swift */,
 				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
 				0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */,
 				0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */,
@@ -153,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				0E36EAEF2D7525F000C163E9 /* Info.plist */,
+				0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */,
 				0EA4BD662B93FC18005259B4 /* Resources */,
 				0EA4BD672B93FC28005259B4 /* Views */,
 				0EA4BD682B93FC30005259B4 /* Helpers */,
@@ -212,6 +222,8 @@
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
+				0E7E00912D823EC80019A92A /* AttachmentsView.swift */,
+				0E7E00932D82516A0019A92A /* AttachmentPicker.swift */,
 				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
 				0E29527E2D711A930079479A /* PolylineView */,
@@ -324,9 +336,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */,
+				0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */,
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
+				0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
@@ -349,6 +363,7 @@
 				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
+				0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
 				0EA4BD472B9151AF005259B4 /* TrekPointApp.swift in Sources */,
 				0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */,
@@ -359,6 +374,7 @@
 				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
 				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
+				0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */,
 				0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
@@ -511,8 +527,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TrekPoint/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) needs access to your photo library to add images and videos to annotations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -545,8 +562,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TrekPoint/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) needs access to your photo library to add images and videos to annotations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

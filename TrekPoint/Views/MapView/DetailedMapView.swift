@@ -186,8 +186,6 @@ struct DetailedMapView: View {
             .padding()
         }
         .onChange(of: selectedMapItemTag) {
-            print(selectedMapItemTag ?? "No selection")
-            
             switch selectedMapItemTag {
             case let .annotation(id):
                 if let annotation = annotations.first(where: { id == $0.id }) {
@@ -229,6 +227,14 @@ struct DetailedMapView: View {
             else { return }
             
             newPolyline.appendCurrentLocation(lastLocation.coordinate)
+        }
+        .onChange(of: showSheet) {
+            guard !showSheet else { return }
+            
+            Task {
+                try await Task.sleep(for: .seconds(0.01))
+                showSheet = true
+            }
         }
         .task {
             NotificationCenter.default.addObserver(

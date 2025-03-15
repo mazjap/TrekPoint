@@ -60,7 +60,9 @@ class NewAnnotationManager {
         
         return AnnotationData(
             title: workingAnnotation.title,
-            coordinate: workingAnnotation.coordinate
+            userDescription: workingAnnotation.userDescription,
+            coordinate: workingAnnotation.coordinate,
+            attachments: workingAnnotation.attachments
         )
     }
 }
