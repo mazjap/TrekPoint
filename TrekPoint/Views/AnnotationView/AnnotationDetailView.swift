@@ -29,6 +29,7 @@ struct AnnotationDetailView: View {
 }
 
 fileprivate struct AnnotationDetailViewImplementation: View {
+    @State private var previewId = UUID()
     @State private var isBrowsingPhotos = false
     @Binding private var coordinate: Coordinate
     @Binding private var title: String
@@ -48,7 +49,11 @@ fileprivate struct AnnotationDetailViewImplementation: View {
     var body: some View {
         Form {
             MapPreview(feature: .annotation(annotation))
+                .id(previewId)
                 .frame(height: 260)
+                .onChange(of: coordinate) {
+                    previewId = UUID()
+                }
             
             TextField("Name this marker", text: $title)
                 .font(.title2.bold())
