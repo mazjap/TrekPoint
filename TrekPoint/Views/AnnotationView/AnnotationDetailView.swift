@@ -21,9 +21,9 @@ struct AnnotationDetailView: View {
         switch storage {
         case let .annotationData(annotation):
             let bindable = Bindable(annotation)
-            AnnotationDetailViewImplementation(annotation: annotation, coordinate: bindable.coordinate, title: bindable.title, attachments: bindable.attachments, notes: bindable.userDescription)
+            AnnotationDetailViewImplementation(annotation: .model(annotation), coordinate: bindable.coordinate, title: bindable.title, attachments: bindable.attachments, notes: bindable.userDescription)
         case let .workingAnnotation(annotation):
-            AnnotationDetailViewImplementation(annotation: annotation.wrappedValue, coordinate: annotation.coordinate, title: annotation.title, attachments: annotation.attachments, notes: annotation.userDescription)
+            AnnotationDetailViewImplementation(annotation: .working(annotation.wrappedValue), coordinate: annotation.coordinate, title: annotation.title, attachments: annotation.attachments, notes: annotation.userDescription)
         }
     }
 }
@@ -35,10 +35,10 @@ fileprivate struct AnnotationDetailViewImplementation: View {
     @Binding private var attachments: [Attachment]
     @Binding private var notes: String
     
-    private let feature: MapFeature
+    private let annotation: AnnotationType
     
-    init(annotation: any AnnotationProvider, coordinate: Binding<Coordinate>, title: Binding<String>, attachments: Binding<[Attachment]>, notes: Binding<String>) {
-        self.feature = .annotation(annotation)
+    init(annotation: AnnotationType, coordinate: Binding<Coordinate>, title: Binding<String>, attachments: Binding<[Attachment]>, notes: Binding<String>) {
+        self.annotation = annotation
         self._coordinate = coordinate
         self._title = title
         self._attachments = attachments
@@ -47,7 +47,7 @@ fileprivate struct AnnotationDetailViewImplementation: View {
     
     var body: some View {
         Form {
-            MapPreview(feature: feature)
+            MapPreview(feature: .annotation(annotation))
                 .frame(height: 260)
             
             TextField("Name this marker", text: $title)
@@ -78,12 +78,8 @@ fileprivate struct AnnotationDetailViewImplementation: View {
             }
             
             DisclosureGroup("Attachments") {
-                TabView {
-                    AttachmentsView(attachments: $attachments)
-                }
-                .tabViewStyle(.page(indexDisplayMode: .automatic))
-                .frame(height: 350)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                AttachmentsView(annotation: annotation)
+                    .frame(height: 350)
             }
             
             DisclosureGroup("Notes") {
@@ -95,11 +91,7 @@ fileprivate struct AnnotationDetailViewImplementation: View {
                 }
             }
         }
-        .background {
-            Color.white
-                .ignoresSafeArea(edges: .bottom)
-                .shadow(color: .black.opacity(0.1), radius: 10, y: -10)
-        }
+        .navigationTitle(title)
     }
 }
 

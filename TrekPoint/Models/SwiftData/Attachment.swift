@@ -9,7 +9,7 @@ extension ModelInformation.ModelVersion1_1_0 {
         case video = "mp4"
     }
     
-    struct Attachment: Codable, Identifiable {
+    struct Attachment: Codable, Identifiable, Hashable {
         let type: AttachmentType
         let id: UUID
         let createdAt: Date

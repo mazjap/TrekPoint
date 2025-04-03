@@ -8,87 +8,50 @@ fileprivate enum NavigationState {
 
 struct CreateAnnotationView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @Environment(AnnotationPersistenceManager.self) private var annotationManager
+    private let onDismiss: () -> Void
+    private let commitError: (Error) -> Void
     
-    @State private var navigationState: NavigationState = .viewing
-    @Binding private var annotation: WorkingAnnotation?
-    
-    private let onCreated: () -> Bool
-    private let onDiscarded: () -> Void
-    
-    init(workingAnnotation: Binding<WorkingAnnotation>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
-        self.init(
-            workingAnnotation: Binding<WorkingAnnotation?> {
-                workingAnnotation.wrappedValue
-            } set: {
-                if let newValue = $0 {
-                    workingAnnotation.wrappedValue = newValue
-                }
-            },
-            onCreated: onCreated,
-            onDiscarded: onDiscarded
-        )
-    }
-    
-    init(workingAnnotation: Binding<WorkingAnnotation?>, onCreated: @escaping () -> Bool, onDiscarded: @escaping () -> Void) {
-        self._annotation = workingAnnotation
-        self.onCreated = onCreated
-        self.onDiscarded = onDiscarded
+    init(onDismiss: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
+        self.onDismiss = onDismiss
+        self.commitError = commitError
     }
     
     var body: some View {
-        NavigationStack {
-            let annotationBinding = $annotation.safelyUnwrapped(.init(coordinate: .random, title: ""))
-            
-            AnnotationDetailView(annotation: annotationBinding)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            navigationState = .canceling
-                            dismiss()
-                        }
+        AnnotationDetailView(annotation: Bindable(annotationManager).workingAnnotation.safelyUnwrapped(WorkingAnnotation(coordinate: .random, title: "")))
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        annotationManager.clearWorkingAnnotationProgress()
                     }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Create") {
-                            if onCreated() {
-                                navigationState = .creating
-                                dismiss()
-                            }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        do {
+                            try annotationManager.finalizeWorkingAnnotation()
+                        } catch {
+                            commitError(error)
                         }
                     }
                 }
-                .navigationBarBackButtonHidden()
-                .onDisappear {
-                    switch navigationState {
-                    case .creating:
-                        // Do nothing - created successfully
-                        break
-                    case .canceling:
-                        onDiscarded()
-                    case .viewing:
-                        // When PHPhoto UI sheet is dismissed, it dismisses this sheet too for some reason
-                        break
-                    }
+            }
+            .onChange(of: annotationManager.workingAnnotation) {
+                if annotationManager.workingAnnotation == nil {
+                    onDismiss()
+                    dismiss()
                 }
-        }
+            }
     }
 }
 
 #Preview {
-    struct CreateAnnotationPreview: View {
-        @State private var annotation = WorkingAnnotation(
-            coordinate: Coordinate(
-                latitude: .random(in: -90...90),
-                longitude: .random(in: -180...180)
-            ),
-            title: ""
-        )
-        
-        var body: some View {
-            CreateAnnotationView(workingAnnotation: $annotation) {true} onDiscarded: {}
-        }
-    }
+    let newAnnotationManager = {
+        let annotationManager = AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: .init())
+        annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate.random)
+        return annotationManager
+    }()
     
-    return CreateAnnotationPreview()
+    CreateAnnotationView(onDismiss: {}) { print($0) }
+        .environment(newAnnotationManager)
 }

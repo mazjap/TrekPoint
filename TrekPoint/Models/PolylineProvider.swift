@@ -13,7 +13,7 @@ extension PolylineData: PolylineProvider {
     var tag: MapFeatureTag { .polyline(id) }
 }
 
-struct WorkingPolyline: PolylineProvider {
+struct WorkingPolyline: PolylineProvider, Hashable {
     var title: String
     var userDescription = ""
     var coordinates: [Coordinate]
@@ -73,4 +73,3 @@ struct WorkingPolyline: PolylineProvider {
         isLocationTracked: false
     )
 }
-

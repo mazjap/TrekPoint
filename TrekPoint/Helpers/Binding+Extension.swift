@@ -5,6 +5,8 @@ extension Binding {
         Binding<T> {
             wrappedValue ?? defaultValue
         } set: {
+            guard wrappedValue != nil else { return }
+            
             wrappedValue = $0
         }
     }

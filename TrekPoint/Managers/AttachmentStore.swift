@@ -2,7 +2,14 @@ import Foundation
 import UIKit
 import SwiftUI
 
-class AttachmentStore: Observable {
+enum AttachmentError: Error {
+    case fileNotFound
+    case imageCompressionFailed
+    case fileWriteFailed(Error)
+    case fileReadFailed(Error)
+}
+
+class AttachmentStore {
     private let fileManager: FileManager
     private let attachmentsDirectory: URL
     
@@ -20,8 +27,10 @@ class AttachmentStore: Observable {
         self.attachmentsDirectory = attachmentsDirectory
     }
     
-    func storeImage(_ image: UIImage) -> Attachment? {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
+    func storeImage(_ image: UIImage) throws -> Attachment {
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            throw AttachmentError.imageCompressionFailed
+        }
         
         let attachment = Attachment(type: .image)
         let fileURL = attachmentsDirectory.appendingPathComponent(attachment.fileName)
@@ -31,39 +40,46 @@ class AttachmentStore: Observable {
             
             return attachment
         } catch {
-            return nil
+            throw AttachmentError.fileWriteFailed(error)
         }
     }
     
-    func storeVideo(thatExistsAtURL tempURL: URL) -> Attachment? {
+    func storeVideo(thatExistsAtURL tempURL: URL) throws -> Attachment {
         let attachment = Attachment(type: .video)
         let destinationURL = attachmentsDirectory.appendingPathComponent(attachment.fileName)
         
         do {
-            // Copy from the source to our permanent location
+            // Copy from the source to new permanent location
             try fileManager.copyItem(at: tempURL, to: destinationURL)
             
             return attachment
         } catch {
-            return nil
+            throw AttachmentError.fileWriteFailed(error)
         }
     }
     
-    func resolveURL(for attachment: Attachment) -> URL? {
-        // Create url from document directory and attachment id + type
+    func getUrl(for attachment: Attachment) throws -> URL {
         let url = attachmentsDirectory.appendingPathComponent(attachment.fileName)
         
         if fileManager.fileExists(atPath: url.path()) {
             return url
         } else {
-            // TODO: - Show message/delete attachment/alert caller
-            return nil
+            throw AttachmentError.fileNotFound
         }
     }
     
-    func deleteAttachment(_ attachment: Attachment) {
-        if let resolvedURL = resolveURL(for: attachment) {
-            try? fileManager.removeItem(at: resolvedURL)
+    func delete(_ attachment: Attachment) throws {
+        let url = attachmentsDirectory.appendingPathComponent(attachment.fileName)
+        
+        if fileManager.fileExists(atPath: url.path()) {
+            try fileManager.removeItem(at: url)
+        } else {
+            throw AttachmentError.fileNotFound
         }
+    }
+    
+    func exists(_ attachment: Attachment) -> Bool {
+        let url = attachmentsDirectory.appendingPathComponent(attachment.fileName)
+        return fileManager.fileExists(atPath: url.path())
     }
 }

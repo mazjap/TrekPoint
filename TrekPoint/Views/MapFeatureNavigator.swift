@@ -9,36 +9,31 @@ enum MapFeatureToPresent: Hashable {
 }
 
 struct MapFeatureNavigator: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var annotations: [AnnotationData]
-    @Query private var polylines: [PolylineData]
-    
     @Binding private var selection: MapFeatureToPresent?
-    @Binding private var isInEditingMode: Bool
-    @Binding private var toastReasons: [ToastReason]
     
-    private let newAnnotation: NewAnnotationManager
-    private let newPolyline: NewPolylineManager
-    
+    private let annotations: [AnnotationData]
+    private let polylines: [PolylineData]
+    private let annotationManager: AnnotationPersistenceManager
+    private let polylineManager: PolylinePersistenceManager
+    private let toastManager: ToastManager
     private let onSelection: (MapFeature?) -> Void
-    private let onTrackingPolylineCreated: () -> Void
     
     init(
         selection: Binding<MapFeatureToPresent?>,
-        isInEditingMode: Binding<Bool>,
-        toastReasons: Binding<[ToastReason]>,
-        newAnnotation: NewAnnotationManager,
-        newPolyline: NewPolylineManager,
-        onSelection: @escaping (MapFeature?) -> Void,
-        onTrackingPolylineCreated: @escaping () -> Void
+        annotations: [AnnotationData],
+        polylines: [PolylineData],
+        annotationManager: AnnotationPersistenceManager,
+        polylineManager: PolylinePersistenceManager,
+        toastManager: ToastManager,
+        onSelection: @escaping (MapFeature?) -> Void
     ) {
         self._selection = selection
-        self._isInEditingMode = isInEditingMode
-        self._toastReasons = toastReasons
-        self.newAnnotation = newAnnotation
-        self.newPolyline = newPolyline
+        self.annotations = annotations
+        self.polylines = polylines
+        self.annotationManager = annotationManager
+        self.polylineManager = polylineManager
+        self.toastManager = toastManager
         self.onSelection = onSelection
-        self.onTrackingPolylineCreated = onTrackingPolylineCreated
     }
     
     var body: some View {
@@ -50,7 +45,7 @@ struct MapFeatureNavigator: View {
                 }
                 
                 if !annotations.isEmpty {
-                    Section("Annotations") {
+                    Section("Markers") {
                         ForEach(annotations) { item in
                             Button {
                                 selection = .annotation(item)
@@ -88,67 +83,23 @@ struct MapFeatureNavigator: View {
                 }
             }
             .navigationDestination(item: $selection) { currentSelection in
-                let goAwayView = Color.clear.onAppear {
-                    selection = nil
+                let onDismiss = {
                     onSelection(nil)
                 }
                 
                 Group {
                     switch currentSelection {
                     case let .annotation(annotation):
-                        ModifyAnnotationView(annotation: annotation)
+                        ModifyAnnotationView(annotation: annotation, onDismiss: onDismiss, commitError: toastManager.commitFeatureCreationError)
                     case let .polyline(polyline):
-                        ModifyPolylineView(polyline: polyline)
+                        ModifyPolylineView(polyline: polyline, onDismiss: onDismiss, commitError: toastManager.commitFeatureCreationError)
                     case .workingAnnotation:
-                        if newAnnotation.workingAnnotation == nil {
-                            goAwayView
-                        } else {
-                            CreateAnnotationView(workingAnnotation: Bindable(newAnnotation).workingAnnotation) {
-                                
-                                do {
-                                    try modelContext.insert(newAnnotation.finalize())
-                                    
-                                    return true
-                                } catch let annotationError as AnnotationFinalizationError {
-                                    toastReasons.append( .annotationCreationError(annotationError))
-                                } catch {
-                                    // TODO: - Send to some analytics service
-                                    toastReasons.append(.somethingWentWrong(.error(error)))
-                                }
-                                
-                                return false
-                            } onDiscarded: {
-                                newAnnotation.clearProgress()
-                            }
-                        }
+                        CreateAnnotationView(onDismiss: onDismiss, commitError: toastManager.commitFeatureCreationError)
                     case .workingPolyline:
-                        if newPolyline.workingPolyline == nil {
-                            goAwayView
-                        } else {
-                            CreatePolylineView(workingPolyline: Bindable(newPolyline).workingPolyline) {
-                                do {
-                                    let shouldPhoneHome = newPolyline.isTrackingPolyline
-                                    try modelContext.insert(newPolyline.finalize())
-                                    
-                                    if shouldPhoneHome {
-                                        onTrackingPolylineCreated()
-                                    }
-                                    
-                                    return true
-                                } catch let polylineError as PolylineFinalizationError {
-                                    toastReasons.append(.polylineCreationError(polylineError))
-                                } catch {
-                                    // TODO: - Send to some analytics service
-                                    toastReasons.append(.somethingWentWrong(.error(error)))
-                                }
-                                
-                                return false
-                            } onDiscarded: {
-                                newPolyline.clearProgress()
-                            }
-                        }
+                        CreatePolylineView(onDismiss: onDismiss, commitError: toastManager.commitFeatureCreationError)
                     }
                 }
+                .navigationBarBackButtonHidden()
             }
             .padding(.top, -20)
             .toolbar {
@@ -163,34 +114,49 @@ struct MapFeatureNavigator: View {
     
     private func deleteAnnotations(offsets: IndexSet) {
         withAnimation {
-            for index in offsets {
-                modelContext.delete(annotations[index])
+            var errors = [Error]()
+            
+            for annotation in offsets.map({ annotations[$0] }) {
+                do {
+                    try annotationManager.deleteAnnotation(annotation)
+                } catch {
+                    errors.append(error)
+                }
+            }
+            
+            if !errors.isEmpty {
+                toastManager.addBreadForToasting(.somethingWentWrong(.message("Encountered error when trying to delete polylines: \(errors)")))
             }
         }
     }
     
     private func deletePolylines(offsets: IndexSet) {
         withAnimation {
-            for index in offsets {
-                modelContext.delete(polylines[index])
+            var errors = [Error]()
+            
+            for polyline in offsets.map({ polylines[$0] }) {
+                do {
+                    try polylineManager.deletePolyline(polyline)
+                } catch {
+                    errors.append(error)
+                }
+            }
+            
+            if !errors.isEmpty {
+                toastManager.addBreadForToasting(.somethingWentWrong(.message("Encountered error when trying to delete polylines: \(errors)")))
             }
         }
     }
 }
 
 #Preview {
-    MapFeatureNavigator(selection: .constant(nil), isInEditingMode: .constant(false), toastReasons: .constant([]), newAnnotation: .init(), newPolyline: .init(), onSelection: {_ in}, onTrackingPolylineCreated: {})
-        .modelContainer(for: CurrentModelVersion.models, inMemory: true) { phase in
-            switch phase {
-            case let .success(container):
-                let context = ModelContext(container)
-                
-                context.insert(AnnotationData(title: "annotation", coordinate: WorkingAnnotation.example.coordinate))
-                context.insert(PolylineData(title: "path", coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false))
-                
-                try! context.save()
-            case let .failure(error):
-                print(error)
-            }
-        }
+    MapFeatureNavigator(
+        selection: .constant(nil),
+        annotations: [ModelContainer.previewAnnotation],
+        polylines: [ModelContainer.previewPolyline],
+        annotationManager: AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: .init()),
+        polylineManager: PolylinePersistenceManager(modelContainer: .preview),
+        toastManager: .init(),
+        onSelection: { _ in }
+    )
 }

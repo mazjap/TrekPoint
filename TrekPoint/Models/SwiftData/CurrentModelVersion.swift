@@ -25,7 +25,8 @@ enum ModelInformation {
         
         static var models: [any PersistentModel.Type] = [
             AnnotationData.self,
-            PolylineData.self
+            PolylineData.self,
+            PendingTrackingLocation.self
         ]
     }
     

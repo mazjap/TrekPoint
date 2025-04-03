@@ -1,23 +1,38 @@
 import SwiftUI
 
 struct ModifyPolylineView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(PolylinePersistenceManager.self) private var polylineManager
     @Environment(\.dismiss) private var dismiss
     private let polyline: PolylineData
+    private let onDismiss: () -> Void
+    private let commitError: (Error) -> Void
     
-    init(polyline: PolylineData) {
+    init(polyline: PolylineData, onDismiss: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
         self.polyline = polyline
+        self.onDismiss = onDismiss
+        self.commitError = commitError
     }
     
     var body: some View {
         PolylineDetailView(polyline: polyline)
             .toolbar {
-                Button("Save") {
-                    do {
-                        try modelContext.save()
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        polylineManager.discardChanges()
+                        onDismiss()
                         dismiss()
-                    } catch {
-                        print(error as NSError)
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        do {
+                            try polylineManager.save()
+                            onDismiss()
+                            dismiss()
+                        } catch {
+                            commitError(error)
+                        }
                     }
                 }
             }
@@ -25,6 +40,7 @@ struct ModifyPolylineView: View {
 }
 
 #Preview {
-    ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false))
+    ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false), onDismiss: {})  { print($0) }
+        .environment(PolylinePersistenceManager(modelContainer: .preview))
 }
 

@@ -4,10 +4,15 @@ import Photos
 import AVKit
 
 struct AttachmentPicker: View {
-    @Environment(AttachmentStore.self) private var attachmentStore
-    @Binding var attachments: [Attachment]
+    @Environment(AnnotationPersistenceManager.self) private var attachmentManager
     @State private var presentPicker = false
     @State private var isLoading = false
+    
+    private let annotation: AnnotationType
+    
+    init(annotation: AnnotationType) {
+        self.annotation = annotation
+    }
     
     var body: some View {
         Button {
@@ -20,7 +25,23 @@ struct AttachmentPicker: View {
                 .cornerRadius(10)
         }
         .sheet(isPresented: $presentPicker) {
-            PHPickerView(attachments: $attachments, isLoading: $isLoading, attachmentStore: attachmentStore)
+            PHPickerView(isLoading: $isLoading) { attachmentType in
+                do {
+                    switch (annotation, attachmentType) {
+                    case let (.model(annotationData), .addImage(image)):
+                        try attachmentManager.addImage(image, to: annotationData)
+                    case let (.working, .addImage(image)):
+                        try attachmentManager.addImageToWorkingAnnotation(image)
+                    case let (.model(annotationData), .addVideo(url)):
+                        try attachmentManager.addVideo(thatExistsAtURL: url, to: annotationData)
+                    case let (.working, .addVideo(url)):
+                        try attachmentManager.addVideoToWorkingAnnotation(thatExistsAtURL: url)
+                    }
+                } catch {
+                    // TODO: - Gracefully handle error (toast?) instead of swallowing
+                    print(error)
+                }
+            }
         }
         
         if isLoading {
@@ -31,14 +52,17 @@ struct AttachmentPicker: View {
 }
 
 struct PHPickerView: UIViewControllerRepresentable {
-    @Binding private var attachments: [Attachment]
-    @Binding private var isLoading: Bool
-    private let attachmentStore: AttachmentStore
+    enum AttachmentType {
+        case addImage(UIImage)
+        case addVideo(at: URL)
+    }
     
-    init(attachments: Binding<[Attachment]>, isLoading: Binding<Bool>, attachmentStore: AttachmentStore) {
-        self._attachments = attachments
+    @Binding private var isLoading: Bool
+    private let addAttachment: (AttachmentType) -> Void
+    
+    init(isLoading: Binding<Bool>, addAttachment: @escaping (AttachmentType) -> Void) {
         self._isLoading = isLoading
-        self.attachmentStore = attachmentStore
+        self.addAttachment = addAttachment
     }
     
     func makeUIViewController(context: Context) -> PHPickerViewController {
@@ -79,12 +103,10 @@ struct PHPickerView: UIViewControllerRepresentable {
                 if itemProvider.canLoadObject(ofClass: UIImage.self) {
                     itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (object, error) in
                         defer { group.leave() }
-                        guard let self = self, let image = object as? UIImage else { return }
+                        guard let image = object as? UIImage else { return }
                         
-                        if let attachment = self.parent.attachmentStore.storeImage(image) {
-                            DispatchQueue.main.async {
-                                self.parent.attachments.append(attachment)
-                            }
+                        DispatchQueue.main.async { [weak self] in
+                            self?.parent.addAttachment(.addImage(image))
                         }
                     }
                 } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
@@ -98,12 +120,11 @@ struct PHPickerView: UIViewControllerRepresentable {
                         do {
                             try FileManager.default.copyItem(at: url, to: tempURL)
                             
-                            if let attachment = self.parent.attachmentStore.storeVideo(thatExistsAtURL: tempURL) {
-                                DispatchQueue.main.async {
-                                    self.parent.attachments.append(attachment)
-                                }
+                            DispatchQueue.main.async { [weak self] in
+                                self?.parent.addAttachment(.addVideo(at: tempURL))
                             }
                         } catch {
+                            // TODO: - Gracefully handle error (toast?) instead of swallowing
                             print("Error copying video: \(error)")
                         }
                     }

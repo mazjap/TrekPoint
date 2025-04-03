@@ -51,7 +51,7 @@ fileprivate struct PolylineDetailViewImplementation: View {
                     if title.isEmpty {
                         Color.red.opacity(0.2)
                             .allowsHitTesting(false)
-                        // TODO: - Don't use magic number
+                            // TODO: - Don't use magic number
                             .padding(.horizontal, -20)
                             .padding(.vertical, -10)
                     }
@@ -122,6 +122,7 @@ fileprivate struct PolylineDetailViewImplementation: View {
                 }
             }
         }
+        .navigationTitle(title)
     }
 }
 

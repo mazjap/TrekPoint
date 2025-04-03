@@ -3,16 +3,17 @@ import UIKit
 
 @Observable
 class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let locationManager = CLLocationManager()
     var lastLocation: CLLocation?
     var isTracking = false
+    
     private(set) var isUserLocationActive: Bool = false {
         didSet {
             UserDefaults.standard.set(isUserLocationActive, forKey: "is_user_location_active")
         }
     }
     
-    // Add tracking ID to identify the ongoing track session
+    private let backgroundManager = BackgroundPersistenceManager()
+    private let locationManager = CLLocationManager()
     private var activeTrackingID: UUID?
     
     override init() {
@@ -50,7 +51,7 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
         activeTrackingID = UUID()
         
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.distanceFilter = 2.0
+        locationManager.distanceFilter = 5.0
         
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.showsBackgroundLocationIndicator = true
@@ -68,7 +69,7 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     
     func stopTracking() {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.distanceFilter = 5.0
+        locationManager.distanceFilter = 2.0
         
         locationManager.allowsBackgroundLocationUpdates = false
         locationManager.showsBackgroundLocationIndicator = false
@@ -103,12 +104,11 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
         
         let temporaryLocation = TemporaryTrackingLocation(
             trackingID: trackingID,
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
+            coordinate: Coordinate(location.coordinate),
             timestamp: location.timestamp
         )
         
-        PersistenceController.shared.saveLocationInBackground(temporaryLocation) {
+        backgroundManager.saveLocationInBackground(temporaryLocation) {
             UIApplication.shared.endBackgroundTask(backgroundTaskID)
         }
     }
@@ -122,5 +122,13 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
             return trackingID
         }
         return nil
+    }
+    
+    func getPendingLocations(forTrackingId trackingId: UUID) -> [CLLocationCoordinate2D] {
+        backgroundManager.getPendingLocations(for: trackingId)
+    }
+    
+    func clearPendingLocations(for trackingId: UUID) {
+        backgroundManager.clearPendingLocations(for: trackingId)
     }
 }
