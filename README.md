@@ -19,6 +19,7 @@ TrekPoint is an iOS mapping application focused on outdoor navigation and locati
 - Create Markers: Drop pins at specific coordinates with custom titles
 - Edit Markers: Modify marker details and locations
 - Drag & Drop: Intuitive dragging interface for precise pin placement
+- Attachments: Add videos and images to you markers
 
 <img src="./src/creating_marker.gif" alt="Creating a marker" style="width: 240px" />
 
