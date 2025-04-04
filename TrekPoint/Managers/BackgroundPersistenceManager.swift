@@ -1,34 +1,12 @@
-import CoreLocation
+import Foundation
 import SwiftData
+import CoreLocation
 
-struct TemporaryTrackingLocation {
-    let trackingID: UUID
-    let latitude: Double
-    let longitude: Double
-    let timestamp: Date
-}
-
-@Model
-final class PendingTrackingLocation {
-    var trackingID: UUID
-    var latitude: Double
-    var longitude: Double
-    var timestamp: Date
-    
-    init(trackingID: UUID, latitude: Double, longitude: Double, timestamp: Date) {
-        self.trackingID = trackingID
-        self.latitude = latitude
-        self.longitude = longitude
-        self.timestamp = timestamp
-    }
-}
-
-class PersistenceController {
-    static let shared = PersistenceController()
-    
+@Observable
+class BackgroundPersistenceManager {
     private let container: ModelContainer
     
-    private init() {
+    init() {
         do {
             container = try ModelContainer(for: Schema(CurrentModelVersion.models))
         } catch {
@@ -42,8 +20,7 @@ class PersistenceController {
             
             let pendingLocation = PendingTrackingLocation(
                 trackingID: location.trackingID,
-                latitude: location.latitude,
-                longitude: location.longitude,
+                coordinate: location.coordinate,
                 timestamp: location.timestamp
             )
             
@@ -66,7 +43,7 @@ class PersistenceController {
         
         do {
             let pendingLocations = try context.fetch(descriptor)
-            return pendingLocations.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+            return pendingLocations.map { CLLocationCoordinate2D($0.coordinate) }
         } catch {
             print("Failed to fetch pending locations: \(error)")
             return []

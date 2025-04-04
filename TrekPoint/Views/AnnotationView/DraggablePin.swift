@@ -72,7 +72,6 @@ struct DraggablePin: View {
             .task {
                 updateJigglability()
             }
-            .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .frame(width: iconSize, height: iconSize)
         .contentShape(.rect)

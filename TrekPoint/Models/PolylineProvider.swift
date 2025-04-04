@@ -13,9 +13,9 @@ extension PolylineData: PolylineProvider {
     var tag: MapFeatureTag { .polyline(id) }
 }
 
-struct WorkingPolyline: PolylineProvider {
+struct WorkingPolyline: PolylineProvider, Hashable {
     var title: String
-    var userDescription: String
+    var userDescription = ""
     var coordinates: [Coordinate]
     var isLocationTracked: Bool
     let startedAt: Date = .now
@@ -24,7 +24,6 @@ struct WorkingPolyline: PolylineProvider {
     
     static let example: WorkingPolyline = .init(
         title: "Walking Path",
-        userDescription: "",
         coordinates: [
             Coordinate(latitude: 40.051493, longitude: -111.671492),
             Coordinate(latitude: 40.051484, longitude: -111.671493),
@@ -74,4 +73,3 @@ struct WorkingPolyline: PolylineProvider {
         isLocationTracked: false
     )
 }
-

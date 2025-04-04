@@ -15,20 +15,23 @@
 		0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */; };
 		0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */; };
 		0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */; };
-		0E36EA8B2D73F53400C163E9 /* NewPolylineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */; };
-		0E36EA8D2D73F8EB00C163E9 /* MapEditingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */; };
 		0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */; };
 		0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */; };
 		0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */; };
 		0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */; };
 		0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF22D752EA600C163E9 /* AppDelegate.swift */; };
+		0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */; };
+		0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00892D820BC80019A92A /* UIScreen+current.swift */; };
+		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
+		0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */; };
+		0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00912D823EC80019A92A /* AttachmentsView.swift */; };
+		0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00932D82516A0019A92A /* AttachmentPicker.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
-		0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */; };
 		0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */; };
 		0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */; };
 		0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */; };
@@ -46,6 +49,10 @@
 		0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */; };
 		0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */; };
 		0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA4BD612B93F487005259B4 /* ModifyAnnotationView.swift */; };
+		0EA7FC502D854F8D001828BB /* ModelContainer+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */; };
+		0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */; };
+		0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */; };
+		0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC552D87C0AC001828BB /* ToastManager.swift */; };
 		0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */; };
 		0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453062BAD5639007C40DE /* DraggablePin.swift */; };
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
@@ -61,21 +68,24 @@
 		0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationMapOverlay.swift; sourceTree = "<group>"; };
 		0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationProvider.swift; sourceTree = "<group>"; };
 		0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineProvider.swift; sourceTree = "<group>"; };
-		0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPolylineManager.swift; sourceTree = "<group>"; };
-		0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEditingMode.swift; sourceTree = "<group>"; };
 		0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePolylinePoint.swift; sourceTree = "<group>"; };
 		0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StringInterpolation+format.swift"; sourceTree = "<group>"; };
 		0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTrackingManager.swift; sourceTree = "<group>"; };
-		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingLocation.swift; sourceTree = "<group>"; };
 		0E36EAF22D752EA600C163E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Extension.swift"; sourceTree = "<group>"; };
+		0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistenceManager.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E00892D820BC80019A92A /* UIScreen+current.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+current.swift"; sourceTree = "<group>"; };
+		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
+		0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
+		0E7E00912D823EC80019A92A /* AttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentsView.swift; sourceTree = "<group>"; };
+		0E7E00932D82516A0019A92A /* AttachmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPicker.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
-		0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAnnotationManager.swift; sourceTree = "<group>"; };
 		0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentModelVersion.swift; sourceTree = "<group>"; };
 		0E9512C82BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationData+CoreLocation.swift"; sourceTree = "<group>"; };
 		0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
@@ -93,6 +103,10 @@
 		0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Hashable.swift"; sourceTree = "<group>"; };
 		0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
 		0EA4BD612B93F487005259B4 /* ModifyAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyAnnotationView.swift; sourceTree = "<group>"; };
+		0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModelContainer+Convenience.swift"; sourceTree = "<group>"; };
+		0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationPersistenceManager.swift; sourceTree = "<group>"; };
+		0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylinePersistenceManager.swift; sourceTree = "<group>"; };
+		0EA7FC552D87C0AC001828BB /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
 		0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationDetent+Extension.swift"; sourceTree = "<group>"; };
 		0EE453062BAD5639007C40DE /* DraggablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePin.swift; sourceTree = "<group>"; };
 		0EE453082BAD5FF3007C40DE /* MapPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreview.swift; sourceTree = "<group>"; };
@@ -114,6 +128,7 @@
 		0E29527E2D711A930079479A /* PolylineView */ = {
 			isa = PBXGroup;
 			children = (
+				0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */,
 				0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */,
 				0E29527F2D711AC00079479A /* CreatePolylineView.swift */,
 				0E2952812D711B0F0079479A /* ModifyPolylineView.swift */,
@@ -126,9 +141,11 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD4A2B9151AF005259B4 /* AnnotationData.swift */,
+				0E7E008D2D820F7E0019A92A /* Attachment.swift */,
 				0E8EF05A2D70528E006145C0 /* PolylineData.swift */,
 				0E9512C62BB532FC00E9CA83 /* CurrentModelVersion.swift */,
 				0E9B1AF22D3DF0D600174ECE /* PersistentEditableModel.swift */,
+				0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */,
 			);
 			path = SwiftData;
 			sourceTree = "<group>";
@@ -152,8 +169,8 @@
 		0EA4BD452B9151AF005259B4 /* TrekPoint */ = {
 			isa = PBXGroup;
 			children = (
-				0E36EAEF2D7525F000C163E9 /* Info.plist */,
 				0EA4BD662B93FC18005259B4 /* Resources */,
+				0EA7FC582D87DA09001828BB /* Managers */,
 				0EA4BD672B93FC28005259B4 /* Views */,
 				0EA4BD682B93FC30005259B4 /* Helpers */,
 				0EA4BD5E2B93D2B1005259B4 /* Models */,
@@ -173,9 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				0E36EA902D74F33100C163E9 /* SwiftData */,
-				0E36EA8C2D73F8EB00C163E9 /* MapEditingMode.swift */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
-				0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
 				0EE4530A2BAD619E007C40DE /* MapFeature.swift */,
@@ -186,10 +201,13 @@
 		0EA4BD632B93F819005259B4 /* AnnotationView */ = {
 			isa = PBXGroup;
 			children = (
+				0EE453062BAD5639007C40DE /* DraggablePin.swift */,
 				0EA4BD582B91C848005259B4 /* AnnotationDetailView.swift */,
 				0EA4BD5A2B91CD3B005259B4 /* CreateAnnotationView.swift */,
 				0EA4BD612B93F487005259B4 /* ModifyAnnotationView.swift */,
 				0E29529F2D72ED140079479A /* AnnotationMapOverlay.swift */,
+				0E7E00912D823EC80019A92A /* AttachmentsView.swift */,
+				0E7E00932D82516A0019A92A /* AttachmentPicker.swift */,
 			);
 			path = AnnotationView;
 			sourceTree = "<group>";
@@ -202,6 +220,7 @@
 				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
 				0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
+				0E36EAEF2D7525F000C163E9 /* Info.plist */,
 				0EA4BD4E2B9151B0005259B4 /* Preview Content */,
 			);
 			path = Resources;
@@ -214,8 +233,8 @@
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
 				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
-				0E29527E2D711A930079479A /* PolylineView */,
 				0EA4BD632B93F819005259B4 /* AnnotationView */,
+				0E29527E2D711A930079479A /* PolylineView */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -231,19 +250,29 @@
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
 				0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */,
 				0E7E00892D820BC80019A92A /* UIScreen+current.swift */,
+				0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */,
+				0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		0EA7FC582D87DA09001828BB /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */,
+				0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */,
+				0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */,
+				0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */,
+				0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */,
+				0EA7FC552D87C0AC001828BB /* ToastManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		0EE4530C2BAD62B3007C40DE /* MapView */ = {
 			isa = PBXGroup;
 			children = (
-				0EE453062BAD5639007C40DE /* DraggablePin.swift */,
-				0E36EA8E2D73FF1200C163E9 /* DraggablePolylinePoint.swift */,
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
-				0E9512C42BB5282D00E9CA83 /* NewAnnotationManager.swift */,
-				0E36EA8A2D73F53400C163E9 /* NewPolylineManager.swift */,
-				0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
 			path = MapView;
@@ -324,41 +353,48 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E36EA852D73A25800C163E9 /* AnnotationProvider.swift in Sources */,
+				0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */,
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
+				0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
+				0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
+				0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
 				0E29527B2D7107030079479A /* MapFeatureNavigator.swift in Sources */,
-				0E9512C52BB5282D00E9CA83 /* NewAnnotationManager.swift in Sources */,
-				0E36EA8D2D73F8EB00C163E9 /* MapEditingMode.swift in Sources */,
+				0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */,
 				0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
+				0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
 				0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */,
 				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
+				0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */,
+				0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
 				0EA4BD472B9151AF005259B4 /* TrekPointApp.swift in Sources */,
 				0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */,
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
-				0E36EA8B2D73F53400C163E9 /* NewPolylineManager.swift in Sources */,
 				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
 				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
 				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
+				0EA7FC502D854F8D001828BB /* ModelContainer+Convenience.swift in Sources */,
+				0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */,
 				0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
@@ -509,10 +545,11 @@
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TrekPoint/Info.plist;
+				INFOPLIST_FILE = TrekPoint/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) needs access to your photo library to add images and videos to annotations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -543,10 +580,11 @@
 				DEVELOPMENT_TEAM = HFR8F4BT7E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TrekPoint/Info.plist;
+				INFOPLIST_FILE = TrekPoint/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrekPoint requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(PRODUCT_NAME) requires location access to show your location on the map and to follow your location when path tracking is enabled. Your data is stored on-device and is never transfered anywhere.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) needs access to your photo library to add images and videos to annotations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

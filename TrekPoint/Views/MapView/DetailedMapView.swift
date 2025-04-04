@@ -55,35 +55,35 @@ import WarmToast
 
 struct DetailedMapView: View {
     @Environment(LocationTrackingManager.self) private var locationManager
-    @Environment(NewPolylineManager.self) private var newPolyline
-    @Environment(NewAnnotationManager.self) private var newAnnotation
-    @Environment(\.modelContext) private var modelContext
+    @Environment(AnnotationPersistenceManager.self) private var annotationManager
+    @Environment(PolylinePersistenceManager.self) private var polylineManager
+    
     @Query private var annotations: [AnnotationData]
     @Query private var polylines: [PolylineData]
     
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @State private var editingMode: MapEditingMode = .view
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
-    @Binding private var showSheet: Bool
-    @Binding private var toastReasons: [ToastReason]
     
+    @Binding private var showSheet: Bool
+    
+    private let toastManager: ToastManager
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
     
-    init(showSheet: Binding<Bool>, toastReasons: Binding<[ToastReason]>) {
+    init(showSheet: Binding<Bool>, toastManager: ToastManager) {
         self._showSheet = showSheet
-        self._toastReasons = toastReasons
+        self.toastManager = toastManager
     }
     
     var body: some View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
-                Map(position: $cameraPosition, selection: $selectedMapItemTag, scope: nspace) {
+                Map(position: $cameraPosition, bounds: MapCameraBounds(minimumDistance: 0, maximumDistance: .infinity), selection: $selectedMapItemTag, scope: nspace) {
                     if locationManager.isUserLocationActive {
                         UserAnnotation()
                     }
@@ -99,19 +99,19 @@ struct DetailedMapView: View {
                 .mapStyle(.hybrid(elevation: .realistic))
                 .mapControlVisibility(.hidden)
                 .onTapGesture { location in
-                    if editingMode == .drawPolyline {
-                        guard let coordinate = proxy.convert(
-                            location,
-                            from: .local
-                        ) else {
-                            return
-                        }
-                        
-                        newPolyline.append(coordinate)
-                        // If this is the first point, show the options UI
-                        if newPolyline.workingPolyline?.coordinates.count == 1 {
-                            selectedMapItemTag = .newFeature
-                        }
+                    guard polylineManager.isDrawingPolyline else { return }
+                    guard let coordinate = proxy.convert(
+                        location,
+                        from: .local
+                    ) else {
+                        return
+                    }
+                    
+                    polylineManager.appendWorkingPolylineCoordinate(Coordinate(coordinate))
+                    
+                    // If this is the first point, show the options UI
+                    if polylineManager.workingPolyline?.coordinates.count == 1 {
+                        selectedMapItemTag = .newFeature
                     }
                 }
                 .overlay(alignment: .topTrailing) {
@@ -123,13 +123,14 @@ struct DetailedMapView: View {
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
-                isInEditingMode: Binding { editingMode != .view } set: { _ in editingMode = .view },
-                toastReasons: $toastReasons,
-                newAnnotation: newAnnotation,
-                newPolyline: newPolyline
+                annotations: annotations,
+                polylines: polylines,
+                annotationManager: annotationManager,
+                polylineManager: polylineManager,
+                toastManager: toastManager
             ) { newSelection in
-                newAnnotation.clearProgress()
-                
+                annotationManager.clearWorkingAnnotationProgress()
+
                 if let newSelection {
                     selectedMapItemTag = newSelection.tag
                     
@@ -144,17 +145,13 @@ struct DetailedMapView: View {
                 } else {
                     selectedMapItemTag = nil
                 }
-            } onTrackingPolylineCreated: {
-                locationManager.stopTracking()
-                editingMode = .view
             }
-            .modelContext(modelContext)
             .presentationDetents(detents, selection: $selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .interactiveDismissDisabled()
         }
         .preheatToaster(
-            withLoaf: $toastReasons,
+            withLoaf: Bindable(toastManager).reasons,
             options: .toasterStrudel(type: .error)
         ) { item in
             HStack {
@@ -170,11 +167,13 @@ struct DetailedMapView: View {
                         Text("Try dragging the pin to place it on the map.")
                             .font(.body)
                     }
+                case .annotationCreationError(.noAnnotation):
+                    Text("Something went wrong")
                 case .polylineCreationError(.tooFewCoordinates(let required, let have)):
                     VStack(alignment: .leading) {
                         Text("Paths need at least \(required) coordinates")
                         
-                        Text("This polyline currently has \(have) coordinates. Try adding more points to complete the path.")
+                        Text("This path currently has \(have) coordinates. Try adding more points to complete the path.")
                             .font(.body)
                     }
                 case .somethingWentWrong:
@@ -186,31 +185,29 @@ struct DetailedMapView: View {
             .padding()
         }
         .onChange(of: selectedMapItemTag) {
-            print(selectedMapItemTag ?? "No selection")
-            
             switch selectedMapItemTag {
             case let .annotation(id):
                 if let annotation = annotations.first(where: { id == $0.id }) {
                     presentedMapFeature = .annotation(annotation)
                 } else {
                     // TODO: - Send to some analytics service
-                    toastReasons.append(.somethingWentWrong(.message("Presentation of annotation with id: \(id) was requested, but no such map feature exists")))
+                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of annotation with id: \(id) was requested, but no such map feature exists")))
                 }
             case let .polyline(id):
                 if let polyline = polylines.first(where: { id == $0.id }) {
                     presentedMapFeature = .polyline(polyline)
                 } else {
                     // TODO: - Send to some analytics service
-                    toastReasons.append(.somethingWentWrong(.message("Presentation of polyline with id: \(id) was requested, but no such map feature exists")))
+                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of polyline with id: \(id) was requested, but no such map feature exists")))
                 }
             case .newFeature:
-                if newAnnotation.workingAnnotation != nil {
+                if annotationManager.workingAnnotation != nil {
                     presentedMapFeature = .workingAnnotation
-                } else if newPolyline.workingPolyline != nil {
+                } else if polylineManager.workingPolyline != nil {
                     presentedMapFeature = .workingPolyline
                 } else {
                     // TODO: - Send to some analytics service
-                    toastReasons.append(.somethingWentWrong(.message("Presentation of the currently working feature (either annotation or polyline) was requested, but none exist")))
+                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of the currently working feature (either annotation or polyline) was requested, but none exist")))
                 }
             case .none:
                 break
@@ -224,21 +221,35 @@ struct DetailedMapView: View {
             }
         }
         .onChange(of: locationManager.lastLocation) {
-            guard newPolyline.isTrackingPolyline,
-                  let lastLocation = locationManager.lastLocation
+            guard polylineManager.isTrackingPolyline,
+                  let lastLocation = locationManager.lastLocation?.coordinate
             else { return }
             
-            newPolyline.appendCurrentLocation(lastLocation.coordinate)
+            polylineManager.appendTrackedPolylineCoordinate(lastLocation)
+            print("New coordinate: \(lastLocation)")
         }
-        .task {
+        .onChange(of: showSheet) {
+            guard !showSheet else { return }
+            
+            Task {
+                try await Task.sleep(for: .seconds(0.01))
+                showSheet = true
+            }
+        }
+        .onChange(of: polylineManager.workingPolyline?.isLocationTracked) { wasLocationTracked, _ in
+            if wasLocationTracked ?? false {
+                locationManager.stopTracking()
+            }
+        }
+        .onAppear {
             NotificationCenter.default.addObserver(
-                forName: NSNotification.Name("RestoreTrackingSession"),
+                forName: .restoreTrackingSession,
                 object: nil,
                 queue: .main
             ) { notification in
-                if let trackingID = notification.userInfo?["trackingID"] as? UUID {
+                if let trackingId = notification.userInfo?["trackingID"] as? UUID {
                     // Restore the tracking session
-                    self.restoreTrackingSession(trackingID: trackingID)
+                    self.restoreTrackingSession(trackingId: trackingId)
                 }
             }
             
@@ -258,7 +269,7 @@ struct DetailedMapView: View {
                     from: .global
                 ) else {
                     // TODO: - Send to some analytics service
-                    toastReasons.append(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
+                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
                 }
                 
@@ -276,13 +287,10 @@ struct DetailedMapView: View {
     
     @MapContentBuilder
     private func inProgressPin(proxy: MapProxy) -> some MapContent {
-        if let newAnnotationLocation = newAnnotation.workingAnnotation?.coordinate {
+        if let newAnnotationLocation = annotationManager.workingAnnotation {
             AnnotationMapOverlay(
-                annotation: WorkingAnnotation(
-                    coordinate: newAnnotationLocation,
-                    title: newAnnotation.workingAnnotation?.title ?? ""
-                ),
-                shouldJiggle: newAnnotation.isShowingOptions,
+                annotation: newAnnotationLocation,
+                shouldJiggle: annotationManager.isShowingOptions,
                 foregroundColor: .orange,
                 fillColor: .blue
             ) { newPosition in
@@ -291,21 +299,21 @@ struct DetailedMapView: View {
                     from: .global
                 ) else {
                     // TODO: - Send to some analytics service
-                    toastReasons.append(.somethingWentWrong(.message("Working annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
+                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Working annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
                 }
                 
-                newAnnotation.apply(coordinate: Coordinate(newCoordinate))
+                annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(newCoordinate))
             }
         }
     }
     
     @MapContentBuilder
     private func inProgressPolyline(proxy: MapProxy) -> some MapContent {
-        if let workingPolyline = newPolyline.workingPolyline, !workingPolyline.coordinates.isEmpty {
+        if let workingPolyline = polylineManager.workingPolyline, !workingPolyline.coordinates.isEmpty {
             PolylineMapOverlay(
                 polyline: workingPolyline,
-                strokeColor: newPolyline.isTrackingPolyline ? .purple : .blue
+                strokeColor: polylineManager.isTrackingPolyline ? .purple : .blue
             )
             
             // Add markers for each point
@@ -317,18 +325,18 @@ struct DetailedMapView: View {
                 ) {
                     DraggablePolylinePoint(
                         movementEnabled: !workingPolyline.isLocationTracked,
-                        fillColor: newPolyline.isTrackingPolyline ? .purple : .blue
+                        fillColor: polylineManager.isTrackingPolyline ? .purple : .blue
                     ) { newPosition in
                         guard let newCoordinate = proxy.convert(
                             newPosition,
                             from: .global
                         ) else {
                             // TODO: - Send to some analytics service
-                            toastReasons.append(.somethingWentWrong(.message("Working polyline point movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
+                            toastManager.addBreadForToasting(.somethingWentWrong(.message("Working polyline point movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                             return
                         }
                         
-                        newPolyline.move(index: index, to: newCoordinate)
+                        polylineManager.moveWorkingPolylineCoordinate(at: index, to: newCoordinate)
                     }
                 }
                 .tag(MapFeatureTag.newFeature)
@@ -356,20 +364,17 @@ struct DetailedMapView: View {
                 let cornerRadius = buttonSize / 3
                 
                 HStack(spacing: 0) {
-                    if newAnnotation.isShowingOptions {
+                    if annotationManager.isShowingOptions {
                         HStack {
                             Button {
                                 do {
-                                    let annotation = try newAnnotation.finalize()
-                                    modelContext.insert(annotation)
+                                    try polylineManager.finalizeWorkingPolyline()
                                     
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
-                                } catch let annotationError as AnnotationFinalizationError {
-                                    toastReasons.append(.annotationCreationError(annotationError))
                                 } catch {
                                     // TODO: - Send to some analytics service
-                                    toastReasons.append(.somethingWentWrong(.error(error)))
+                                    toastManager.commitFeatureCreationError(error)
                                 }
                             } label: {
                                 Text("Confirm")
@@ -378,11 +383,11 @@ struct DetailedMapView: View {
                             Divider()
                             
                             Button {
-                                newAnnotation.undo()
+                                annotationManager.undo()
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             }
-                            .disabled(!newAnnotation.canUndo)
+                            .disabled(!annotationManager.canUndo)
                         }
                         .padding(.horizontal)
                         .background {
@@ -397,7 +402,7 @@ struct DetailedMapView: View {
                     }
                     
                     Button {
-                        if newAnnotation.workingAnnotation == nil {
+                        if annotationManager.workingAnnotation == nil {
                             let midPoint = CGPoint(x: frame.midX, y: frame.midY)
                             
                             guard let coordinate = proxy.convert(
@@ -405,15 +410,15 @@ struct DetailedMapView: View {
                                 from: .global
                             ) else {
                                 // TODO: - Send to some analytics service
-                                toastReasons.append(.somethingWentWrong(.message("Annotation creation was not possible. (\(midPoint) could not be converted to a map coordinate")))
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation creation was not possible. (\(midPoint) could not be converted to a map coordinate")))
                                 
                                 return
                             }
                             
-                            newAnnotation.apply(coordinate: coordinate)
+                            annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
                             selectedMapItemTag = .newFeature
                         } else {
-                            newAnnotation.clearProgress()
+                            annotationManager.clearWorkingAnnotationProgress()
                             selectedMapItemTag = nil
                             selectedDetent = .small
                         }
@@ -425,7 +430,7 @@ struct DetailedMapView: View {
                             .accessibilityLabel("Create New Marker")
                     }
                     .frame(width: buttonSize)
-                    .foregroundStyle(newAnnotation.isShowingOptions ? activeColor : inactiveColor)
+                    .foregroundStyle(annotationManager.isShowingOptions ? activeColor : inactiveColor)
                     .background {
                         UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius)
                             .fill(.background)
@@ -437,20 +442,17 @@ struct DetailedMapView: View {
                     .frame(width: buttonSize)
                 
                 HStack(spacing: 0) {
-                    if newPolyline.isShowingOptions && newPolyline.isDrawingPolyline {
+                    if polylineManager.isShowingOptions && polylineManager.isDrawingPolyline {
                         HStack {
                             Button {
                                 do {
-                                    let polyline = try newPolyline.finalize()
-                                    modelContext.insert(polyline)
+                                    _ = try polylineManager.finalizeWorkingPolyline()
                                     
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
-                                } catch let polylineError as PolylineFinalizationError {
-                                    toastReasons.append(.polylineCreationError(polylineError))
                                 } catch {
                                     // TODO: - Send to some analytics service
-                                    toastReasons.append(.somethingWentWrong(.error(error)))
+                                    toastManager.commitFeatureCreationError(error)
                                 }
                             } label: {
                                 Text("Confirm")
@@ -459,11 +461,11 @@ struct DetailedMapView: View {
                             Divider()
                             
                             Button {
-                                newPolyline.undo()
+                                polylineManager.undo()
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             }
-                            .disabled(!newPolyline.canUndo)
+                            .disabled(!polylineManager.canUndo)
                         }
                         .padding(.horizontal)
                         .background {
@@ -478,28 +480,23 @@ struct DetailedMapView: View {
                     }
                     
                     Button {
-                        if editingMode == .drawPolyline {
-                            editingMode = .view
-                            newPolyline.clearProgress()
+                        if polylineManager.workingPolyline != nil {
+                            polylineManager.clearWorkingPolylineProgress()
                             selectedMapItemTag = nil
                             selectedDetent = .small
                         } else {
-                            editingMode = .drawPolyline
-                            
-                            // Clear any in-progress polyline
-                            newPolyline.clearProgress()
-                            newPolyline.append([Coordinate]())
+                            polylineManager.startNewWorkingPolyline()
                             selectedMapItemTag = .newFeature
                         }
                     } label: {
-                        Image(systemName: newPolyline.isDrawingPolyline ? "hand.draw.fill" : "hand.draw")
+                        Image(systemName: polylineManager.isDrawingPolyline ? "hand.draw.fill" : "hand.draw")
                             .resizable()
                             .scaledToFit()
                             .padding(padding)
-                            .accessibilityLabel(newPolyline.isDrawingPolyline ? "Stop Drawing Path" : "Draw Path")
+                            .accessibilityLabel(polylineManager.isDrawingPolyline ? "Stop Drawing Path" : "Draw Path")
                     }
                     .frame(width: buttonSize, height: buttonSize)
-                    .foregroundStyle(newPolyline.isDrawingPolyline ? activeColor : inactiveColor)
+                    .foregroundStyle(polylineManager.isDrawingPolyline ? activeColor : inactiveColor)
                     .background {
                         Rectangle()
                             .fill(.background)
@@ -541,7 +538,7 @@ struct DetailedMapView: View {
                         .frame(width: buttonSize)
                     
                     HStack(spacing: 0) {
-                        if newPolyline.isTrackingPolyline {
+                        if polylineManager.isTrackingPolyline {
                             HStack {
                                 Text("R")
                                     .font(.title)
@@ -556,10 +553,8 @@ struct DetailedMapView: View {
                                 HStack(spacing: 0) {
                                     Button {
                                         do {
-                                            let polyline = try newPolyline.finalize()
-                                            modelContext.insert(polyline)
+                                            _ = try polylineManager.finalizeWorkingPolyline()
                                             
-                                            editingMode = .view
                                             locationManager.stopTracking()
                                         } catch {
                                             print(error)
@@ -584,27 +579,24 @@ struct DetailedMapView: View {
                         }
                         
                         Button {
-                            if editingMode == .locationTrackedPolyline {
-                                editingMode = .view
-                                newPolyline.clearProgress()
+                            if polylineManager.workingPolyline != nil {
+                                polylineManager.clearWorkingPolylineProgress()
                                 selectedMapItemTag = nil
                                 selectedDetent = .small
                                 locationManager.stopTracking()
                             } else {
-                                editingMode = .locationTrackedPolyline
-                                newPolyline.clearProgress()
-                                newPolyline.startLocationTracking(currentLocation: locationManager.startTracking())
+                                polylineManager.startNewLocationTrackedPolyline(withUserCoordinate: locationManager.startTracking())
                                 selectedMapItemTag = .newFeature
                             }
                         } label: {
-                            Image(systemName: newPolyline.isTrackingPolyline ? "location.north.line.fill" : "location.north.line")
+                            Image(systemName: polylineManager.isTrackingPolyline ? "location.north.line.fill" : "location.north.line")
                                 .resizable()
                                 .scaledToFit()
                                 .padding(padding)
-                                .accessibilityLabel(newPolyline.isTrackingPolyline ? "Stop Tracking" : "Track My Path")
+                                .accessibilityLabel(polylineManager.isTrackingPolyline ? "Stop Tracking" : "Track My Path")
                         }
                         .frame(width: buttonSize)
-                        .foregroundStyle(newPolyline.isTrackingPolyline ? activeColor : inactiveColor)
+                        .foregroundStyle(polylineManager.isTrackingPolyline ? activeColor : inactiveColor)
                         .background {
                             UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
                                 .fill(.background)
@@ -622,24 +614,21 @@ struct DetailedMapView: View {
         .padding(.horizontal)
     }
     
-    private func restoreTrackingSession(trackingID: UUID) {
-        // Get all pending locations
-        let pendingLocations = PersistenceController.shared.getPendingLocations(for: trackingID)
+    private func restoreTrackingSession(trackingId: UUID) {
+        let pendingLocations = locationManager.getPendingLocations(forTrackingId: trackingId)
         
         // Create a new polyline with these locations
         if !pendingLocations.isEmpty {
             // Start a new tracked polyline
-            editingMode = .locationTrackedPolyline
-            newPolyline.clearProgress()
-            newPolyline.startLocationTracking(currentLocation: pendingLocations.first)
+            polylineManager.startNewLocationTrackedPolyline()
             
             // Add all the pending locations
             for location in pendingLocations {
-                newPolyline.appendCurrentLocation(location)
+                polylineManager.appendTrackedPolylineCoordinate(location)
             }
             
             // Clear the pending locations now that we've restored them
-            PersistenceController.shared.clearPendingLocations(for: trackingID)
+            locationManager.clearPendingLocations(for: trackingId)
             
             // Continue tracking
             let _ = locationManager.startTracking()
@@ -649,24 +638,6 @@ struct DetailedMapView: View {
 }
 
 #Preview {
-    DetailedMapView(showSheet: .constant(true), toastReasons: .constant([]))
-        .modelContainer(for: CurrentModelVersion.models, inMemory: true) { result in
-            switch result {
-            case let .success(container):
-                let context = ModelContext(container)
-                
-                context.insert(AnnotationData(
-                    title: WorkingAnnotation.example.title,
-                    coordinate: WorkingAnnotation.example.coordinate)
-                )
-                context.insert(PolylineData(
-                    title: WorkingPolyline.example.title,
-                    coordinates: WorkingPolyline.example.coordinates,
-                    isLocationTracked: false
-                ))
-                try! context.save()
-            case let .failure(error):
-                print(error)
-            }
-        }
+    DetailedMapView(showSheet: .constant(true), toastManager: .init())
+        .modelContainer(.preview)
 }

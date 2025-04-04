@@ -1,18 +1,37 @@
 import UIKit
+import SwiftData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    let locationManager = LocationTrackingManager()
-    let polylineManager = NewPolylineManager()
-    let annotationManager = NewAnnotationManager()
+    let locationManager: LocationTrackingManager
+    let attachmentStore: AttachmentStore
+    let annotationManager: AnnotationPersistenceManager
+    let polylineManager: PolylinePersistenceManager
+    
+    var sharedModelContainer: ModelContainer = {
+        do {
+            return try ModelContainer(makeConfiguration: { ModelConfiguration(schema: $0, isStoredInMemoryOnly: false) })
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
+    override init() {
+        self.locationManager = LocationTrackingManager()
+        self.attachmentStore = AttachmentStore()
+        self.annotationManager = AnnotationPersistenceManager(modelContainer: sharedModelContainer, attachmentStore: attachmentStore)
+        self.polylineManager = PolylinePersistenceManager(modelContainer: sharedModelContainer)
+        
+        super.init()
+    }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         // Check if an ongoing tracking session exists
         if let trackingID = locationManager.checkForPendingTracks() {
             // Restore the tracking state
             NotificationCenter.default.post(
-                name: NSNotification.Name("RestoreTrackingSession"),
+                name: .restoreTrackingSession,
                 object: nil,
-                userInfo: ["trackingID": trackingID]
+                userInfo: ["trackingID" : trackingID]
             )
         }
         

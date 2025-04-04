@@ -46,8 +46,7 @@ struct LaunchAnimationView: View {
         .ignoresSafeArea()
         .onAppear {
             withAnimation(.easeInOut(duration: 0.5)) {
-                animationState.hOffset = -10
-                animationState.vOffset = 5
+                animationState.vOffset = size.height / 30
             } completion: {
                 withAnimation(.easeInOut(duration: 1)) {
                     animationState.hOffset = size.width
@@ -63,6 +62,14 @@ struct LaunchAnimationView: View {
 
 #Preview {
     @Previewable @State var isAnimationComplete = false
+    @Previewable @State var id = UUID()
     
-    LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
+    ZStack {
+        Button("Restart") {
+            id = UUID()
+        }
+        
+        LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
+            .id(id)
+    }
 }
