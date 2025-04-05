@@ -19,10 +19,9 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.distanceFilter = 5.0 // Filter updates less than 5 meters
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         
-        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.allowsBackgroundLocationUpdates = false
         locationManager.pausesLocationUpdatesAutomatically = false
         
         if UserDefaults.standard.bool(forKey: "is_user_location_active") {
@@ -45,12 +44,13 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     
     func hideUserLocation() {
         isUserLocationActive = false
+        locationManager.stopUpdatingLocation()
     }
     
     func startTracking() -> CLLocationCoordinate2D? {
         activeTrackingID = UUID()
         
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         locationManager.distanceFilter = 5.0
         
         locationManager.allowsBackgroundLocationUpdates = true
