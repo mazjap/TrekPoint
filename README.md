@@ -79,7 +79,6 @@ Medium Priority:
 
 Lower Priority:
 
-- Photo/Video attachments for markers
 - iCloud sync for cross-device usage
 - Categorized markers (custom categories for different types of locations)
 
