@@ -127,9 +127,13 @@ class AnnotationPersistenceManager {
     }
     
     func clearWorkingAnnotationProgress() {
+        _clearWorkingAnnotationProgress(removeAttachments: true)
+    }
+    
+    private func _clearWorkingAnnotationProgress(removeAttachments: Bool) {
         isShowingOptions = false
         
-        if let attachments = workingAnnotation?.attachments {
+        if removeAttachments, let attachments = workingAnnotation?.attachments {
             for attachment in attachments {
                 do {
                     try deleteAttachmentFromWorkingAnnotation(attachment)
@@ -149,7 +153,7 @@ class AnnotationPersistenceManager {
         guard let workingAnnotation else { throw AnnotationFinalizationError.noCoordinate }
         guard !workingAnnotation.title.isEmpty else { throw AnnotationFinalizationError.emptyTitle }
         
-        clearWorkingAnnotationProgress()
+        _clearWorkingAnnotationProgress(removeAttachments: false)
         
         let annotationData = AnnotationData(
             title: workingAnnotation.title,
