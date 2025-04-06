@@ -5,6 +5,7 @@ import SwiftUI
 enum AttachmentError: Error {
     case fileNotFound
     case imageCompressionFailed
+    case iAskedFileManagerAndFileManagerSaidNo
     case fileWriteFailed(Error)
     case fileReadFailed(Error)
 }
@@ -21,7 +22,11 @@ class AttachmentStore {
         
         // Create directory if it doesn't exist
         if !fileManager.fileExists(atPath: attachmentsDirectory.path) {
-            try! fileManager.createDirectory(at: attachmentsDirectory, withIntermediateDirectories: true, attributes: nil)
+            do {
+                try fileManager.createDirectory(at: attachmentsDirectory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                fatalError("Failed to create Attachments directory: \(error)")
+            }
         }
         
         self.attachmentsDirectory = attachmentsDirectory
@@ -35,13 +40,11 @@ class AttachmentStore {
         let attachment = Attachment(type: .image)
         let fileURL = attachmentsDirectory.appendingPathComponent(attachment.fileName)
         
-        do {
-            try data.write(to: fileURL)
-            
-            return attachment
-        } catch {
-            throw AttachmentError.fileWriteFailed(error)
+        if !fileManager.createFile(atPath: fileURL.path(), contents: data, attributes: [.protectionKey : FileProtectionType.complete]) {
+            throw AttachmentError.iAskedFileManagerAndFileManagerSaidNo
         }
+        
+        return attachment
     }
     
     func storeVideo(thatExistsAtURL tempURL: URL) throws -> Attachment {
@@ -51,6 +54,7 @@ class AttachmentStore {
         do {
             // Copy from the source to new permanent location
             try fileManager.copyItem(at: tempURL, to: destinationURL)
+            try fileManager.setAttributes([.protectionKey : FileProtectionType.complete], ofItemAtPath: destinationURL.path())
             
             return attachment
         } catch {
