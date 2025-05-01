@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -58,6 +58,16 @@
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
 		0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4530A2BAD619E007C40DE /* MapFeature.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0EDADA5D2DC3C59700CB1847 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0EA4BD3B2B9151AF005259B4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0EA4BD422B9151AF005259B4;
+			remoteInfo = TrekPoint;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0E29527A2D7107030079479A /* MapFeatureNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeatureNavigator.swift; sourceTree = "<group>"; };
@@ -114,11 +124,16 @@
 		0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationPersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylinePersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC552D87C0AC001828BB /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
+		0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrekPointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationDetent+Extension.swift"; sourceTree = "<group>"; };
 		0EE453062BAD5639007C40DE /* DraggablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePin.swift; sourceTree = "<group>"; };
 		0EE453082BAD5FF3007C40DE /* MapPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreview.swift; sourceTree = "<group>"; };
 		0EE4530A2BAD619E007C40DE /* MapFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeature.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0EDADA5A2DC3C59700CB1847 /* TrekPointTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TrekPointTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0EA4BD402B9151AF005259B4 /* Frameworks */ = {
@@ -126,6 +141,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E98C6E32D777D700046115A /* WarmToast in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0EDADA562DC3C59700CB1847 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +198,7 @@
 				0E4E2AB72DA1924700AABFDE /* README.md */,
 				0EA4BD452B9151AF005259B4 /* TrekPoint */,
 				0E4E2ABE2DA1925900AABFDE /* src */,
+				0EDADA5A2DC3C59700CB1847 /* TrekPointTests */,
 				0EA4BD442B9151AF005259B4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -184,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD432B9151AF005259B4 /* TrekPoint.app */,
+				0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -320,6 +344,29 @@
 			productReference = 0EA4BD432B9151AF005259B4 /* TrekPoint.app */;
 			productType = "com.apple.product-type.application";
 		};
+		0EDADA582DC3C59700CB1847 /* TrekPointTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0EDADA612DC3C59700CB1847 /* Build configuration list for PBXNativeTarget "TrekPointTests" */;
+			buildPhases = (
+				0EDADA552DC3C59700CB1847 /* Sources */,
+				0EDADA562DC3C59700CB1847 /* Frameworks */,
+				0EDADA572DC3C59700CB1847 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0EDADA5E2DC3C59700CB1847 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0EDADA5A2DC3C59700CB1847 /* TrekPointTests */,
+			);
+			name = TrekPointTests;
+			packageProductDependencies = (
+			);
+			productName = TrekPointTests;
+			productReference = 0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -327,11 +374,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					0EA4BD422B9151AF005259B4 = {
 						CreatedOnToolsVersion = 15.2;
+					};
+					0EDADA582DC3C59700CB1847 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 0EA4BD422B9151AF005259B4;
 					};
 				};
 			};
@@ -352,6 +403,7 @@
 			projectRoot = "";
 			targets = (
 				0EA4BD422B9151AF005259B4 /* TrekPoint */,
+				0EDADA582DC3C59700CB1847 /* TrekPointTests */,
 			);
 		};
 /* End PBXProject section */
@@ -364,6 +416,13 @@
 				0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */,
 				0EA4BD502B9151B0005259B4 /* Preview Assets.xcassets in Resources */,
 				0EA4BD4D2B9151B0005259B4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0EDADA572DC3C59700CB1847 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,7 +482,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0EDADA552DC3C59700CB1847 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0EDADA5E2DC3C59700CB1847 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0EA4BD422B9151AF005259B4 /* TrekPoint */;
+			targetProxy = 0EDADA5D2DC3C59700CB1847 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */ = {
@@ -626,6 +700,54 @@
 			};
 			name = Release;
 		};
+		0EDADA5F2DC3C59700CB1847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HFR8F4BT7E;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.TrekPointTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrekPoint.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrekPoint";
+				XROS_DEPLOYMENT_TARGET = 2.4;
+			};
+			name = Debug;
+		};
+		0EDADA602DC3C59700CB1847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HFR8F4BT7E;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mazjap.TrekPointTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrekPoint.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrekPoint";
+				XROS_DEPLOYMENT_TARGET = 2.4;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -643,6 +765,15 @@
 			buildConfigurations = (
 				0EA4BD542B9151B0005259B4 /* Debug */,
 				0EA4BD552B9151B0005259B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0EDADA612DC3C59700CB1847 /* Build configuration list for PBXNativeTarget "TrekPointTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0EDADA5F2DC3C59700CB1847 /* Debug */,
+				0EDADA602DC3C59700CB1847 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
