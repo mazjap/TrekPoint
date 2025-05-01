@@ -49,9 +49,9 @@ import WarmToast
 //   - [ ] Area calculation tool (measure acreage of drawn polygons)
 //   - [ ] Share maps/locations via standard iOS share sheet
 // -----------------------------Very unlikely----------------------------
-//   - [ ] Elevation data display
-//   - [ ] Weather integration
-//   - [ ] Public land boundaries overlay
+//   - [ ] Elevation data display (Vapor Server with USGS DEM data)
+//   - [ ] Weather integration (WeatherKit?)
+//   - [ ] Public land boundaries overlay (Vapor Server with PADUS 4.0?)
 
 struct DetailedMapView: View {
     @Environment(LocationTrackingManager.self) private var locationManager
