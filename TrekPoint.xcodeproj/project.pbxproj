@@ -262,7 +262,6 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */,
-				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
 				0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
@@ -276,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
+				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
 				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,

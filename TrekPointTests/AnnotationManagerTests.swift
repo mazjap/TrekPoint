@@ -6,7 +6,6 @@ import UIKit
 class TestAttachmentStore: AttachmentProvider {
     var storage = [Attachment : UIImage]()
     
-    
     func storeImage(_ image: UIImage) throws -> Attachment {
         let attachment = Attachment(type: .image)
         
