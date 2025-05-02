@@ -41,5 +41,5 @@ struct ModifyAnnotationView: View {
 
 #Preview {
     ModifyAnnotationView(annotation: AnnotationData(title: WorkingAnnotation.example.title, coordinate: WorkingAnnotation.example.coordinate), onDismiss: {}) { print($0) }
-        .environment(AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: .init()))
+        .environment(AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: AttachmentStore()))
 }

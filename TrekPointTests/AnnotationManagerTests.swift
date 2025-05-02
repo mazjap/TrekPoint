@@ -1,0 +1,176 @@
+@testable import TrekPoint
+import Testing
+import SwiftData
+import UIKit
+
+class TestAttachmentStore: AttachmentProvider {
+    var storage = [Attachment : UIImage]()
+    
+    
+    func storeImage(_ image: UIImage) throws -> Attachment {
+        let attachment = Attachment(type: .image)
+        
+        storage[attachment] = image
+        return attachment
+    }
+    
+    func storeVideo(thatExistsAtURL tempURL: URL) throws -> Attachment {
+        fatalError()
+    }
+    
+    func getUrl(for attachment: Attachment) throws -> URL {
+        fatalError()
+    }
+    
+    func delete(_ attachment: Attachment) throws {
+        storage[attachment] = nil
+    }
+    
+    func exists(_ attachment: Attachment) -> Bool {
+        storage[attachment] != nil
+    }
+}
+
+@MainActor
+@Suite
+struct AnnotationManagerTests {
+    let container: ModelContainer
+    let manager: AnnotationPersistenceManager
+    
+    init() throws {
+        self.container = try ModelContainer(for: Schema(versionedSchema: CurrentModelVersion.self), configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        self.manager = AnnotationPersistenceManager(modelContainer: container, attachmentStore: TestAttachmentStore())
+    }
+    
+    @Test("Annotation creation")
+    func annotationCreation() throws {
+        try #expect(container.mainContext.fetch(FetchDescriptor<AnnotationData>()).count == 0)
+        
+        let initialCoord = Coordinate(latitude: 40.0, longitude: -111.0)
+        manager.changeWorkingAnnotationsCoordinate(to: initialCoord)
+        
+        #expect(manager.workingAnnotation != nil)
+        #expect(manager.workingAnnotation?.coordinate.latitude == 40.0)
+        
+        manager.workingAnnotation?.title = "Title"
+        
+        _ = try manager.finalizeWorkingAnnotation()
+        
+        try #expect(container.mainContext.fetch(FetchDescriptor<AnnotationData>()).count == 1)
+    }
+    
+    @Test("Delete annotation")
+    func annotationDeletion() throws {
+        manager.changeWorkingAnnotationsCoordinate(to: Coordinate(latitude: 40.0, longitude: -111.0))
+        manager.workingAnnotation?.title = "Test Annotation"
+        
+        let annotation = try manager.finalizeWorkingAnnotation()
+        
+        try #expect(container.mainContext.fetch(FetchDescriptor<AnnotationData>()).count == 1)
+        
+        try manager.deleteAnnotation(annotation)
+        
+        try #expect(container.mainContext.fetch(FetchDescriptor<AnnotationData>()).count == 0)
+    }
+    
+    @Test("Annotation replacement")
+    func workingAnnotationReplacement() {
+        let initialCoord = Coordinate(latitude: 40.0, longitude: -111.0)
+        manager.changeWorkingAnnotationsCoordinate(to: initialCoord)
+        manager.workingAnnotation?.title = "Hello, World!"
+        
+        #expect(manager.workingAnnotation?.coordinate.latitude == 40.0)
+        #expect(manager.workingAnnotation?.title == "Hello, World!")
+        
+        let newCoord = Coordinate(latitude: 41.0, longitude: -112.0)
+        manager.startNewWorkingAnnotation(with: newCoord)
+        
+        #expect(manager.workingAnnotation?.coordinate.latitude == 41.0)
+        #expect(manager.workingAnnotation?.title == "", "WorkingAnnotation should have an empty title after being replaced")
+    }
+    
+    @Test("Clear working annotation")
+    func clearWorkingAnnotation() {
+        manager.startNewWorkingAnnotation(with: .random)
+        
+        #expect(manager.workingAnnotation != nil)
+        #expect(manager.isShowingOptions == true)
+        
+        manager.clearWorkingAnnotationProgress()
+        
+        #expect(manager.workingAnnotation == nil)
+        #expect(manager.isShowingOptions == false)
+    }
+    
+    @Test("Finalizing annotation without title throws expected error")
+    func finalizingWithoutTitleThrowsError() {
+        manager.changeWorkingAnnotationsCoordinate(to: Coordinate(latitude: 40, longitude: -111))
+        
+        do {
+            _ = try manager.finalizeWorkingAnnotation()
+            #expect(Bool(false), "Should have thrown an error for empty title")
+        } catch let error as AnnotationFinalizationError {
+            #expect(error == .emptyTitle)
+        } catch {
+            #expect(Bool(false), "Unexpected error type: \(error)")
+        }
+    }
+    
+    @Test("Finalizing without a working annotation throws error")
+    func noAnnotationThrowsError() {
+        manager.clearWorkingAnnotationProgress()
+        
+        do {
+            _ = try manager.finalizeWorkingAnnotation()
+            #expect(Bool(false), "Should have thrown an error for no annotation")
+        } catch let error as AnnotationFinalizationError {
+            #expect(error == .noCoordinate)
+        } catch {
+            #expect(Bool(false), "Unexpected error type: \(error)")
+        }
+    }
+    
+    @Test("Undo coordinate change")
+    func undoCoordinateChange() {
+        let firstCoord = Coordinate(latitude: 40.0, longitude: -111.0)
+        manager.changeWorkingAnnotationsCoordinate(to: firstCoord)
+        
+        let secondCoord = Coordinate(latitude: 41.0, longitude: -112.0)
+        manager.changeWorkingAnnotationsCoordinate(to: secondCoord)
+        
+        #expect(manager.canUndo == true)
+        
+        manager.undo()
+        
+        #expect(manager.workingAnnotation?.coordinate.latitude == 40.0)
+        #expect(manager.workingAnnotation?.coordinate.longitude == -111.0)
+        #expect(manager.canUndo == false)
+    }
+    
+    @Test("Add and delete attachment")
+    func attachmentManagement() throws {
+        manager.changeWorkingAnnotationsCoordinate(to: Coordinate(latitude: 40.0, longitude: -111.0))
+        manager.workingAnnotation?.title = "Test Annotation"
+        
+        // Create test image
+        let size = CGSize(width: 10, height: 10)
+        UIGraphicsBeginImageContext(size)
+        let context = UIGraphicsGetCurrentContext()!
+        context.setFillColor(UIColor.red.cgColor)
+        context.fill(CGRect(origin: .zero, size: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
+        try manager.addImageToWorkingAnnotation(image)
+        
+        #expect(manager.workingAnnotation?.attachments.count == 1)
+        
+        // Delete the attachment
+        if let attachment = manager.workingAnnotation?.attachments.first {
+            try manager.deleteAttachmentFromWorkingAnnotation(attachment)
+            #expect(manager.workingAnnotation?.attachments.count == 0, "Attachment should be deleted")
+        } else {
+            #expect(Bool(false), "Attachment should exist")
+        }
+    }
+}

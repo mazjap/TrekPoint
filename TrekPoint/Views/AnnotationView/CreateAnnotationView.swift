@@ -47,7 +47,7 @@ struct CreateAnnotationView: View {
 
 #Preview {
     let newAnnotationManager = {
-        let annotationManager = AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: .init())
+        let annotationManager = AnnotationPersistenceManager(modelContainer: .preview, attachmentStore: AttachmentStore())
         annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate.random)
         return annotationManager
     }()

@@ -26,11 +26,11 @@ class AnnotationPersistenceManager {
     private let undoManager: UndoManager
     private let modelContainer: ModelContainer
     private var modelContext: ModelContext
-    private let attachmentStore: AttachmentStore
+    private let attachmentStore: AttachmentProvider
     
     var canUndo: Bool { !undoManager.actions.isEmpty }
     
-    init(modelContainer: ModelContainer, attachmentStore: AttachmentStore) {
+    init(modelContainer: ModelContainer, attachmentStore: AttachmentProvider) {
         self.undoManager = UndoManager()
         self.modelContainer = modelContainer
         self.modelContext = modelContainer.mainContext
