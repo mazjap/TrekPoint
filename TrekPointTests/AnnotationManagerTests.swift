@@ -41,6 +41,21 @@ struct AnnotationManagerTests {
         self.manager = AnnotationPersistenceManager(modelContainer: container, attachmentStore: TestAttachmentStore())
     }
     
+    func createTestImage() -> UIImage {
+        let size = CGSize(width: 10, height: 10)
+        UIGraphicsBeginImageContext(size)
+        
+        let context = UIGraphicsGetCurrentContext()!
+        context.setFillColor(UIColor.red.cgColor)
+        context.fill(CGRect(origin: .zero, size: size))
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
     @Test("Annotation creation")
     func annotationCreation() throws {
         try #expect(container.mainContext.fetch(FetchDescriptor<AnnotationData>()).count == 0)
@@ -151,25 +166,34 @@ struct AnnotationManagerTests {
         manager.changeWorkingAnnotationsCoordinate(to: Coordinate(latitude: 40.0, longitude: -111.0))
         manager.workingAnnotation?.title = "Test Annotation"
         
-        // Create test image
-        let size = CGSize(width: 10, height: 10)
-        UIGraphicsBeginImageContext(size)
-        let context = UIGraphicsGetCurrentContext()!
-        context.setFillColor(UIColor.red.cgColor)
-        context.fill(CGRect(origin: .zero, size: size))
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        
-        try manager.addImageToWorkingAnnotation(image)
+        try manager.addImageToWorkingAnnotation(createTestImage())
         
         #expect(manager.workingAnnotation?.attachments.count == 1)
         
-        // Delete the attachment
         if let attachment = manager.workingAnnotation?.attachments.first {
             try manager.deleteAttachmentFromWorkingAnnotation(attachment)
             #expect(manager.workingAnnotation?.attachments.count == 0, "Attachment should be deleted")
         } else {
             #expect(Bool(false), "Attachment should exist")
         }
+    }
+    
+    @Test("Properties persist across representations")
+    func propertiesRemainTheSameWhenSaving() throws {
+        let coordinate = Coordinate(latitude: 40.0, longitude: -110.0)
+        let title = "Test"
+        let notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        
+        manager.changeWorkingAnnotationsCoordinate(to: coordinate)
+        manager.workingAnnotation?.title = title
+        manager.workingAnnotation?.userDescription = notes
+        try manager.addImageToWorkingAnnotation(createTestImage())
+        
+        let annotationData = try manager.finalizeWorkingAnnotation()
+        
+        #expect(annotationData.coordinate == coordinate)
+        #expect(annotationData.title == title)
+        #expect(annotationData.userDescription == notes)
+        #expect(annotationData.attachments.count == 1)
     }
 }
