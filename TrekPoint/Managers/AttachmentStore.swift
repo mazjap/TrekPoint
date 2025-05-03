@@ -18,18 +18,35 @@ protocol AttachmentProvider {
     func exists(_ attachment: Attachment) -> Bool
 }
 
+protocol FileManagerProvider {
+    var documentDirectory: URL { get }
+    
+    func fileExists(atPath: String) -> Bool
+    func createDirectory(at url: URL, withIntermediateDirectories: Bool, attributes: [FileAttributeKey : Any]?) throws
+    func createFile(atPath path: String, contents: Data?, attributes: [FileAttributeKey : Any]?) -> Bool
+    func copyItem(at source: URL, to destination: URL) throws
+    func setAttributes(_ attributes: [FileAttributeKey : Any], ofItemAtPath path: String) throws
+    func removeItem(at url: URL) throws
+}
+
+extension FileManager: FileManagerProvider {
+    var documentDirectory: URL {
+        urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+}
+
 class AttachmentStore: AttachmentProvider {
-    private let fileManager: FileManager
+    private let fileManager: FileManagerProvider
     private let attachmentsDirectory: URL
     
-    init(fileManager: FileManager = .default) {
+    init(fileManager: FileManagerProvider = FileManager.default) {
         self.fileManager = fileManager
         
-        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let documentsDirectory = fileManager.documentDirectory
         let attachmentsDirectory = documentsDirectory.appendingPathComponent("Attachments", isDirectory: true)
         
         // Create directory if it doesn't exist
-        if !fileManager.fileExists(atPath: attachmentsDirectory.path) {
+        if !fileManager.fileExists(atPath: attachmentsDirectory.path()) {
             do {
                 try fileManager.createDirectory(at: attachmentsDirectory, withIntermediateDirectories: true, attributes: nil)
             } catch {
