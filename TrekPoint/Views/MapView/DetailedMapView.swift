@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import MapKit
 import WarmToast
+import Dependencies
 
 // Tasks:
 // - [x] Get user's location working
@@ -638,11 +639,11 @@ struct DetailedMapView: View {
 }
 
 #Preview {
-    let modelContainer = ModelContainer.preview
+    @Dependency(\.modelContainer) var modelContainer 
     
     DetailedMapView(showSheet: .constant(true), toastManager: .init())
         .modelContainer(modelContainer)
         .environment(LocationTrackingManager())
         .environment(AnnotationPersistenceManager())
-        .environment(PolylinePersistenceManager(modelContainer: modelContainer))
+        .environment(PolylinePersistenceManager())
 }

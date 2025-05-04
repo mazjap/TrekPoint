@@ -43,7 +43,7 @@ struct CreatePolylineView: View {
 
 #Preview {
     let newPolylineManager = {
-        let annotationManager = PolylinePersistenceManager(modelContainer: .preview)
+        let annotationManager = PolylinePersistenceManager()
         annotationManager.startNewWorkingPolyline(with: .random)
         return annotationManager
     }()

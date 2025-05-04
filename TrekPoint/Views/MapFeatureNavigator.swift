@@ -155,7 +155,7 @@ struct MapFeatureNavigator: View {
         annotations: [.preview],
         polylines: [.preview],
         annotationManager: AnnotationPersistenceManager(),
-        polylineManager: PolylinePersistenceManager(modelContainer: .preview),
+        polylineManager: PolylinePersistenceManager(),
         toastManager: .init(),
         onSelection: { _ in }
     )

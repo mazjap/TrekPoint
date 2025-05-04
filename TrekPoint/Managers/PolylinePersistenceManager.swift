@@ -1,10 +1,22 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import Dependencies
 
 enum PolylineFinalizationError: Error {
     case emptyTitle
     case tooFewCoordinates(required: Int, have: Int)
+}
+
+enum PolylinePersistenceManagerKey: DependencyKey {
+    static let liveValue = PolylinePersistenceManager()
+}
+
+extension DependencyValues {
+    var polylinePersistenceManager: PolylinePersistenceManager {
+        get { self[PolylinePersistenceManagerKey.self] }
+        set { self[PolylinePersistenceManagerKey.self] = newValue }
+    }
 }
 
 @Observable
@@ -23,19 +35,18 @@ class PolylinePersistenceManager {
     
     var isShowingOptions = false
     
-    private var undoManager: UndoManager
-    private let modelContainer: ModelContainer
-    private var modelContext: ModelContext
+    private var undoManager = UndoManager()
+    
+    @ObservationIgnored @Dependency(\.modelContainer) private var modelContainer
+    private var modelContext: ModelContext {
+        modelContainer.mainContext
+    }
     
     var isDrawingPolyline: Bool { !(workingPolyline?.isLocationTracked ?? true) }
     var isTrackingPolyline: Bool { workingPolyline?.isLocationTracked ?? false }
     var canUndo: Bool { !undoManager.actions.isEmpty }
     
-    init(modelContainer: ModelContainer) {
-        self.undoManager = UndoManager()
-        self.modelContainer = modelContainer
-        self.modelContext = modelContainer.mainContext
-    }
+    nonisolated init() {}
     
     /// Clears any existing working polyline data, and starts a new one with the given coordinate
     func startNewWorkingPolyline(with coordinate: Coordinate? = nil) {
