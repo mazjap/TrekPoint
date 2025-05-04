@@ -1,23 +1,49 @@
 import CoreLocation
 import UIKit
+import Dependencies
+
+protocol UserDefaultsProtocol {
+    func bool(forKey: String) -> Bool
+    func set(_ value: Any?, forKey: String)
+    func string(forKey: String) -> String?
+    func removeObject(forKey: String)
+}
+
+extension UserDefaults: UserDefaultsProtocol {}
+
+protocol BackgroundPersistenceProtocol {
+    func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void)
+    func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D]
+    func clearPendingLocations(for trackingID: UUID)
+}
+
+extension BackgroundPersistenceManager: BackgroundPersistenceProtocol {}
+
+
 
 @Observable
 class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
     var isTracking = false
     
+    private let userDefaults: UserDefaultsProtocol
+    
     private(set) var isUserLocationActive: Bool = false {
         didSet {
-            UserDefaults.standard.set(isUserLocationActive, forKey: "is_user_location_active")
+            userDefaults.set(isUserLocationActive, forKey: "is_user_location_active")
         }
     }
     
-    private let backgroundManager = BackgroundPersistenceManager()
-    private let locationManager = CLLocationManager()
+    private let backgroundManager: BackgroundPersistenceProtocol
+    @ObservationIgnored @Dependency(\.locationManagerProvider) private var locationManager
     private var activeTrackingID: UUID?
     
-    override init() {
+    init(userDefaults: UserDefaultsProtocol = UserDefaults.standard, backgroundPersistenceManager: BackgroundPersistenceProtocol = BackgroundPersistenceManager()) {
+        self.userDefaults = userDefaults
+        self.backgroundManager = backgroundPersistenceManager
+        
         super.init()
+        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         
