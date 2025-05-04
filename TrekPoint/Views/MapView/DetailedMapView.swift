@@ -55,9 +55,10 @@ import Dependencies
 //   - [ ] Public land boundaries overlay (Vapor Server with PADUS 4.0?)
 
 struct DetailedMapView: View {
-    @Environment(LocationTrackingManager.self) private var locationManager
-    @Environment(AnnotationPersistenceManager.self) private var annotationManager
-    @Environment(PolylinePersistenceManager.self) private var polylineManager
+    @Dependency(\.locationTrackingManager) private var locationManager
+    @Dependency(\.annotationPersistenceManager) private var annotationManager
+    @Dependency(\.polylinePersistenceManager) private var polylineManager
+    @Dependency(\.toastManager) private var toastManager: ToastManager
     
     @Query private var annotations: [AnnotationData]
     @Query private var polylines: [PolylineData]
@@ -72,12 +73,10 @@ struct DetailedMapView: View {
     
     @Binding private var showSheet: Bool
     
-    private let toastManager: ToastManager
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
     
-    init(showSheet: Binding<Bool>, toastManager: ToastManager) {
+    init(showSheet: Binding<Bool>) {
         self._showSheet = showSheet
-        self.toastManager = toastManager
     }
     
     var body: some View {
@@ -641,9 +640,6 @@ struct DetailedMapView: View {
 #Preview {
     @Dependency(\.modelContainer) var modelContainer 
     
-    DetailedMapView(showSheet: .constant(true), toastManager: .init())
+    DetailedMapView(showSheet: .constant(true))
         .modelContainer(modelContainer)
-        .environment(LocationTrackingManager())
-        .environment(AnnotationPersistenceManager())
-        .environment(PolylinePersistenceManager())
 }

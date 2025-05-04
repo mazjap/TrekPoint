@@ -1,8 +1,9 @@
 import SwiftUI
 import AVKit
+import Dependencies
 
 struct AttachmentsView: View {
-    @Environment(AnnotationPersistenceManager.self) private var annotationManager
+    @Dependency(\.annotationPersistenceManager) private var annotationManager
     private let annotation: AnnotationType
     
     init(annotation: AnnotationType) {
@@ -124,6 +125,4 @@ fileprivate struct VideoPlayerView: View {
 
 #Preview {
     AttachmentsView(annotation: .working(.example))
-        .environment(AnnotationPersistenceManager())
-        .environment(PolylinePersistenceManager())
 }

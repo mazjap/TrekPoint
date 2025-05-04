@@ -11,9 +11,6 @@ struct TrekPointApp: App {
         WindowGroup {
             ZStack {
                 ContentView(showSheet: $isAnimationComplete)
-                    .environment(appDelegate.locationManager)
-                    .environment(appDelegate.annotationManager)
-                    .environment(appDelegate.polylineManager)
                 
                 if !isAnimationComplete {
                     LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
