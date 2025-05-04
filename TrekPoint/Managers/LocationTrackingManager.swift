@@ -13,8 +13,8 @@ extension DependencyValues {
     }
 }
 
-// TODO: - Isolate to MainActor
 @Observable
+@MainActor
 class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
     var isTracking = false
@@ -30,17 +30,19 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     @ObservationIgnored @Dependency(\.backgroundPersistenceProvider) private var backgroundManager: BackgroundPersistenceProvider
     @ObservationIgnored @Dependency(\.locationManagerProvider) private var locationManager
     
-    override init() {
+    nonisolated override init() {
         super.init()
         
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        
-        locationManager.allowsBackgroundLocationUpdates = false
-        locationManager.pausesLocationUpdatesAutomatically = false
-        
-        if UserDefaults.standard.bool(forKey: "is_user_location_active") {
-            showUserLocation()
+        Task { @MainActor in
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            
+            locationManager.allowsBackgroundLocationUpdates = false
+            locationManager.pausesLocationUpdatesAutomatically = false
+            
+            if UserDefaults.standard.bool(forKey: "is_user_location_active") {
+                showUserLocation()
+            }
         }
     }
     
@@ -103,12 +105,15 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
         UserDefaults.standard.removeObject(forKey: "active_tracking_id")
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        lastLocation = location
         
-        if isTracking {
-            storeLocationInBackground(location)
+        Task { @MainActor in
+            lastLocation = location
+            
+            if isTracking {
+                storeLocationInBackground(location)
+            }
         }
     }
     
