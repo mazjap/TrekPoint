@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import Dependencies
 
 enum RealReasonForSomethingGoingWrong {
     case error(Error)
@@ -10,12 +11,24 @@ enum ToastReason {
     case annotationCreationError(AnnotationFinalizationError)
     case polylineCreationError(PolylineFinalizationError)
     case somethingWentWrong(RealReasonForSomethingGoingWrong)
-    
+}
+
+enum ToastManagerKey: DependencyKey {
+    static let liveValue = ToastManager()
+}
+
+extension DependencyValues {
+    var toastManager: ToastManager {
+        get { self[ToastManagerKey.self] }
+        set { self[ToastManagerKey.self] = newValue }
+    }
 }
 
 @Observable
 class ToastManager {
     var reasons = [ToastReason]()
+    
+    // TODO: - Make a LoggerProvider protocol and make Logger a dependency
     private let logger = Logger(subsystem: "ToastManager", category: "TrekPoint")
     
     func commitFeatureCreationError(_ error: Error) {
