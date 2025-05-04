@@ -53,6 +53,9 @@
 		0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */; };
 		0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */; };
 		0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC552D87C0AC001828BB /* ToastManager.swift */; };
+		0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38E82DC7D46B0033B4D1 /* Dependencies */; };
+		0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EA2DC7D46B0033B4D1 /* DependenciesMacros */; };
+		0EBD38F02DC7D6A90033B4D1 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */; };
 		0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */; };
 		0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453062BAD5639007C40DE /* DraggablePin.swift */; };
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
@@ -141,6 +144,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E98C6E32D777D700046115A /* WarmToast in Frameworks */,
+				0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */,
+				0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +153,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EBD38F02DC7D6A90033B4D1 /* DependenciesTestSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +205,7 @@
 				0EA4BD452B9151AF005259B4 /* TrekPoint */,
 				0E4E2ABE2DA1925900AABFDE /* src */,
 				0EDADA5A2DC3C59700CB1847 /* TrekPointTests */,
+				0EBD38EE2DC7D6A90033B4D1 /* Frameworks */,
 				0EA4BD442B9151AF005259B4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -315,6 +322,13 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		0EBD38EE2DC7D6A90033B4D1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0EE4530C2BAD62B3007C40DE /* MapView */ = {
 			isa = PBXGroup;
 			children = (
@@ -362,6 +376,7 @@
 			);
 			name = TrekPointTests;
 			packageProductDependencies = (
+				0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */,
 			);
 			productName = TrekPointTests;
 			productReference = 0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */;
@@ -397,6 +412,7 @@
 			mainGroup = 0EA4BD3A2B9151AF005259B4;
 			packageReferences = (
 				0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */,
+				0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */,
 			);
 			productRefGroup = 0EA4BD442B9151AF005259B4 /* Products */;
 			projectDirPath = "";
@@ -797,6 +813,14 @@
 				minimumVersion = 0.0.1;
 			};
 		};
+		0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-dependencies.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.9.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -804,6 +828,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */;
 			productName = WarmToast;
+		};
+		0EBD38E82DC7D46B0033B4D1 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		0EBD38EA2DC7D46B0033B4D1 /* DependenciesMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesMacros;
+		};
+		0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesTestSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
