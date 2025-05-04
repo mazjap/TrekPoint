@@ -2,6 +2,7 @@ import SwiftData
 import Foundation
 import struct CoreLocation.CLLocationCoordinate2D
 import class UIKit.UIImage
+import Dependencies
 
 enum AnnotationFinalizationError: Error {
     case noCoordinate
@@ -26,15 +27,14 @@ class AnnotationPersistenceManager {
     private let undoManager: UndoManager
     private let modelContainer: ModelContainer
     private var modelContext: ModelContext
-    private let attachmentStore: AttachmentProvider
+    @ObservationIgnored @Dependency(\.attachmentStore) private var attachmentStore
     
     var canUndo: Bool { !undoManager.actions.isEmpty }
     
-    init(modelContainer: ModelContainer, attachmentStore: AttachmentProvider) {
+    init(modelContainer: ModelContainer) {
         self.undoManager = UndoManager()
         self.modelContainer = modelContainer
         self.modelContext = modelContainer.mainContext
-        self.attachmentStore = attachmentStore
     }
     
     // MARK: - Attachment Methods

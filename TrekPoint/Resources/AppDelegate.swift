@@ -3,7 +3,6 @@ import SwiftData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     let locationManager: LocationTrackingManager
-    let attachmentStore: AttachmentStore
     let annotationManager: AnnotationPersistenceManager
     let polylineManager: PolylinePersistenceManager
     
@@ -17,8 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     override init() {
         self.locationManager = LocationTrackingManager()
-        self.attachmentStore = AttachmentStore()
-        self.annotationManager = AnnotationPersistenceManager(modelContainer: sharedModelContainer, attachmentStore: attachmentStore)
+        self.annotationManager = AnnotationPersistenceManager(modelContainer: sharedModelContainer)
         self.polylineManager = PolylinePersistenceManager(modelContainer: sharedModelContainer)
         
         super.init()

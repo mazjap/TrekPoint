@@ -3,33 +3,6 @@ import Testing
 import SwiftData
 import UIKit
 
-class TestAttachmentStore: AttachmentProvider {
-    var storage = [Attachment : UIImage]()
-    
-    func storeImage(_ image: UIImage) throws -> Attachment {
-        let attachment = Attachment(type: .image)
-        
-        storage[attachment] = image
-        return attachment
-    }
-    
-    func storeVideo(thatExistsAtURL tempURL: URL) throws -> Attachment {
-        fatalError()
-    }
-    
-    func getUrl(for attachment: Attachment) throws -> URL {
-        fatalError()
-    }
-    
-    func delete(_ attachment: Attachment) throws {
-        storage[attachment] = nil
-    }
-    
-    func exists(_ attachment: Attachment) -> Bool {
-        storage[attachment] != nil
-    }
-}
-
 @MainActor
 @Suite
 struct AnnotationManagerTests {
@@ -38,7 +11,7 @@ struct AnnotationManagerTests {
     
     init() throws {
         self.container = try ModelContainer(for: Schema(versionedSchema: CurrentModelVersion.self), configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        self.manager = AnnotationPersistenceManager(modelContainer: container, attachmentStore: TestAttachmentStore())
+        self.manager = AnnotationPersistenceManager(modelContainer: container)
     }
     
     func createTestImage() -> UIImage {

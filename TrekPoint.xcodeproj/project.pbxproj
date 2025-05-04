@@ -56,6 +56,7 @@
 		0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38E82DC7D46B0033B4D1 /* Dependencies */; };
 		0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EA2DC7D46B0033B4D1 /* DependenciesMacros */; };
 		0EBD38F02DC7D6A90033B4D1 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */; };
+		0EBD38F22DC7D70D0033B4D1 /* AttachmentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F12DC7D70D0033B4D1 /* AttachmentProvider.swift */; };
 		0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */; };
 		0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453062BAD5639007C40DE /* DraggablePin.swift */; };
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
@@ -127,6 +128,7 @@
 		0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationPersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylinePersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC552D87C0AC001828BB /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
+		0EBD38F12DC7D70D0033B4D1 /* AttachmentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentProvider.swift; sourceTree = "<group>"; };
 		0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrekPointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationDetent+Extension.swift"; sourceTree = "<group>"; };
 		0EE453062BAD5639007C40DE /* DraggablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePin.swift; sourceTree = "<group>"; };
@@ -313,7 +315,7 @@
 			isa = PBXGroup;
 			children = (
 				0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */,
-				0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */,
+				0EBD38F32DC7D7860033B4D1 /* AttachmentProvider */,
 				0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */,
 				0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */,
 				0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */,
@@ -327,6 +329,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0EBD38F32DC7D7860033B4D1 /* AttachmentProvider */ = {
+			isa = PBXGroup;
+			children = (
+				0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */,
+				0EBD38F12DC7D70D0033B4D1 /* AttachmentProvider.swift */,
+			);
+			path = AttachmentProvider;
 			sourceTree = "<group>";
 		};
 		0EE4530C2BAD62B3007C40DE /* MapView */ = {
@@ -486,6 +497,7 @@
 				0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */,
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
 				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
+				0EBD38F22DC7D70D0033B4D1 /* AttachmentProvider.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
 				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,

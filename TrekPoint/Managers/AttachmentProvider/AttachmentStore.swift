@@ -10,14 +10,6 @@ enum AttachmentError: Error {
     case fileReadFailed(Error)
 }
 
-protocol AttachmentProvider {
-    func storeImage(_ image: UIImage) throws -> Attachment
-    func storeVideo(thatExistsAtURL tempURL: URL) throws -> Attachment
-    func getUrl(for attachment: Attachment) throws -> URL
-    func delete(_ attachment: Attachment) throws
-    func exists(_ attachment: Attachment) -> Bool
-}
-
 protocol FileManagerProvider {
     var documentDirectory: URL { get }
     
