@@ -2,16 +2,6 @@ import CoreLocation
 import UIKit
 import Dependencies
 
-protocol BackgroundPersistenceProtocol {
-    func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void)
-    func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D]
-    func clearPendingLocations(for trackingID: UUID)
-}
-
-extension BackgroundPersistenceManager: BackgroundPersistenceProtocol {}
-
-
-
 @Observable
 class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
@@ -25,12 +15,10 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     }
     
     @ObservationIgnored @Dependency(\.userDefaultsProvider) private var userDefaults
-    private let backgroundManager: BackgroundPersistenceProtocol
+    @ObservationIgnored @Dependency(\.backgroundPersistenceProvider) private var backgroundManager: BackgroundPersistenceProvider
     @ObservationIgnored @Dependency(\.locationManagerProvider) private var locationManager
     
-    init(backgroundPersistenceManager: BackgroundPersistenceProtocol = BackgroundPersistenceManager()) {
-        self.backgroundManager = backgroundPersistenceManager
-        
+    override init() {
         super.init()
         
         locationManager.delegate = self
