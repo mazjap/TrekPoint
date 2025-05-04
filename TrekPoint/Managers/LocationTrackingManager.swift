@@ -2,6 +2,18 @@ import CoreLocation
 import UIKit
 import Dependencies
 
+enum LocationTrackingManagerKey: DependencyKey {
+    static let liveValue = LocationTrackingManager()
+}
+
+extension DependencyValues {
+    var locationTrackingManager: LocationTrackingManager {
+        get { self[LocationTrackingManagerKey.self] }
+        set { self[LocationTrackingManagerKey.self] = newValue }
+    }
+}
+
+// TODO: - Isolate to MainActor
 @Observable
 class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
