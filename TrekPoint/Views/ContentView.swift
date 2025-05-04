@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Dependencies
 
 struct ContentView: View {
     @Binding private var showSheet: Bool
@@ -19,6 +20,8 @@ struct ContentView: View {
 }
 
 #Preview {
+    @Dependency(\.modelContainer) var modelContainer
+    
     ContentView(showSheet: .constant(true))
-        .modelContainer(for: CurrentModelVersion.models, inMemory: true)
+        .modelContainer(modelContainer)
 }

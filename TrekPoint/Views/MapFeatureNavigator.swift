@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Dependencies
 
 enum MapFeatureToPresent: Hashable {
     case annotation(AnnotationData)
@@ -9,30 +10,25 @@ enum MapFeatureToPresent: Hashable {
 }
 
 struct MapFeatureNavigator: View {
+    @Dependency(\.annotationPersistenceManager) private var annotationManager
+    @Dependency(\.polylinePersistenceManager) private var polylineManager
+    @Dependency(\.toastManager) private var toastManager
+    
     @Binding private var selection: MapFeatureToPresent?
     
     private let annotations: [AnnotationData]
     private let polylines: [PolylineData]
-    private let annotationManager: AnnotationPersistenceManager
-    private let polylineManager: PolylinePersistenceManager
-    private let toastManager: ToastManager
     private let onSelection: (MapFeature?) -> Void
     
     init(
         selection: Binding<MapFeatureToPresent?>,
         annotations: [AnnotationData],
         polylines: [PolylineData],
-        annotationManager: AnnotationPersistenceManager,
-        polylineManager: PolylinePersistenceManager,
-        toastManager: ToastManager,
         onSelection: @escaping (MapFeature?) -> Void
     ) {
         self._selection = selection
         self.annotations = annotations
         self.polylines = polylines
-        self.annotationManager = annotationManager
-        self.polylineManager = polylineManager
-        self.toastManager = toastManager
         self.onSelection = onSelection
     }
     
@@ -154,9 +150,6 @@ struct MapFeatureNavigator: View {
         selection: .constant(nil),
         annotations: [.preview],
         polylines: [.preview],
-        annotationManager: AnnotationPersistenceManager(),
-        polylineManager: PolylinePersistenceManager(),
-        toastManager: .init(),
         onSelection: { _ in }
     )
 }

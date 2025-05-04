@@ -124,10 +124,7 @@ struct DetailedMapView: View {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
                 annotations: annotations,
-                polylines: polylines,
-                annotationManager: annotationManager,
-                polylineManager: polylineManager,
-                toastManager: toastManager
+                polylines: polylines
             ) { newSelection in
                 annotationManager.clearWorkingAnnotationProgress()
 

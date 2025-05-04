@@ -1,18 +1,9 @@
 import UIKit
 import SwiftData
+import Dependencies
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    let locationManager: LocationTrackingManager
-    let annotationManager: AnnotationPersistenceManager
-    let polylineManager: PolylinePersistenceManager
-    
-    override init() {
-        self.locationManager = LocationTrackingManager()
-        self.annotationManager = AnnotationPersistenceManager()
-        self.polylineManager = PolylinePersistenceManager()
-        
-        super.init()
-    }
+    @Dependency(\.locationTrackingManager) private var locationManager
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         // Check if an ongoing tracking session exists

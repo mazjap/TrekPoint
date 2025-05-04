@@ -43,11 +43,10 @@ struct CreatePolylineView: View {
 }
 
 #Preview {
-    let newPolylineManager = {
-        let annotationManager = PolylinePersistenceManager()
-        annotationManager.startNewWorkingPolyline(with: .random)
-        return annotationManager
-    }()
-    
-    CreatePolylineView(onDismiss: {}) { print($0) }
+    withDependencies { dependencies in
+        dependencies.polylinePersistenceManager.startNewWorkingPolyline(with: .random)
+        dependencies.polylinePersistenceManager.appendWorkingPolylineCoordinate(.random)
+    } operation: {
+        CreatePolylineView(onDismiss: {}) { print($0) }
+    }
 }
