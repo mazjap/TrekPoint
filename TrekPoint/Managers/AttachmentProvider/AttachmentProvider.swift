@@ -37,8 +37,8 @@ class TestAttachmentStore: AttachmentProvider {
 }
 
 enum AttachmentProviderKey: DependencyKey {
-    static var liveValue: any AttachmentProvider { AttachmentStore() }
-    static var testValue: any AttachmentProvider { TestAttachmentStore() }
+    static let liveValue: any AttachmentProvider = AttachmentStore()
+    static let testValue: any AttachmentProvider = TestAttachmentStore()
 }
 
 extension DependencyValues {
