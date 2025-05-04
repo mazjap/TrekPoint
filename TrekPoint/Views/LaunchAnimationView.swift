@@ -3,7 +3,8 @@ import SwiftUI
 fileprivate struct LaunchAnimationState {
     var hOffset: Double = 0
     var vOffset: Double = 0
-    var opacity: Double = 1
+    var backgroundOpacity: Double = 1
+    var elementOpacity: Double = 1
 }
 
 fileprivate enum AnimationStep: CaseIterable {
@@ -12,8 +13,9 @@ fileprivate enum AnimationStep: CaseIterable {
 }
 
 struct LaunchAnimationView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    
     @State private var animationState = LaunchAnimationState()
-    @State private var isAnimating = false
     @Binding private var isAnimationComplete: Bool
     
     private let size: CGSize
@@ -26,7 +28,7 @@ struct LaunchAnimationView: View {
     var body: some View {
         ZStack {
             Color.launchScreen
-                .opacity(animationState.opacity)
+                .opacity(animationState.backgroundOpacity)
             
             ZStack {
                 Image("MountainLeft")
@@ -42,18 +44,28 @@ struct LaunchAnimationView: View {
                     .offset(y: animationState.vOffset)
             }
             .scaledToFill()
+            .opacity(animationState.elementOpacity)
         }
         .ignoresSafeArea()
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.5)) {
-                animationState.vOffset = size.height / 30
-            } completion: {
-                withAnimation(.easeInOut(duration: 1)) {
-                    animationState.hOffset = size.width
-                    animationState.vOffset = -size.height
-                    animationState.opacity = 0
+            if reduceMotion {
+                withAnimation(.easeIn(duration: 0.5)) {
+                    animationState.backgroundOpacity = 0
+                    animationState.elementOpacity = 0
                 } completion: {
                     isAnimationComplete = true
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    animationState.vOffset = size.height / 30
+                } completion: {
+                    withAnimation(.easeInOut(duration: 1)) {
+                        animationState.hOffset = size.width
+                        animationState.vOffset = -size.height
+                        animationState.backgroundOpacity = 0
+                    } completion: {
+                        isAnimationComplete = true
+                    }
                 }
             }
         }
