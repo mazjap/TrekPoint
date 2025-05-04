@@ -2,9 +2,10 @@ import SwiftUI
 import PhotosUI
 import Photos
 import AVKit
+import Dependencies
 
 struct AttachmentPicker: View {
-    @Environment(AnnotationPersistenceManager.self) private var attachmentManager
+    @Dependency(\.annotationPersistenceManager) private var attachmentManager
     @State private var presentPicker = false
     @State private var isLoading = false
     

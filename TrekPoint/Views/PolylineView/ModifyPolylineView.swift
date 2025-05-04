@@ -1,7 +1,8 @@
 import SwiftUI
+import Dependencies
 
 struct ModifyPolylineView: View {
-    @Environment(PolylinePersistenceManager.self) private var polylineManager
+    @Dependency(\.polylinePersistenceManager) private var polylineManager
     @Environment(\.dismiss) private var dismiss
     private let polyline: PolylineData
     private let onDismiss: () -> Void
@@ -41,6 +42,5 @@ struct ModifyPolylineView: View {
 
 #Preview {
     ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false), onDismiss: {})  { print($0) }
-        .environment(PolylinePersistenceManager())
 }
 

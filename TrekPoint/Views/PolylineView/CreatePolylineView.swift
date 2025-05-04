@@ -1,8 +1,9 @@
 import SwiftUI
+import Dependencies
 
 struct CreatePolylineView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(PolylinePersistenceManager.self) private var polylineManager
+    @Dependency(\.polylinePersistenceManager) private var polylineManager
     private let onDismiss: () -> Void
     private let commitError: (Error) -> Void
     
@@ -49,5 +50,4 @@ struct CreatePolylineView: View {
     }()
     
     CreatePolylineView(onDismiss: {}) { print($0) }
-        .environment(newPolylineManager)
 }

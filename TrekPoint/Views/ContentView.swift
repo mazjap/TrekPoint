@@ -2,7 +2,6 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State private var toastManager = ToastManager()
     @Binding private var showSheet: Bool
     
     init(showSheet: Binding<Bool>) {
@@ -11,7 +10,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            DetailedMapView(showSheet: $showSheet, toastManager: toastManager)
+            DetailedMapView(showSheet: $showSheet)
                 .navigationTitle("Map")
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)

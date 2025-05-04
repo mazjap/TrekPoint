@@ -1,7 +1,8 @@
 import SwiftUI
+import Dependencies
 
 struct ModifyAnnotationView: View {
-    @Environment(AnnotationPersistenceManager.self) private var annotationManager
+    @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Environment(\.dismiss) private var dismiss
     private let annotation: AnnotationData
     private let onDismiss: () -> Void
@@ -41,5 +42,4 @@ struct ModifyAnnotationView: View {
 
 #Preview {
     ModifyAnnotationView(annotation: AnnotationData(title: WorkingAnnotation.example.title, coordinate: WorkingAnnotation.example.coordinate), onDismiss: {}) { print($0) }
-        .environment(AnnotationPersistenceManager())
 }
