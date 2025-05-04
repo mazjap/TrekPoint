@@ -29,6 +29,8 @@
 		0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */; };
 		0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00912D823EC80019A92A /* AttachmentsView.swift */; };
 		0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00932D82516A0019A92A /* AttachmentPicker.swift */; };
+		0E80B5B82DC8238700FF2FDC /* MapControlButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */; };
+		0E80B5BC2DC827B900FF2FDC /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E80B5BB2DC827B900FF2FDC /* ToastView.swift */; };
 		0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05A2D70528E006145C0 /* PolylineData.swift */; };
 		0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */; };
 		0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */; };
@@ -108,6 +110,8 @@
 		0E7E008F2D8216FD0019A92A /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		0E7E00912D823EC80019A92A /* AttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentsView.swift; sourceTree = "<group>"; };
 		0E7E00932D82516A0019A92A /* AttachmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPicker.swift; sourceTree = "<group>"; };
+		0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControlButtons.swift; sourceTree = "<group>"; };
+		0E80B5BB2DC827B900FF2FDC /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		0E8EF05A2D70528E006145C0 /* PolylineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineData.swift; sourceTree = "<group>"; };
 		0E8EF05C2D705806006145C0 /* PolylineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineDetailView.swift; sourceTree = "<group>"; };
 		0E8EF05E2D705BFA006145C0 /* PolylineData+CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PolylineData+CoreLocation.swift"; sourceTree = "<group>"; };
@@ -292,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
+				0E80B5BB2DC827B900FF2FDC /* ToastView.swift */,
 				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
 				0E29527A2D7107030079479A /* MapFeatureNavigator.swift */,
@@ -364,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
+				0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
 			path = MapView;
@@ -504,6 +510,7 @@
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0E7E008A2D820BC80019A92A /* UIScreen+current.swift in Sources */,
+				0E80B5B82DC8238700FF2FDC /* MapControlButtons.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */,
@@ -530,6 +537,7 @@
 				0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */,
 				0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */,
 				0EA4BD622B93F487005259B4 /* ModifyAnnotationView.swift in Sources */,
+				0E80B5BC2DC827B900FF2FDC /* ToastView.swift in Sources */,
 				0EA4BD5B2B91CD3B005259B4 /* CreateAnnotationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
