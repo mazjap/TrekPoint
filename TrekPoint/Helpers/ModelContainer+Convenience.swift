@@ -26,7 +26,11 @@ extension ModelContainer {
 enum ModelContainerKey: DependencyKey {
     static let liveValue: ModelContainer = .shared
     static let previewValue: ModelContainer = .preview
-    static let testValue: ModelContainer = .preview
+    static var testValue: ModelContainer { // NOTE: - ModelContainer is recreated for each test run
+        try! ModelContainer { schema in
+            ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        }
+    }
 }
 
 extension DependencyValues {

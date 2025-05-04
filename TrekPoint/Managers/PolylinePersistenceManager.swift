@@ -10,6 +10,7 @@ enum PolylineFinalizationError: Error {
 
 enum PolylinePersistenceManagerKey: DependencyKey {
     static let liveValue = PolylinePersistenceManager()
+    static var testValue: PolylinePersistenceManager { PolylinePersistenceManager() }
 }
 
 extension DependencyValues {

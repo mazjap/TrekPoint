@@ -2,17 +2,15 @@
 import Testing
 import SwiftData
 import CoreLocation
+import Dependencies
 
 @MainActor
 @Suite
 struct PolylineManagerTests {
-    let container: ModelContainer
-    let manager: PolylinePersistenceManager
-    
-    init() throws {
-        self.container = try ModelContainer(for: Schema(versionedSchema: CurrentModelVersion.self), configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        self.manager = PolylinePersistenceManager(modelContainer: container)
-    }
+    // NOTE: - ModelContainer & PolylinePersistenceManager are recreated for
+    // each test run. See AnnotationManagerTests for more details
+    @Dependency(\.modelContainer) var container: ModelContainer
+    @Dependency(\.polylinePersistenceManager) var manager
     
     @Test("Drawn polyline creation")
     func polylineCreation() throws {
