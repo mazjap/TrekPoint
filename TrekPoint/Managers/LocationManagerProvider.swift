@@ -19,7 +19,7 @@ protocol LocationManagerProtocol: AnyObject {
 extension CLLocationManager: LocationManagerProtocol {}
 
 enum LocationManagerProviderKey: DependencyKey {
-    static var liveValue: any LocationManagerProtocol { CLLocationManager() }
+    static let liveValue: any LocationManagerProtocol = CLLocationManager()
 }
 
 extension DependencyValues {
