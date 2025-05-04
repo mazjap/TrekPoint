@@ -2,15 +2,6 @@ import CoreLocation
 import UIKit
 import Dependencies
 
-protocol UserDefaultsProtocol {
-    func bool(forKey: String) -> Bool
-    func set(_ value: Any?, forKey: String)
-    func string(forKey: String) -> String?
-    func removeObject(forKey: String)
-}
-
-extension UserDefaults: UserDefaultsProtocol {}
-
 protocol BackgroundPersistenceProtocol {
     func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void)
     func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D]
@@ -26,20 +17,18 @@ class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDele
     var lastLocation: CLLocation?
     var isTracking = false
     
-    private let userDefaults: UserDefaultsProtocol
-    
+    private var activeTrackingID: UUID?
     private(set) var isUserLocationActive: Bool = false {
         didSet {
             userDefaults.set(isUserLocationActive, forKey: "is_user_location_active")
         }
     }
     
+    @ObservationIgnored @Dependency(\.userDefaultsProvider) private var userDefaults
     private let backgroundManager: BackgroundPersistenceProtocol
     @ObservationIgnored @Dependency(\.locationManagerProvider) private var locationManager
-    private var activeTrackingID: UUID?
     
-    init(userDefaults: UserDefaultsProtocol = UserDefaults.standard, backgroundPersistenceManager: BackgroundPersistenceProtocol = BackgroundPersistenceManager()) {
-        self.userDefaults = userDefaults
+    init(backgroundPersistenceManager: BackgroundPersistenceProtocol = BackgroundPersistenceManager()) {
         self.backgroundManager = backgroundPersistenceManager
         
         super.init()
