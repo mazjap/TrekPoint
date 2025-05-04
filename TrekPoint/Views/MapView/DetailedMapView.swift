@@ -643,6 +643,6 @@ struct DetailedMapView: View {
     DetailedMapView(showSheet: .constant(true), toastManager: .init())
         .modelContainer(modelContainer)
         .environment(LocationTrackingManager())
-        .environment(AnnotationPersistenceManager(modelContainer: modelContainer, attachmentStore: AttachmentStore()))
+        .environment(AnnotationPersistenceManager(modelContainer: modelContainer))
         .environment(PolylinePersistenceManager(modelContainer: modelContainer))
 }
