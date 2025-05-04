@@ -41,6 +41,6 @@ struct ModifyPolylineView: View {
 
 #Preview {
     ModifyPolylineView(polyline: PolylineData(title: WorkingPolyline.example.title, coordinates: WorkingPolyline.example.coordinates, isLocationTracked: false), onDismiss: {})  { print($0) }
-        .environment(PolylinePersistenceManager(modelContainer: .preview))
+        .environment(PolylinePersistenceManager())
 }
 

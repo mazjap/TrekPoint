@@ -125,5 +125,5 @@ fileprivate struct VideoPlayerView: View {
 #Preview {
     AttachmentsView(annotation: .working(.example))
         .environment(AnnotationPersistenceManager())
-        .environment(PolylinePersistenceManager(modelContainer: .preview))
+        .environment(PolylinePersistenceManager())
 }

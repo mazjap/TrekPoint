@@ -9,7 +9,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     override init() {
         self.locationManager = LocationTrackingManager()
         self.annotationManager = AnnotationPersistenceManager()
-        self.polylineManager = PolylinePersistenceManager(modelContainer: .shared)
+        self.polylineManager = PolylinePersistenceManager()
         
         super.init()
     }
