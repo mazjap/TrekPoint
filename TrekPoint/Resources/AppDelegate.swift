@@ -6,18 +6,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     let annotationManager: AnnotationPersistenceManager
     let polylineManager: PolylinePersistenceManager
     
-    var sharedModelContainer: ModelContainer = {
-        do {
-            return try ModelContainer(makeConfiguration: { ModelConfiguration(schema: $0, isStoredInMemoryOnly: false) })
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-    
     override init() {
         self.locationManager = LocationTrackingManager()
-        self.annotationManager = AnnotationPersistenceManager(modelContainer: sharedModelContainer)
-        self.polylineManager = PolylinePersistenceManager(modelContainer: sharedModelContainer)
+        self.annotationManager = AnnotationPersistenceManager()
+        self.polylineManager = PolylinePersistenceManager(modelContainer: .shared)
         
         super.init()
     }

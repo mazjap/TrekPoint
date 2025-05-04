@@ -1,4 +1,5 @@
 import SwiftData
+import Dependencies
 
 extension ModelContainer {
     /// Initializes a new ModelContainer with `ModelInformation.currentSchema` & `ModelInformation.MigrationPlan`.
@@ -22,7 +23,28 @@ extension ModelContainer {
     }
 }
 
+enum ModelContainerKey: DependencyKey {
+    static let liveValue: ModelContainer = .shared
+    static let previewValue: ModelContainer = .preview
+    static let testValue: ModelContainer = .preview
+}
+
+extension DependencyValues {
+    var modelContainer: ModelContainer {
+        get { self[ModelContainerKey.self] }
+        set { self[ModelContainerKey.self] = newValue }
+    }
+}
+
 extension ModelContainer {
+    static let shared: ModelContainer = {
+        do {
+            return try ModelContainer(makeConfiguration: { ModelConfiguration(schema: $0, isStoredInMemoryOnly: false) })
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
     static let preview: ModelContainer = {
         let container = try! ModelContainer { schema in
             ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -30,13 +52,17 @@ extension ModelContainer {
         
         let context = ModelContext(container)
         
-        context.insert(previewPolyline)
-        context.insert(previewAnnotation)
+        context.insert(AnnotationData.preview)
+        context.insert(PolylineData.preview)
+        
+        try! context.save()
         
         return container
     }()
-    
-    static let previewAnnotation: AnnotationData = {
+}
+
+extension AnnotationData {
+    static let preview: AnnotationData = {
         AnnotationData(
             title: WorkingAnnotation.example.title,
             userDescription: WorkingAnnotation.example.userDescription,
@@ -44,8 +70,11 @@ extension ModelContainer {
             attachments: WorkingAnnotation.example.attachments
         )
     }()
+}
     
-    static let previewPolyline: PolylineData = {
+
+extension PolylineData {
+    static let preview: PolylineData = {
         PolylineData(
             title: WorkingPolyline.example.title,
             userDescription: WorkingPolyline.example.userDescription,

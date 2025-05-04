@@ -10,6 +10,17 @@ enum AnnotationFinalizationError: Error {
     case noAnnotation
 }
 
+enum AnnotationPersistenceManagerKey: DependencyKey {
+    static let liveValue: AnnotationPersistenceManager = AnnotationPersistenceManager()
+}
+
+extension DependencyValues {
+    var annotationPersistenceManager: AnnotationPersistenceManager {
+        get { self[AnnotationPersistenceManagerKey.self] }
+        set { self[AnnotationPersistenceManagerKey.self] = newValue }
+    }
+}
+
 @Observable
 @MainActor
 class AnnotationPersistenceManager {
@@ -24,18 +35,17 @@ class AnnotationPersistenceManager {
     var workingAnnotation: WorkingAnnotation?
     var isShowingOptions = false
     
-    private let undoManager: UndoManager
-    private let modelContainer: ModelContainer
-    private var modelContext: ModelContext
+    private let undoManager = UndoManager()
+    @ObservationIgnored @Dependency(\.modelContainer) private var modelContainer: ModelContainer
     @ObservationIgnored @Dependency(\.attachmentStore) private var attachmentStore
+    
+    private var modelContext: ModelContext {
+        modelContainer.mainContext
+    }
     
     var canUndo: Bool { !undoManager.actions.isEmpty }
     
-    init(modelContainer: ModelContainer) {
-        self.undoManager = UndoManager()
-        self.modelContainer = modelContainer
-        self.modelContext = modelContainer.mainContext
-    }
+    nonisolated init() {}
     
     // MARK: - Attachment Methods
     
