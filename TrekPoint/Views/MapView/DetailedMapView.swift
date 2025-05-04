@@ -638,6 +638,11 @@ struct DetailedMapView: View {
 }
 
 #Preview {
+    let modelContainer = ModelContainer.preview
+    
     DetailedMapView(showSheet: .constant(true), toastManager: .init())
-        .modelContainer(.preview)
+        .modelContainer(modelContainer)
+        .environment(LocationTrackingManager())
+        .environment(AnnotationPersistenceManager(modelContainer: modelContainer, attachmentStore: AttachmentStore()))
+        .environment(PolylinePersistenceManager(modelContainer: modelContainer))
 }
