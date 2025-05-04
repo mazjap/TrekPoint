@@ -12,6 +12,7 @@ enum AnnotationFinalizationError: Error {
 
 enum AnnotationPersistenceManagerKey: DependencyKey {
     static let liveValue: AnnotationPersistenceManager = AnnotationPersistenceManager()
+    static var testValue: AnnotationPersistenceManager { AnnotationPersistenceManager() }
 }
 
 extension DependencyValues {

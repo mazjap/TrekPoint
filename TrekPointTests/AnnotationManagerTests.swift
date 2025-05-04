@@ -2,16 +2,22 @@
 import Testing
 import SwiftData
 import UIKit
+import Dependencies
 
 @MainActor
 @Suite
 struct AnnotationManagerTests {
-    let container: ModelContainer
-    let manager: AnnotationPersistenceManager
+    // NOTE: - ModelContainer & AnnotationPersistenceManager are recreated for
+    // each test run. See ModelContainer+Convenience and
+    // AnnotationPersistenceManager (they are computed dependencies rather than
+    // stored). If I need to write tests in the future that should have SwiftData
+    // persistence between test functions, I'll need to override the Dependency
+    // using `withDependencies`.
+    @Dependency(\.modelContainer) var container: ModelContainer
+    @Dependency(\.annotationPersistenceManager) var manager
     
-    init() throws {
-        self.container = try ModelContainer(for: Schema(versionedSchema: CurrentModelVersion.self), configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        self.manager = AnnotationPersistenceManager(modelContainer: container)
+    init() {
+        print(container.configurations)
     }
     
     func createTestImage() -> UIImage {
