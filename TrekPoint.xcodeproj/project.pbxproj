@@ -60,6 +60,7 @@
 		0EBD38F52DC7DBEF0033B4D1 /* LocationManagerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F42DC7DBEF0033B4D1 /* LocationManagerProvider.swift */; };
 		0EBD38F72DC7DD8F0033B4D1 /* UserDefaultsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */; };
 		0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F82DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift */; };
+		0EBD38FC2DC7F92F0033B4D1 /* FileManagerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38FB2DC7F92F0033B4D1 /* FileManagerProvider.swift */; };
 		0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */; };
 		0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453062BAD5639007C40DE /* DraggablePin.swift */; };
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
@@ -135,6 +136,7 @@
 		0EBD38F42DC7DBEF0033B4D1 /* LocationManagerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManagerProvider.swift; sourceTree = "<group>"; };
 		0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsProvider.swift; sourceTree = "<group>"; };
 		0EBD38F82DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistenceProvider.swift; sourceTree = "<group>"; };
+		0EBD38FB2DC7F92F0033B4D1 /* FileManagerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerProvider.swift; sourceTree = "<group>"; };
 		0EDADA592DC3C59700CB1847 /* TrekPointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrekPointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationDetent+Extension.swift"; sourceTree = "<group>"; };
 		0EE453062BAD5639007C40DE /* DraggablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePin.swift; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				0EBD38F42DC7DBEF0033B4D1 /* LocationManagerProvider.swift */,
 				0EBD38F32DC7D7860033B4D1 /* AttachmentProvider */,
 				0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */,
+				0EBD38FB2DC7F92F0033B4D1 /* FileManagerProvider.swift */,
 				0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */,
 				0EA7FC552D87C0AC001828BB /* ToastManager.swift */,
 			);
@@ -488,6 +491,7 @@
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
+				0EBD38FC2DC7F92F0033B4D1 /* FileManagerProvider.swift in Sources */,
 				0EBD38F72DC7DD8F0033B4D1 /* UserDefaultsProvider.swift in Sources */,
 				0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
