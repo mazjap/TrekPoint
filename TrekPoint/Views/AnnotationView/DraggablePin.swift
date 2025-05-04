@@ -8,6 +8,7 @@ struct DraggablePin: View {
     @State private var isJigglingActive: Bool = false
     
     @ScaledMetric(relativeTo: .title) private var iconSize: Double = 48
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     
     private let movementEnabled: Bool
     private let shouldJiggle: Bool
@@ -50,7 +51,7 @@ struct DraggablePin: View {
                 .padding(.horizontal, 13)
                 .padding(.bottom, 15)
             }
-            .rotationEffect(isJigglingActive && shouldJiggle && !isActive ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
+            .rotationEffect(isJigglingActive && shouldJiggle && !isActive && !reduceMotion ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
             .animation(isJigglingActive && shouldJiggle && !isActive ? .easeInOut(duration: 0.2).repeatForever(autoreverses: true) : .default, value: isJigglingActive)
             .animation(.snappy, value: isActive)
             .scaleEffect(isActive ? 1.3 : 1, anchor: .center)
