@@ -152,9 +152,9 @@ struct MapFeatureNavigator: View {
 #Preview {
     MapFeatureNavigator(
         selection: .constant(nil),
-        annotations: [ModelContainer.previewAnnotation],
-        polylines: [ModelContainer.previewPolyline],
-        annotationManager: AnnotationPersistenceManager(modelContainer: .preview),
+        annotations: [.preview],
+        polylines: [.preview],
+        annotationManager: AnnotationPersistenceManager(),
         polylineManager: PolylinePersistenceManager(modelContainer: .preview),
         toastManager: .init(),
         onSelection: { _ in }
