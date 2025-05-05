@@ -63,14 +63,19 @@ class AnnotationPersistenceManager {
     }
     
     func delete(_ attachment: Attachment, from annotation: AnnotationData) throws {
-        try attachmentStore.delete(attachment)
-        
         guard let index = annotation.attachments.firstIndex(where: { $0.id == attachment.id }) else { return }
         try deleteAttachment(at: index, from: annotation)
     }
     
     func deleteAttachment(at index: Int, from annotation: AnnotationData) throws {
-        try attachmentStore.delete(annotation.attachments[index])
+        do {
+            try attachmentStore.delete(annotation.attachments[index])
+        } catch AttachmentError.fileNotFound {
+            // Continue on if the file doesn't exist
+        } catch {
+            // Throw any other errors
+            throw error
+        }
         
         annotation.attachments.remove(at: index)
         try save()

@@ -4,6 +4,7 @@ import Dependencies
 
 struct AttachmentsView: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
+    @Dependency(\.toastManager) private var toastManager
     private let annotation: AnnotationType
     
     init(annotation: AnnotationType) {
@@ -26,8 +27,7 @@ struct AttachmentsView: View {
                                 try annotationManager.deleteAttachmentFromWorkingAnnotation(attachment)
                             }
                         } catch {
-                            // TODO: - Gracefully handle error (toast?) instead of swallowing
-                            print(error)
+                            toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                         }
                     } label: {
                         Label("Remove Attachment", systemImage: "trash")
