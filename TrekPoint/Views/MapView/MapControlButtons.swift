@@ -71,15 +71,7 @@ struct MapControlButtons: View {
                             .disabled(!annotationManager.canUndo)
                         }
                         .padding(.horizontal)
-                        .background {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(.background)
-                        }
-                        
-                        Triangle(faceAlignment: .leading)
-                            .fill(.background)
-                            .frame(width: 10, height: 20)
-                            .offset(x: -1)
+                        .toolTipVersionSpecificBackground(triangleSize: CGSize(width: 10, height: 20), cornerRadius: cornerRadius)
                     }
                     
                     Button {
@@ -112,10 +104,7 @@ struct MapControlButtons: View {
                     }
                     .frame(width: buttonSize)
                     .foregroundStyle(annotationManager.isShowingOptions ? activeColor : inactiveColor)
-                    .background {
-                        UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius)
-                            .fill(.background)
-                    }
+                    .versionSpecificBackground(in: UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius))
                 }
                 .frame(height: buttonSize)
                 
@@ -149,15 +138,7 @@ struct MapControlButtons: View {
                             .disabled(!polylineManager.canUndo)
                         }
                         .padding(.horizontal)
-                        .background {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(.background)
-                        }
-                        
-                        Triangle(faceAlignment: .leading)
-                            .fill(.background)
-                            .frame(width: 10, height: 20)
-                            .offset(x: -1)
+                        .toolTipVersionSpecificBackground(triangleSize: CGSize(width: 10, height: 20), cornerRadius: cornerRadius)
                     }
                     
                     Button {
@@ -178,15 +159,19 @@ struct MapControlButtons: View {
                     }
                     .frame(width: buttonSize, height: buttonSize)
                     .foregroundStyle(polylineManager.isDrawingPolyline ? activeColor : inactiveColor)
-                    .background {
-                        Rectangle()
-                            .fill(.background)
-                    }
+                    .versionSpecificBackground(in: Rectangle())
                 }
                 .frame(height: buttonSize)
                 
                 Divider()
                     .frame(width: buttonSize)
+                
+                let userLocationShape = if locationManager.isUserLocationActive {
+                    AnyShape(Rectangle())
+                } else {
+                    AnyShape(UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
+                        
+                }
             
                 Button {
                     if locationManager.isUserLocationActive {
@@ -203,15 +188,7 @@ struct MapControlButtons: View {
                 }
                 .frame(width: buttonSize)
                 .foregroundStyle(locationManager.isUserLocationActive ? activeColor : inactiveColor)
-                .background {
-                    if locationManager.isUserLocationActive {
-                        Rectangle()
-                            .fill(.background)
-                    } else {
-                        UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                            .fill(.background)
-                    }
-                }
+                .versionSpecificBackground(in: userLocationShape)
                 .frame(height: buttonSize)
                 
                 if locationManager.isUserLocationActive {
@@ -246,15 +223,7 @@ struct MapControlButtons: View {
                                     }
                                     .frame(height: buttonSize)
                                     .padding(.horizontal)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: cornerRadius)
-                                            .fill(.background)
-                                    }
-                                    
-                                    Triangle(faceAlignment: .leading)
-                                        .fill(.background)
-                                        .frame(width: 10, height: 20)
-                                        .offset(x: -1)
+                                    .toolTipVersionSpecificBackground(triangleSize: CGSize(width: 10, height: 20), cornerRadius: cornerRadius)
                                 }
                             }
                         }
@@ -278,20 +247,51 @@ struct MapControlButtons: View {
                         }
                         .frame(width: buttonSize)
                         .foregroundStyle(polylineManager.isTrackingPolyline ? activeColor : inactiveColor)
-                        .background {
-                            UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius)
-                                .fill(.background)
-                        }
+                        .versionSpecificBackground(in: UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
                     }
                     .frame(height: buttonSize)
                 }
-                
-                Spacer()
             }
             .opacity(selectedDetent == .largeWithoutScaleEffect ? 0 : 1)
             .animation(.easeOut(duration: 0.2), value: selectedDetent)
             .animation(.easeInOut(duration: 0.2), value: locationManager.isUserLocationActive)
         }
         .padding(.horizontal)
+    }
+}
+
+fileprivate struct RoundedRectangleWithTrailingLeadingFacedTriangle: Shape {
+    let triangleSize: CGSize
+    let cornerRadius: Double
+    
+    func path(in rect: CGRect) -> Path {
+        let roundedRectFrame = CGRect(x: rect.minX, y: rect.minY, width: rect.width - triangleSize.width + 1, height: rect.height)
+        let roundedRectPath = RoundedRectangle(cornerRadius: cornerRadius).path(in: roundedRectFrame)
+        
+        let triangleOrigin = CGPoint(x: rect.maxX - triangleSize.width, y: roundedRectFrame.midY - triangleSize.height / 2)
+        let triangleFrame = CGRect(origin: triangleOrigin, size: triangleSize)
+        let trianglePath = Triangle(faceAlignment: .leading).path(in: triangleFrame)
+        
+        return roundedRectPath.union(trianglePath)
+    }
+}
+
+
+fileprivate extension View {
+    @ViewBuilder
+    func versionSpecificBackground(in shape: some Shape) -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(in: shape)
+        } else {
+            self.background {
+                shape.fill(.background)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func toolTipVersionSpecificBackground(triangleSize: CGSize, cornerRadius: Double) -> some View {
+        self.padding(.trailing, triangleSize.width)
+            .versionSpecificBackground(in: RoundedRectangleWithTrailingLeadingFacedTriangle(triangleSize: triangleSize, cornerRadius: cornerRadius))
     }
 }
