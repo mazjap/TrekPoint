@@ -3,9 +3,17 @@ import SwiftData
 import CoreLocation
 import Dependencies
 
-enum PolylineFinalizationError: Error {
+enum PolylineFinalizationError: Error, Identifiable {
     case emptyTitle
     case tooFewCoordinates(required: Int, have: Int)
+    
+    var id: String {
+        switch self {
+        case .emptyTitle: "emptyTitle"
+        case let .tooFewCoordinates(required, have):
+            "tooFewCoordinates(required: \(required), have: \(have))"
+        }
+    }
 }
 
 enum PolylinePersistenceManagerKey: DependencyKey {

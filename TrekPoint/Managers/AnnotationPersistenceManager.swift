@@ -4,10 +4,12 @@ import struct CoreLocation.CLLocationCoordinate2D
 import class UIKit.UIImage
 import Dependencies
 
-enum AnnotationFinalizationError: Error {
+enum AnnotationFinalizationError: String, Error, Identifiable {
     case noCoordinate
     case emptyTitle
     case noAnnotation
+    
+    var id: String { rawValue }
 }
 
 enum AnnotationPersistenceManagerKey: DependencyKey {

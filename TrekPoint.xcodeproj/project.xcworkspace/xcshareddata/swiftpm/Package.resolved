@@ -1,5 +1,5 @@
 {
-  "originHash" : "eb32a06c69230da40239734e50359976fd2ff6a333f2b8b7fb70b06a8d82ca78",
+  "originHash" : "de00ebc5ae50f783e47e9d12dc52b3f4d2e1ca6d63f44e5c61b67d31afd07244",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mazjap/warmtoast.git",
       "state" : {
-        "revision" : "b51fdb58227f7f1d036b65aa7dfa9c9278033508",
-        "version" : "0.0.1"
+        "branch" : "main",
+        "revision" : "226e5c3e6f97a9b84a62519059d8cac25674e102"
       }
     },
     {
