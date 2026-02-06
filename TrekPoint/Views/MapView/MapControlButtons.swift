@@ -3,6 +3,7 @@ import MapKit
 import Dependencies
 
 struct MapControlButtons: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Dependency(\.polylinePersistenceManager) private var polylineManager
     @Dependency(\.locationTrackingManager) private var locationManager
@@ -41,7 +42,11 @@ struct MapControlButtons: View {
             VStack(alignment: .trailing, spacing: 0) {
                 let padding = buttonSize / 4
                 let activeColor = Color.blue
-                let inactiveColor = Color(uiColor: .darkGray)
+                let inactiveColor = if colorScheme == .dark {
+                    Color(uiColor: .secondaryLabel)
+                } else {
+                    Color.primary
+                }
                 let cornerRadius = buttonSize / 3
                 
                 HStack(spacing: 0) {
@@ -170,7 +175,6 @@ struct MapControlButtons: View {
                     AnyShape(Rectangle())
                 } else {
                     AnyShape(UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
-                        
                 }
             
                 Button {
