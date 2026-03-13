@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,6 +20,10 @@
 		0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */; };
 		0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */; };
 		0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF22D752EA600C163E9 /* AppDelegate.swift */; };
+		0E3DACAA2F64017500158EF3 /* AnnotationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA52F64017500158EF3 /* AnnotationManagerTests.swift */; };
+		0E3DACAB2F64017500158EF3 /* AttachmentStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA62F64017500158EF3 /* AttachmentStoreTests.swift */; };
+		0E3DACAC2F64017500158EF3 /* CoordinateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA72F64017500158EF3 /* CoordinateTests.swift */; };
+		0E3DACAD2F64017500158EF3 /* PolylineManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */; };
 		0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */; };
 		0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
@@ -94,6 +98,10 @@
 		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingLocation.swift; sourceTree = "<group>"; };
 		0E36EAF22D752EA600C163E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0E3DACA52F64017500158EF3 /* AnnotationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationManagerTests.swift; sourceTree = "<group>"; };
+		0E3DACA62F64017500158EF3 /* AttachmentStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreTests.swift; sourceTree = "<group>"; };
+		0E3DACA72F64017500158EF3 /* CoordinateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateTests.swift; sourceTree = "<group>"; };
+		0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineManagerTests.swift; sourceTree = "<group>"; };
 		0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Extension.swift"; sourceTree = "<group>"; };
 		0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistenceManager.swift; sourceTree = "<group>"; };
 		0E4E2AB72DA1924700AABFDE /* README.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -148,10 +156,6 @@
 		0EE4530A2BAD619E007C40DE /* MapFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeature.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		0EDADA5A2DC3C59700CB1847 /* TrekPointTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TrekPointTests; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		0EA4BD402B9151AF005259B4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -199,6 +203,17 @@
 			path = SwiftData;
 			sourceTree = "<group>";
 		};
+		0E3DACA92F64017500158EF3 /* TrekPointTests */ = {
+			isa = PBXGroup;
+			children = (
+				0E3DACA52F64017500158EF3 /* AnnotationManagerTests.swift */,
+				0E3DACA62F64017500158EF3 /* AttachmentStoreTests.swift */,
+				0E3DACA72F64017500158EF3 /* CoordinateTests.swift */,
+				0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */,
+			);
+			path = TrekPointTests;
+			sourceTree = "<group>";
+		};
 		0E4E2ABE2DA1925900AABFDE /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -218,7 +233,7 @@
 				0E4E2AB72DA1924700AABFDE /* README.md */,
 				0EA4BD452B9151AF005259B4 /* TrekPoint */,
 				0E4E2ABE2DA1925900AABFDE /* src */,
-				0EDADA5A2DC3C59700CB1847 /* TrekPointTests */,
+				0E3DACA92F64017500158EF3 /* TrekPointTests */,
 				0EBD38EE2DC7D6A90033B4D1 /* Frameworks */,
 				0EA4BD442B9151AF005259B4 /* Products */,
 			);
@@ -408,9 +423,6 @@
 			dependencies = (
 				0EDADA5E2DC3C59700CB1847 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				0EDADA5A2DC3C59700CB1847 /* TrekPointTests */,
-			);
 			name = TrekPointTests;
 			packageProductDependencies = (
 				0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */,
@@ -546,6 +558,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E3DACAA2F64017500158EF3 /* AnnotationManagerTests.swift in Sources */,
+				0E3DACAB2F64017500158EF3 /* AttachmentStoreTests.swift in Sources */,
+				0E3DACAC2F64017500158EF3 /* CoordinateTests.swift in Sources */,
+				0E3DACAD2F64017500158EF3 /* PolylineManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

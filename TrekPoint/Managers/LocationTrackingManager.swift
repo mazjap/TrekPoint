@@ -15,7 +15,7 @@ extension DependencyValues {
 
 @Observable
 @MainActor
-class LocationTrackingManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
     var isTracking = false
     
