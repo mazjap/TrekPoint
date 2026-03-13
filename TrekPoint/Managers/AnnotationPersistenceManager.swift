@@ -41,6 +41,7 @@ class AnnotationPersistenceManager {
     private let undoManager = UndoManager()
     @ObservationIgnored @Dependency(\.modelContainer) private var modelContainer: ModelContainer
     @ObservationIgnored @Dependency(\.attachmentStore) private var attachmentStore
+    @ObservationIgnored @Dependency(\.toastManager) private var toastManager
     
     private var modelContext: ModelContext {
         modelContainer.mainContext
@@ -156,8 +157,7 @@ class AnnotationPersistenceManager {
                 do {
                     try deleteAttachmentFromWorkingAnnotation(attachment)
                 } catch {
-                    // TODO: - Gracefully handle error (toast?) instead of swallowing
-                    print(error)
+                    toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                 }
             }
         }

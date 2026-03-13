@@ -6,6 +6,7 @@ import Dependencies
 
 struct AttachmentPicker: View {
     @Dependency(\.annotationPersistenceManager) private var attachmentManager
+    @Dependency(\.toastManager) private var toastManager
     @State private var presentPicker = false
     @State private var isLoading = false
     
@@ -39,8 +40,7 @@ struct AttachmentPicker: View {
                         try attachmentManager.addVideoToWorkingAnnotation(thatExistsAtURL: url)
                     }
                 } catch {
-                    // TODO: - Gracefully handle error (toast?) instead of swallowing
-                    print(error)
+                    toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                 }
             }
         }
@@ -58,6 +58,7 @@ struct PHPickerView: UIViewControllerRepresentable {
         case addVideo(at: URL)
     }
     
+    @Dependency(\.toastManager) private var toastManager
     @Binding private var isLoading: Bool
     private let addAttachment: (AttachmentType) -> Void
     
@@ -125,8 +126,9 @@ struct PHPickerView: UIViewControllerRepresentable {
                                 self?.parent.addAttachment(.addVideo(at: tempURL))
                             }
                         } catch {
-                            // TODO: - Gracefully handle error (toast?) instead of swallowing
-                            print("Error copying video: \(error)")
+                            DispatchQueue.main.async { [weak self] in
+                                self?.parent.toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
+                            }
                         }
                     }
                 } else {
