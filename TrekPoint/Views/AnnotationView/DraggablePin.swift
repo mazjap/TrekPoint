@@ -65,13 +65,17 @@ struct DraggablePin: View {
                 applyNewPosition(CGPoint(x: x, y: y))
                 translation = .zero
                 
-                updateJigglability()
+                Task {
+                    await updateJigglability()
+                }
             }
             .onChange(of: shouldJiggle) {
-                updateJigglability()
+                Task {
+                    await updateJigglability()
+                }
             }
             .task {
-                updateJigglability()
+                await updateJigglability()
             }
         }
         .frame(width: iconSize, height: iconSize)
@@ -98,11 +102,11 @@ struct DraggablePin: View {
         )
     }
     
-    private func updateJigglability() {
+    private func updateJigglability() async {
         if shouldJiggle && !isActive {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.isJigglingActive = true
-            }
+            try? await Task.sleep(for: .seconds(0.1))
+            
+            self.isJigglingActive = true
         } else {
             self.isJigglingActive = false
         }
