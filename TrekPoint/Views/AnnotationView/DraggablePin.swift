@@ -157,7 +157,6 @@ import MapboxMaps
                 
                 Button {
                     isJiggling.toggle()
-                    print("is jiggling:", isJiggling)
                 } label: {
                     Text("Toggle Jiggle")
                         .padding()

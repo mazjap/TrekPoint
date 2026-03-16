@@ -18,53 +18,53 @@ struct LaunchAnimationView: View {
     @State private var animationState = LaunchAnimationState()
     @Binding private var isAnimationComplete: Bool
     
-    private let size: CGSize
     
     init(isAnimationComplete: Binding<Bool>) {
         self._isAnimationComplete = isAnimationComplete
-        self.size = UIScreen.current?.bounds.size ?? .zero
     }
     
     var body: some View {
-        ZStack {
-            Color.launchScreen
-                .opacity(animationState.backgroundOpacity)
-            
+        GeometryReader { geometry in
             ZStack {
-                Image("MountainLeft")
-                    .resizable()
-                    .offset(x: -animationState.hOffset, y: animationState.hOffset)
+                Color.launchScreen
+                    .opacity(animationState.backgroundOpacity)
                 
-                Image("MountainRight")
-                    .resizable()
-                    .offset(x: animationState.hOffset, y: animationState.hOffset)
-                
-                Image("Marker")
-                    .resizable()
-                    .offset(y: animationState.vOffset)
-            }
-            .scaledToFill()
-            .opacity(animationState.elementOpacity)
-        }
-        .ignoresSafeArea()
-        .onAppear {
-            if reduceMotion {
-                withAnimation(.easeIn(duration: 0.5)) {
-                    animationState.backgroundOpacity = 0
-                    animationState.elementOpacity = 0
-                } completion: {
-                    isAnimationComplete = true
+                ZStack {
+                    Image("MountainLeft")
+                        .resizable()
+                        .offset(x: -animationState.hOffset, y: animationState.hOffset)
+                    
+                    Image("MountainRight")
+                        .resizable()
+                        .offset(x: animationState.hOffset, y: animationState.hOffset)
+                    
+                    Image("Marker")
+                        .resizable()
+                        .offset(y: animationState.vOffset)
                 }
-            } else {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    animationState.vOffset = size.height / 30
-                } completion: {
-                    withAnimation(.easeInOut(duration: 1)) {
-                        animationState.hOffset = size.width
-                        animationState.vOffset = -size.height
+                .scaledToFill()
+                .opacity(animationState.elementOpacity)
+            }
+            .ignoresSafeArea()
+            .onAppear {
+                if reduceMotion {
+                    withAnimation(.easeIn(duration: 0.5)) {
                         animationState.backgroundOpacity = 0
+                        animationState.elementOpacity = 0
                     } completion: {
                         isAnimationComplete = true
+                    }
+                } else {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        animationState.vOffset = geometry.size.height / 30
+                    } completion: {
+                        withAnimation(.easeInOut(duration: 1)) {
+                            animationState.hOffset = geometry.size.width
+                            animationState.vOffset = -geometry.size.height
+                            animationState.backgroundOpacity = 0
+                        } completion: {
+                            isAnimationComplete = true
+                        }
                     }
                 }
             }

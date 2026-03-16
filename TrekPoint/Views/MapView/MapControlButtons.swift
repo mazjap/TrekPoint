@@ -204,9 +204,12 @@ struct MapControlButtons: View {
                                             _ = try polylineManager.finalizeWorkingPolyline()
                                             
                                             locationManager.stopTracking()
+                                        } catch let PolylineFinalizationError.tooFewCoordinates(required, have) {
+                                            toastManager.addBreadForToasting(.polylineCreationError(.tooFewCoordinates(required: required, have: have)))
+                                        } catch PolylineFinalizationError.emptyTitle {
+                                            toastManager.addBreadForToasting(.polylineCreationError(.emptyTitle))
                                         } catch {
-                                            print(error)
-                                            // Show error toast
+                                            toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                                         }
                                     } label: {
                                         Text("Confirm")
