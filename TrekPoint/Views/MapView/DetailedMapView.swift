@@ -250,6 +250,8 @@ struct DetailedMapView: View {
                 }
                 
                 annotation.coordinate = Coordinate(newCoordinate)
+            } onTap: {
+                selectedMapItemTag = annotation.tag
             }
         }
     }
@@ -277,6 +279,8 @@ struct DetailedMapView: View {
                 }
                 
                 annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(newCoordinate))
+            } onTap: {
+                selectedMapItemTag = .newFeature
             }
         }
     }

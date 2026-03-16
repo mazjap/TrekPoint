@@ -29,7 +29,8 @@ struct MapPreview: View {
                 movementEnabled: false,
                 foregroundColor: .orange,
                 fillColor: type(of: annotation) == AnnotationData.self ? .white : .blue,
-                applyNewPosition: {_ in}
+                applyNewPosition: {_ in},
+                onTap: {}
             )
         case let .polyline(polyline):
             PolylineMapOverlay(polyline: polyline, strokeColor: .red)
