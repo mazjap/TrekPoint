@@ -1,7 +1,8 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 
 struct AnnotationMapOverlay: MapContent {
+    private let fontSize: Double = 10
     private let annotation: any AnnotationProvider
     private let movementEnabled: Bool
     private let shouldJiggle: Bool
@@ -23,19 +24,25 @@ struct AnnotationMapOverlay: MapContent {
     }
     
     var body: some MapContent {
-        Annotation(annotation.title, coordinate: annotation.clCoordinate, anchor: anchor) {
-            DraggablePin(
-                movementEnabled: movementEnabled,
-                shouldJiggle: shouldJiggle,
-                fillColor: fillColor,
-                accentColor: accentColor,
-                anchor: anchor,
-                applyNewPosition: applyNewPosition
-            )
-            .foregroundStyle(foregroundColor)
-            .id(annotation.tag)
+        MapViewAnnotation(coordinate: annotation.clCoordinate) {
+            let verticalSpacing: Double = 4
+            VStack(spacing: verticalSpacing) {
+                DraggablePin(
+                    movementEnabled: movementEnabled,
+                    shouldJiggle: shouldJiggle,
+                    fillColor: fillColor,
+                    accentColor: accentColor,
+                    anchor: anchor,
+                    applyNewPosition: applyNewPosition
+                )
+                .foregroundStyle(foregroundColor)
+                
+                Text(annotation.title)
+                    .font(.system(size: fontSize, weight: .bold))
+            }
+            .offset(y: verticalSpacing + fontSize)
         }
-        .tag(annotation.tag)
+        .variableAnchors([.init(anchor: .bottom)])
     }
 }
 

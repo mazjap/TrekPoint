@@ -113,7 +113,7 @@ struct DraggablePin: View {
     }
 }
 
-import MapKit
+import MapboxMaps
 
 #Preview {
     @Previewable @State var isJiggling = true
@@ -126,7 +126,7 @@ import MapKit
     }()
     
     Map {
-        Annotation("No Jiggle", coordinate: coordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: coordinate) {
             DraggablePin(
                 movementEnabled: true,
                 shouldJiggle: false,
@@ -138,7 +138,7 @@ import MapKit
             .foregroundStyle(.orange)
         }
         
-        Annotation("Jiggle", coordinate: otherCoordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: otherCoordinate) {
             DraggablePin(
                 movementEnabled: true,
                 shouldJiggle: isJiggling,

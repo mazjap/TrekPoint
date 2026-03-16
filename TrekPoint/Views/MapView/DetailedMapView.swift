@@ -1,6 +1,6 @@
 import SwiftUI
 import SwiftData
-import MapKit
+import MapboxMaps
 import WarmToast
 import Dependencies
 
@@ -66,7 +66,7 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var cameraPosition: Viewport = .styleDefault
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
@@ -74,6 +74,22 @@ struct DetailedMapView: View {
     @Binding private var showSheet: Bool
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
+    
+    private func ornamentOptions(height: CGFloat) -> OrnamentOptions {
+        let smallDetentHeight: CGFloat =
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            10
+        } else {
+            height / 6.5
+        }
+        
+        return OrnamentOptions(
+            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 0), visibility: .visible, useMetricUnits: false, units: .imperial),
+            compass: CompassViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 30), image: nil, visibility: .visible),
+            logo: LogoViewOptions(position: .bottomLeft, margins: CGPoint(x: 10, y: smallDetentHeight)),
+            attributionButton: AttributionButtonOptions(position: .bottomRight, margins: CGPoint(x: 10, y: smallDetentHeight), tintColor: nil)
+        )
+    }
     
     init(showSheet: Binding<Bool>) {
         self._showSheet = showSheet
@@ -83,9 +99,18 @@ struct DetailedMapView: View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
-                Map(position: $cameraPosition, bounds: MapCameraBounds(minimumDistance: 0, maximumDistance: .infinity), selection: $selectedMapItemTag, scope: nspace) {
+                Map(viewport: $cameraPosition) {
+                    StyleProjection(name: .globe)
+                    
+                    RasterDemSource(id: "mapbox-dem")
+                        .url("mapbox://mapbox.mapbox-terrain-dem-v1")
+                        .maxzoom(14.0)
+                    
+                    Terrain(sourceId: "mapbox-dem")
+                        .exaggeration(1.25)
+                    
                     if locationManager.isUserLocationActive {
-                        UserAnnotation()
+                        Puck2D()
                     }
                     
                     annotationViews(proxy: proxy)
@@ -96,30 +121,14 @@ struct DetailedMapView: View {
                     
                     inProgressPin(proxy: proxy)
                 }
-                .mapStyle(.hybrid(elevation: .realistic))
-                .mapControlVisibility(.hidden)
-                .onTapGesture { location in
-                    guard polylineManager.isDrawingPolyline else { return }
-                    guard let coordinate = proxy.convert(
-                        location,
-                        from: .local
-                    ) else {
-                        return
-                    }
-                    
-                    polylineManager.appendWorkingPolylineCoordinate(Coordinate(coordinate))
-                    
-                    // If this is the first point, show the options UI
-                    if polylineManager.workingPolyline?.coordinates.count == 1 {
-                        selectedMapItemTag = .newFeature
-                    }
-                }
+                .ornamentOptions(ornamentOptions(height: frame.height))
+                .mapStyle(.standardSatellite(lightPreset: .dusk))
+                .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
                     MapControlButtons(selectedMapItemTag: $selectedMapItemTag, selectedDetent: $selectedDetent, proxy: proxy, frame: frame, nspace: nspace, buttonSize: buttonSize)
                 }
             }
         }
-        .mapScope(nspace)
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
@@ -131,12 +140,12 @@ struct DetailedMapView: View {
                 if let newSelection {
                     selectedMapItemTag = newSelection.tag
                     
-                    withAnimation(.easeOut) {
+                    withViewportAnimation(.fly) {
                         switch newSelection {
                         case let .annotation(annotation):
-                            cameraPosition = .region(MKCoordinateRegion(center: annotation.clCoordinate, latitudinalMeters: 15_000, longitudinalMeters: 15_000))
+                            cameraPosition = .camera(center: annotation.clCoordinate, zoom: 14)
                         case let .polyline(polyline):
-                            cameraPosition = .rect(MKMapRect(coordinates: polyline.clCoordinates))
+                            cameraPosition = .overview(geometry: Geometry.lineString(LineString(polyline.clCoordinates)), geometryPadding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
                         }
                     }
                 } else {
@@ -184,8 +193,8 @@ struct DetailedMapView: View {
         }
         .onChange(of: locationManager.isUserLocationActive) {
             if locationManager.isUserLocationActive {
-                withAnimation(.easeOut) {
-                    cameraPosition = .userLocation(fallback: .automatic)
+                withViewportAnimation(.fly) {
+                    cameraPosition = .followPuck(zoom: 10)
                 }
             }
         }
@@ -223,20 +232,18 @@ struct DetailedMapView: View {
             }
             
             if locationManager.isUserLocationActive {
-                withAnimation {
-                    cameraPosition = .userLocation(fallback: .automatic)
+                withViewportAnimation(.fly) {
+                    cameraPosition = .followPuck(zoom: 10)
                 }
             }
         }
     }
     
+    @MapContentBuilder
     private func annotationViews(proxy: MapProxy) -> some MapContent {
-        ForEach(annotations) { annotation in
+        ForEvery(annotations) { annotation in
             AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, foregroundColor: .orange) { newPosition in
-                guard let newCoordinate = proxy.convert(
-                    newPosition,
-                    from: .global
-                ) else {
+                guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                     // TODO: - Send to some analytics service
                     toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
@@ -249,7 +256,7 @@ struct DetailedMapView: View {
     
     @MapContentBuilder
     private func polylineViews(proxy: MapProxy) -> some MapContent {
-        ForEach(polylines) { polyline in
+        ForEvery(polylines) { polyline in
             PolylineMapOverlay(polyline: polyline, strokeColor: polyline.isLocationTracked ? .orange : .red)
         }
     }
@@ -263,10 +270,7 @@ struct DetailedMapView: View {
                 foregroundColor: .orange,
                 fillColor: .blue
             ) { newPosition in
-                guard let newCoordinate = proxy.convert(
-                    newPosition,
-                    from: .global
-                ) else {
+                guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                     // TODO: - Send to some analytics service
                     toastManager.addBreadForToasting(.somethingWentWrong(.message("Working annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                     return
@@ -286,20 +290,13 @@ struct DetailedMapView: View {
             )
             
             // Add markers for each point
-            ForEach(Array(workingPolyline.coordinates.enumerated()), id: \.1.id) { index, coordinate in
-                Annotation(
-                    "Point \(index + 1)",
-                    coordinate: CLLocationCoordinate2D(coordinate),
-                    anchor: .center
-                ) {
+            ForEvery(Array(workingPolyline.coordinates.enumerated()), id: \.1.id) { index, coordinate in
+                MapViewAnnotation(coordinate: CLLocationCoordinate2D(coordinate)) {
                     DraggablePolylinePoint(
                         movementEnabled: !workingPolyline.isLocationTracked,
                         fillColor: polylineManager.isTrackingPolyline ? .purple : .blue
                     ) { newPosition in
-                        guard let newCoordinate = proxy.convert(
-                            newPosition,
-                            from: .global
-                        ) else {
+                        guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                             // TODO: - Send to some analytics service
                             toastManager.addBreadForToasting(.somethingWentWrong(.message("Working polyline point movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
                             return
@@ -308,7 +305,6 @@ struct DetailedMapView: View {
                         polylineManager.moveWorkingPolylineCoordinate(at: index, to: newCoordinate)
                     }
                 }
-                .tag(MapFeatureTag.newFeature)
             }
         }
     }

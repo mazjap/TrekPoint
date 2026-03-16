@@ -1,5 +1,5 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 import Dependencies
 
 struct MapControlButtons: View {
@@ -28,17 +28,6 @@ struct MapControlButtons: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            HStack {
-                VStack(alignment: .leading, spacing: 40) {
-                    MapScaleView(scope: nspace)
-                    
-                    MapCompass(scope: nspace)
-                }
-                .mapControlVisibility(.visible) // TODO: - Use a setting to determine whether controls are visible
-                
-                Spacer()
-            }
-            
             VStack(alignment: .trailing, spacing: 0) {
                 let padding = buttonSize / 4
                 let activeColor = Color.blue
@@ -83,10 +72,7 @@ struct MapControlButtons: View {
                         if annotationManager.workingAnnotation == nil {
                             let midPoint = CGPoint(x: frame.midX, y: frame.midY)
                             
-                            guard let coordinate = proxy.convert(
-                                midPoint,
-                                from: .global
-                            ) else {
+                            guard let coordinate = proxy.map?.coordinate(for: midPoint) else {
                                 // TODO: - Send to some analytics service
                                 toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation creation was not possible. (\(midPoint) could not be converted to a map coordinate")))
                                 

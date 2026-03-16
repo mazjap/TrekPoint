@@ -71,7 +71,7 @@ struct DraggablePolylinePoint: View {
     }
 }
 
-import MapKit
+import MapboxMaps
 
 #Preview {
     let coordinate = CLLocationCoordinate2D.random
@@ -83,7 +83,7 @@ import MapKit
     }()
     
     Map {
-        Annotation("No Jiggle", coordinate: coordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: coordinate) {
             DraggablePolylinePoint(
                 movementEnabled: true,
                 fillColor: .green,
@@ -91,7 +91,7 @@ import MapKit
             ) {_ in}
         }
         
-        Annotation("Jiggle", coordinate: otherCoordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: otherCoordinate) {
             DraggablePolylinePoint(
                 movementEnabled: true,
                 fillColor: .red,

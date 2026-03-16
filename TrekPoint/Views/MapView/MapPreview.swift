@@ -1,5 +1,5 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 
 struct MapPreview: View {
     private let feature: MapFeature
@@ -8,27 +8,15 @@ struct MapPreview: View {
         self.feature = feature
     }
     
-    private var initialCameraPosition: MapCameraPosition {
+    private var initialCameraPosition: Viewport {
         switch feature {
         case let .annotation(annotation):
-            let coordinateSpan = MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
-            let region = MKCoordinateRegion(center: annotation.clCoordinate, span: coordinateSpan)
-            
-            return .region(region)
+            return .camera(center: annotation.clCoordinate, zoom: 10)
         case let .polyline(polyline):
-            let boundingBox = MKMapRect(coordinates: polyline.clCoordinates)
-            let expandedWidth = boundingBox.width * 1.3
-            let widthDelta = expandedWidth - boundingBox.width
+            let polyline = LineString(polyline.clCoordinates)
+            let insets = EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
             
-            let expandedHeight = boundingBox.height * 1.3
-            let heightDelta = expandedHeight - boundingBox.height
-            
-            let origin = MKMapPoint(x: boundingBox.minX - widthDelta / 2, y: boundingBox.minY - heightDelta / 2)
-            let size = MKMapSize(width: expandedWidth, height: expandedHeight)
-            
-            let expandedBox = MKMapRect(origin: origin, size: size)
-            
-            return .rect(expandedBox)
+            return .overview(geometry: Geometry.lineString(polyline), geometryPadding: insets)
         }
     }
     
@@ -49,9 +37,10 @@ struct MapPreview: View {
     }
     
     var body: some View {
-        Map(initialPosition: initialCameraPosition, interactionModes: []) {
+        Map(initialViewport: initialCameraPosition) {
             content
         }
+        .gestureOptions(.init(panEnabled: false, pinchEnabled: false, rotateEnabled: false, simultaneousRotateAndPinchZoomEnabled: false, pinchZoomEnabled: false, pinchPanEnabled: false, pitchEnabled: false, doubleTapToZoomInEnabled: false, doubleTouchToZoomOutEnabled: false, quickZoomEnabled: false))
     }
 }
 
