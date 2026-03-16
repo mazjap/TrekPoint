@@ -70,8 +70,7 @@ struct AttachmentsView: View {
                     do {
                         return try annotationManager.getUrl(for: attachment)
                     } catch {
-                        // TODO: - Gracefully handle error (toast?) instead of swallowing
-                        print(error)
+                        toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                         return nil
                     }
                 }()
@@ -90,8 +89,7 @@ struct AttachmentsView: View {
                     do {
                         return try annotationManager.getUrl(for: attachment)
                     } catch {
-                        // TODO: - Gracefully handle error (toast?) instead of swallowing
-                        print(error)
+                        toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                         return nil
                     }
                 }()
