@@ -122,7 +122,20 @@ struct DetailedMapView: View {
                     inProgressPin(proxy: proxy)
                 }
                 .ornamentOptions(ornamentOptions(height: frame.height))
-                .mapStyle(.standardSatellite(lightPreset: .dusk))
+                .mapStyle(.standardSatellite)
+                .onTapGesture { location in
+                    guard polylineManager.isDrawingPolyline else { return }
+                    guard let coordinate = proxy.map?.coordinate(for: location) else {
+                        return
+                    }
+                    
+                    polylineManager.appendWorkingPolylineCoordinate(Coordinate(coordinate))
+                    
+                    // If this is the first point, show the options UI
+                    if polylineManager.workingPolyline?.coordinates.count == 1 {
+                        selectedMapItemTag = .newFeature
+                    }
+                }
                 .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
                     MapControlButtons(selectedMapItemTag: $selectedMapItemTag, selectedDetent: $selectedDetent, proxy: proxy, frame: frame, nspace: nspace, buttonSize: buttonSize)
