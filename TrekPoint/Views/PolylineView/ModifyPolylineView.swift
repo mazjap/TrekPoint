@@ -3,6 +3,7 @@ import Dependencies
 
 struct ModifyPolylineView: View {
     @Dependency(\.polylinePersistenceManager) private var polylineManager
+    @Dependency(\.toastManager) private var toastManager
     @Environment(\.dismiss) private var dismiss
     private let polyline: PolylineData
     private let onDismiss: () -> Void
@@ -28,6 +29,15 @@ struct ModifyPolylineView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         do {
+                            guard !polyline.title.isEmpty else {
+                                toastManager.addBreadForToasting(.polylineCreationError(.emptyTitle))
+                                return
+                            }
+                            guard polyline.coordinates.count > 1 else {
+                                toastManager.addBreadForToasting(.polylineCreationError(.tooFewCoordinates(required: 2, have: polyline.coordinates.count)))
+                                return
+                            }
+                            
                             try polylineManager.save()
                             onDismiss()
                             dismiss()

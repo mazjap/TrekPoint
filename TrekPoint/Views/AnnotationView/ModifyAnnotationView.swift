@@ -3,6 +3,7 @@ import Dependencies
 
 struct ModifyAnnotationView: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
+    @Dependency(\.toastManager) private var toastManager
     @Environment(\.dismiss) private var dismiss
     private let annotation: AnnotationData
     private let onDismiss: () -> Void
@@ -28,6 +29,11 @@ struct ModifyAnnotationView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         do {
+                            guard !annotation.title.isEmpty else {
+                                toastManager.addBreadForToasting(.annotationCreationError(.emptyTitle))
+                                return
+                            }
+                            
                             try annotationManager.save()
                             onDismiss()
                             dismiss()
