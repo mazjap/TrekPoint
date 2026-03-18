@@ -84,6 +84,7 @@ struct DetailedMapView: View {
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
+    // TODO: - Handle name changes as well
     @State private var annotationFeatureCollection: FeatureCollection?
     @State private var polylineFeatureCollection: FeatureCollection?
     
@@ -127,7 +128,7 @@ struct DetailedMapView: View {
                     }
                     
                     if locationManager.isUserLocationActive {
-                        // TODO: - Style puck to my liking
+                        // TODO: - Style puck to my liking or use Puck3D!
                         Puck2D()
                     }
                     
@@ -162,9 +163,7 @@ struct DetailedMapView: View {
                 .mapStyle(MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
                 .onTapGesture { location in
                     guard polylineManager.isDrawingPolyline else { return }
-                    guard let coordinate = proxy.map?.coordinate(for: location) else {
-                        return
-                    }
+                    guard let coordinate = proxy.map?.coordinate(for: location) else { return }
                     
                     polylineManager.appendWorkingPolylineCoordinate(Coordinate(coordinate))
                     
@@ -193,7 +192,7 @@ struct DetailedMapView: View {
                 polylines: polylines
             ) { newSelection in
                 annotationManager.clearWorkingAnnotationProgress()
-
+                
                 if let newSelection {
                     selectedMapItemTag = newSelection.tag
                     
@@ -298,6 +297,7 @@ struct DetailedMapView: View {
     
     @MapContentBuilder
     private func annotationViews(proxy: MapProxy) -> some MapContent {
+        // TODO: - Clustering
         SymbolLayer(id: "marker-layer", source: "annotation-source")
             .iconImage("marker")
             .textFont(["Open Sans Bold"])
@@ -309,8 +309,9 @@ struct DetailedMapView: View {
             .textHaloColor(.black)
             .textHaloBlur(1)
             .textOffset(x: 0, y: 0.25)
+            .iconAllowOverlap(true)
+            .textOptional(true)
             .textField(Exp(.get) { "title" })
-            
         
         TapInteraction(.layer("marker-layer")) { feature, context in
             print("Tapped marker at \(context.coordinate)")
