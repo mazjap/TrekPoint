@@ -24,7 +24,6 @@ struct PolylineMapOverlay: MapContent {
             .lineColor(UIColor(strokeColor))
             .lineWidth(lineWidth)
             .lineJoin(.round)
-            .lineGapWidth(5)
     }
 }
 

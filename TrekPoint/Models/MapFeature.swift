@@ -44,12 +44,34 @@ enum MapFeatureTag: Hashable, Identifiable {
     case polyline(UUID)
     case newFeature
     
+    init?(rawValue: String) {
+        if rawValue == "new_feature" {
+            self = .newFeature
+        } else {
+            let splitString = rawValue.split(separator: "_")
+            
+            guard splitString.count == 2,
+                let uuid = UUID(uuidString: String(splitString[1]))
+            else {
+                return nil
+            }
+            
+            if splitString[0] == "annotation" {
+                self = .annotation(uuid)
+            } else if splitString[0] == "polyline" {
+                self = .polyline(uuid)
+            } else {
+                return nil
+            }
+        }
+    }
+    
     var id: String {
         switch self {
         case let .annotation(id):
-            id.uuidString
+            "annotation_" + id.uuidString
         case let .polyline(id):
-            id.uuidString
+            "polyline_" + id.uuidString
         case .newFeature:
             "new_feature"
         }

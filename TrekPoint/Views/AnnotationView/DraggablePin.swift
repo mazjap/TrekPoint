@@ -7,7 +7,7 @@ struct DraggablePin: View {
     @State private var isActive: Bool = false
     @State private var isJigglingActive: Bool = false
     
-    @ScaledMetric(relativeTo: .title) private var iconSize: Double = 48
+    private let iconSize = CGSize(width: 33, height: 48)
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     
     private let movementEnabled: Bool
@@ -41,14 +41,8 @@ struct DraggablePin: View {
                         .resizable()
                         .scaledToFit()
                         .foregroundStyle(fillColor)
-                    
-                    Image(systemName: "star")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(accentColor)
-                        .padding(.horizontal, -2)
                 }
-                .padding(.horizontal, 13)
+                .padding(.horizontal, 5)
                 .padding(.bottom, 15)
             }
             .rotationEffect(isJigglingActive && shouldJiggle && !isActive && !reduceMotion ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
@@ -78,7 +72,7 @@ struct DraggablePin: View {
                 await updateJigglability()
             }
         }
-        .frame(width: iconSize, height: iconSize)
+        .frame(width: iconSize.width, height: iconSize.height)
         .contentShape(.rect)
         .offset(translation)
         .gesture(LongPressGesture(minimumDuration: 0.2)

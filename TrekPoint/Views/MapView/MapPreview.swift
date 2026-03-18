@@ -29,11 +29,10 @@ struct MapPreview: View {
                 movementEnabled: false,
                 foregroundColor: .orange,
                 fillColor: type(of: annotation) == AnnotationData.self ? .white : .blue,
-                applyNewPosition: {_ in},
-                onTap: {}
+                applyNewPosition: {_ in}
             )
         case let .polyline(polyline):
-            PolylineMapOverlay(polyline: polyline, strokeColor: .red)
+            PolylineMapOverlay(polyline: polyline, strokeColor: polyline.isLocationTracked ? .orange : .red)
         }
     }
     
@@ -41,6 +40,7 @@ struct MapPreview: View {
         Map(initialViewport: initialCameraPosition) {
             content
         }
+        .mapStyle(.standard) // TODO: - Read from settings
         .gestureOptions(.init(panEnabled: false, pinchEnabled: false, rotateEnabled: false, simultaneousRotateAndPinchZoomEnabled: false, pinchZoomEnabled: false, pinchPanEnabled: false, pitchEnabled: false, doubleTapToZoomInEnabled: false, doubleTouchToZoomOutEnabled: false, quickZoomEnabled: false))
     }
 }

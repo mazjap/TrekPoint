@@ -1,4 +1,5 @@
 import struct CoreLocation.CLLocationCoordinate2D
+import Turf
 
 protocol AnnotationProvider {
     var clCoordinate: CLLocationCoordinate2D { get }
@@ -6,6 +7,19 @@ protocol AnnotationProvider {
     var attachments: [Attachment] { get }
     var userDescription: String { get }
     var tag: MapFeatureTag { get }
+}
+
+extension AnnotationProvider {
+    var feature: Feature {
+        var feature = Feature(geometry: .point(Point(clCoordinate)))
+        feature.identifier = FeatureIdentifier(tag.id)
+        feature.properties = [
+            "title" : .string(title),
+            "categoryIcon" : .string("star")
+        ]
+        
+        return feature
+    }
 }
 
 extension AnnotationData: AnnotationProvider {

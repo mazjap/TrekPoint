@@ -339,7 +339,6 @@
 				0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */,
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
-				0E7E00892D820BC80019A92A /* UIScreen+current.swift */,
 				0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */,
 				0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */,
 			);
@@ -469,7 +468,7 @@
 			packageReferences = (
 				0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */,
 				0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */,
-				0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios-binary" */,
+				0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 			);
 			productRefGroup = 0EA4BD442B9151AF005259B4 /* Products */;
 			projectDirPath = "";
@@ -909,9 +908,9 @@
 				minimumVersion = 11.20.0;
 			};
 		};
-		0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios-binary" */ = {
+		0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios-binary.git";
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 11.20.0;
@@ -952,7 +951,7 @@
 		};
 		0EC8C8AA2F67E3E300502C65 /* MapboxMaps */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios-binary" */;
+			package = 0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
 			productName = MapboxMaps;
 		};
 /* End XCSwiftPackageProductDependency section */

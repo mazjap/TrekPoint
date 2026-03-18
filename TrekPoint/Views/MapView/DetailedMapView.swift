@@ -4,6 +4,20 @@ import MapboxMaps
 import WarmToast
 import Dependencies
 
+@MainActor
+func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryColor: Color) -> UIImage {
+    ImageRenderer(content: {
+        Image(.teardrop)
+            .foregroundStyle(baseColor)
+            .overlay {
+                Image(categoryImageName)
+                    .renderingMode(.template)
+                    .foregroundStyle(categoryColor)
+                    .offset(x: 0, y: -8)
+            }
+    }()).uiImage!
+}
+
 // Tasks:
 // - [x] Get user's location working
 // - [x] Get DraggablePin to relocate correctly on drag gesture
@@ -66,10 +80,12 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @State private var cameraPosition: Viewport = .styleDefault
+    @State private var cameraPosition: Viewport = .idle
     @State private var selectedMapItemTag: MapFeatureTag?
     @State private var presentedMapFeature: MapFeatureToPresent?
     @State private var selectedDetent = PresentationDetent.small
+    @State private var annotationFeatureCollection: FeatureCollection?
+    @State private var polylineFeatureCollection: FeatureCollection?
     
     @Binding private var showSheet: Bool
     
@@ -100,16 +116,18 @@ struct DetailedMapView: View {
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
                 Map(viewport: $cameraPosition) {
-                    StyleProjection(name: .globe)
+                    if let annotationFeatureCollection {
+                        GeoJSONSource(id: "annotation-source")
+                            .data(.featureCollection(annotationFeatureCollection))
+                    }
                     
-                    RasterDemSource(id: "mapbox-dem")
-                        .url("mapbox://mapbox.mapbox-terrain-dem-v1")
-                        .maxzoom(14.0)
-                    
-                    Terrain(sourceId: "mapbox-dem")
-                        .exaggeration(1.25)
+                    if let polylineFeatureCollection {
+                        GeoJSONSource(id: "polyline-source")
+                            .data(.featureCollection(polylineFeatureCollection))
+                    }
                     
                     if locationManager.isUserLocationActive {
+                        // TODO: - Style puck to my liking
                         Puck2D()
                     }
                     
@@ -121,8 +139,27 @@ struct DetailedMapView: View {
                     
                     inProgressPin(proxy: proxy)
                 }
+                .onStyleLoaded { _ in
+                    // TODO: - Better error handling
+                    guard let map = proxy.map else { fatalError("No map") }
+                    
+                    do {
+                        try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
+                    } catch {
+                        fatalError("error: \(error)")
+                    }
+                    
+                    let annotationFeatures = annotations.map(\.feature)
+                    let polylineFeatures = polylines.map(\.feature)
+                    annotationFeatureCollection = FeatureCollection(features: annotationFeatures)
+                    polylineFeatureCollection = FeatureCollection(features: polylineFeatures)
+                    
+                    cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatures.compactMap(\.geometry) + polylineFeatures.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
+                }
                 .ornamentOptions(ornamentOptions(height: frame.height))
-                .mapStyle(.standardSatellite)
+                // TODO: - Don't force unwrap and allow user to select a style from a set of like 3 or something
+                // Also, paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
+                .mapStyle(MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
                 .onTapGesture { location in
                     guard polylineManager.isDrawingPolyline else { return }
                     guard let coordinate = proxy.map?.coordinate(for: location) else {
@@ -135,6 +172,13 @@ struct DetailedMapView: View {
                     if polylineManager.workingPolyline?.coordinates.count == 1 {
                         selectedMapItemTag = .newFeature
                     }
+                }
+                // TODO: - Test how bad this is and look into more efficient ways than recreating the entire feature collection if needed
+                .onChange(of: annotations.map(\.coordinate)) {
+                    annotationFeatureCollection = FeatureCollection(features: annotations.map(\.feature))
+                }
+                .onChange(of: polylines.map(\.coordinates)) {
+                    polylineFeatureCollection = FeatureCollection(features: polylines.map(\.feature))
                 }
                 .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
@@ -254,7 +298,35 @@ struct DetailedMapView: View {
     
     @MapContentBuilder
     private func annotationViews(proxy: MapProxy) -> some MapContent {
-        ForEvery(annotations) { annotation in
+        SymbolLayer(id: "marker-layer", source: "annotation-source")
+            .iconImage("marker")
+            .textFont(["Open Sans Bold"])
+            .iconAnchor(.bottom)
+            .textSize(12)
+            .textColor(.white)
+            .textAnchor(.top)
+            .textHaloWidth(2)
+            .textHaloColor(.black)
+            .textHaloBlur(1)
+            .textOffset(x: 0, y: 0.25)
+            .textField(Exp(.get) { "title" })
+            
+        
+        TapInteraction(.layer("marker-layer")) { feature, context in
+            print("Tapped marker at \(context.coordinate)")
+            guard let id = feature.id?.id,
+                  let tag = MapFeatureTag(rawValue: id)
+            else {
+                return false
+            }
+            
+            selectedMapItemTag = tag
+            return true
+        }
+        
+        if let selectedMapItemTag,
+           case .annotation = selectedMapItemTag,
+           let annotation = annotations.first(where: { $0.tag == selectedMapItemTag }) {
             AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, foregroundColor: .orange) { newPosition in
                 guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                     // TODO: - Send to some analytics service
@@ -263,16 +335,41 @@ struct DetailedMapView: View {
                 }
                 
                 annotation.coordinate = Coordinate(newCoordinate)
-            } onTap: {
-                selectedMapItemTag = annotation.tag
+                
+                do {
+                    try annotationManager.save()
+                } catch {
+                    // TODO: Do somehthing other than swallowing
+                    print(error)
+                }
             }
         }
     }
     
     @MapContentBuilder
     private func polylineViews(proxy: MapProxy) -> some MapContent {
-        ForEvery(polylines) { polyline in
-            PolylineMapOverlay(polyline: polyline, strokeColor: polyline.isLocationTracked ? .orange : .red)
+        LineLayer(id: "line-layer", source: "polyline-source")
+            .lineWidth(5)
+            .lineJoin(.round)
+            .lineDashArray([3, 2])
+            .lineColor(Exp(.switchCase) {
+                Exp(.boolean) { Exp(.get) { "isLocationTracked" } }
+                Exp(.toColor) { "#FF8D28" }
+                Exp(.toColor) { "#FE383C" }
+            })
+        
+        // TODO: - Look into laying out text on top of path
+        
+        TapInteraction(.layer("line-layer")) { feature, context in
+            print("Tapped path at \(context.coordinate)")
+            guard let id = feature.id?.id,
+                  let tag = MapFeatureTag(rawValue: id)
+            else {
+                return false
+            }
+            
+            selectedMapItemTag = tag
+            return true
         }
     }
     
@@ -292,8 +389,6 @@ struct DetailedMapView: View {
                 }
                 
                 annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(newCoordinate))
-            } onTap: {
-                selectedMapItemTag = .newFeature
             }
         }
     }
@@ -301,10 +396,10 @@ struct DetailedMapView: View {
     @MapContentBuilder
     private func inProgressPolyline(proxy: MapProxy) -> some MapContent {
         if let workingPolyline = polylineManager.workingPolyline, !workingPolyline.coordinates.isEmpty {
-            PolylineMapOverlay(
-                polyline: workingPolyline,
-                strokeColor: polylineManager.isTrackingPolyline ? .purple : .blue
-            )
+            PolylineAnnotation(id: workingPolyline.tag.id, lineCoordinates: workingPolyline.clCoordinates, isSelected: false, isDraggable: false)
+                .lineColor(UIColor(polylineManager.isTrackingPolyline ? .purple : .blue))
+                .lineWidth(3)
+                .lineJoin(.round)
             
             // Add markers for each point
             ForEvery(Array(workingPolyline.coordinates.enumerated()), id: \.1.id) { index, coordinate in

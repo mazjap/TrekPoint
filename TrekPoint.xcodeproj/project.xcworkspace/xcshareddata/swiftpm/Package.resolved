@@ -1,5 +1,5 @@
 {
-  "originHash" : "603275ccb2ee59ca3cdd40945ee6e10d19cbce746c752c01cbb6e20084399813",
+  "originHash" : "d30bca36f7b4f9aae03ec13ff0e6c4c1da1778d72c4534cc07ac95ac808b0c88",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-common-ios.git",
       "state" : {
-        "revision" : "42a95d102636ceb953fa8065afa4eb8109f3edf0",
-        "version" : "24.20.0"
+        "revision" : "0a1f567dbd9bec885427928a032569ace4c666e5",
+        "version" : "24.20.1"
       }
     },
     {
@@ -24,17 +24,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-core-maps-ios.git",
       "state" : {
-        "revision" : "e5afc4705621bee543dd622b91a44f03df850041",
-        "version" : "11.20.0"
+        "revision" : "4831764fc4b993856203afe61ff33d962225bf27",
+        "version" : "11.20.1"
       }
     },
     {
-      "identity" : "mapbox-maps-ios-binary",
+      "identity" : "mapbox-maps-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mapbox/mapbox-maps-ios-binary.git",
+      "location" : "https://github.com/mapbox/mapbox-maps-ios.git",
       "state" : {
-        "revision" : "f739c704ca0d01d173320ad70daca97d5f014134",
-        "version" : "11.20.0"
+        "revision" : "dc2979042a9825803b0cf92851b767d75b0c1682",
+        "version" : "11.20.1"
       }
     },
     {
