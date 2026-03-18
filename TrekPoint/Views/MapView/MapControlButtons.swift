@@ -63,7 +63,8 @@ struct MapControlButtons: View {
                                     toastManager.commitFeatureCreationError(error)
                                 }
                             } label: {
-                                Text("Confirm")
+                                Label("Confirm", systemImage: "checkmark.circle")
+                                    .frame(maxHeight: .infinity)
                             }
                             
                             Divider()
@@ -72,6 +73,7 @@ struct MapControlButtons: View {
                                 annotationManager.undo()
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward.circle")
+                                    .frame(maxHeight: .infinity)
                             }
                             .disabled(!annotationManager.canUndo)
                         }
@@ -96,6 +98,8 @@ struct MapControlButtons: View {
                             annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
                             selectedMapItemTag = .newFeature
                         } else {
+                            // TODO: - Show an alert to confirm that the user wants to clear progress (same with working polyline)
+                            // Also, creating a polyline and creating an annotation should be mutually exclusive
                             annotationManager.clearWorkingAnnotationProgress()
                             selectedMapItemTag = nil
                             selectedDetent = .small
@@ -130,7 +134,8 @@ struct MapControlButtons: View {
                                     toastManager.commitFeatureCreationError(error)
                                 }
                             } label: {
-                                Text("Confirm")
+                                Label("Confirm", systemImage: "checkmark.circle")
+                                    .frame(maxHeight: .infinity)
                             }
                             
                             Divider()
@@ -139,6 +144,7 @@ struct MapControlButtons: View {
                                 polylineManager.undo()
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward.circle")
+                                    .frame(maxHeight: .infinity)
                             }
                             .disabled(!polylineManager.canUndo)
                         }
@@ -179,6 +185,7 @@ struct MapControlButtons: View {
             
                 Button {
                     if locationManager.isUserLocationActive {
+                        // TODO: - Also cancel user-tracked working polyline and/or alert user that turning off location will stop the in-progress polyline
                         locationManager.hideUserLocation()
                     } else {
                         locationManager.showUserLocation()
@@ -202,6 +209,7 @@ struct MapControlButtons: View {
                     HStack(spacing: 0) {
                         if polylineManager.isTrackingPolyline {
                             HStack {
+                                // TODO: - Make a button and alert user that their location is being recorded and how to turn it off, if they'd like
                                 Text("R")
                                     .font(.title)
                                     .minimumScaleFactor(0.1)
@@ -226,7 +234,8 @@ struct MapControlButtons: View {
                                             toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
                                         }
                                     } label: {
-                                        Text("Confirm")
+                                        Label("Confirm", systemImage: "checkmark.circle")
+                                            .frame(maxHeight: .infinity)
                                     }
                                     .frame(height: buttonSize)
                                     .padding(.horizontal)
