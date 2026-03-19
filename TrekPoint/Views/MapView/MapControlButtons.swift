@@ -54,7 +54,7 @@ struct MapControlButtons: View {
                         HStack {
                             Button {
                                 do {
-                                    try polylineManager.finalizeWorkingPolyline()
+                                    try annotationManager.finalizeWorkingAnnotation()
                                     
                                     selectedMapItemTag = nil
                                     selectedDetent = .small
