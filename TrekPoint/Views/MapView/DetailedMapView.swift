@@ -18,6 +18,30 @@ func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryC
     }()).uiImage!
 }
 
+struct AnnotationMapDisplayDetails: Equatable {
+    var title: String
+    var coordinate: CLLocationCoordinate2D
+}
+
+extension AnnotationMapDisplayDetails {
+    init(_ annotation: AnnotationProvider) {
+        self.title = annotation.title
+        self.coordinate = annotation.clCoordinate
+    }
+}
+
+struct PolylineMapDisplayDetails: Equatable {
+    var title: String
+    var coordinates: [CLLocationCoordinate2D]
+}
+
+extension PolylineMapDisplayDetails {
+    init(_ polyline: PolylineProvider) {
+        self.title = polyline.title
+        self.coordinates = polyline.clCoordinates
+    }
+}
+
 // Tasks:
 // - [x] Get user's location working
 // - [x] Get DraggablePin to relocate correctly on drag gesture
@@ -173,10 +197,10 @@ struct DetailedMapView: View {
                     }
                 }
                 // TODO: - Test how bad this is and look into more efficient ways than recreating the entire feature collection if needed
-                .onChange(of: annotations.map(\.coordinate)) {
+                .onChange(of: annotations.map(AnnotationMapDisplayDetails.init)) {
                     annotationFeatureCollection = FeatureCollection(features: annotations.map(\.feature))
                 }
-                .onChange(of: polylines.map(\.coordinates)) {
+                .onChange(of: polylines.map(PolylineMapDisplayDetails.init)) {
                     polylineFeatureCollection = FeatureCollection(features: polylines.map(\.feature))
                 }
                 .ignoresSafeArea()
