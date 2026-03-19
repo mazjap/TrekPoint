@@ -314,7 +314,8 @@ struct DetailedMapView: View {
             .textField(Exp(.get) { "title" })
         
         TapInteraction(.layer("marker-layer")) { feature, context in
-            print("Tapped marker at \(context.coordinate)")
+            if selectedMapItemTag == .newFeature { return true }
+            
             guard let id = feature.id?.id,
                   let tag = MapFeatureTag(rawValue: id)
             else {
@@ -362,7 +363,8 @@ struct DetailedMapView: View {
         // TODO: - Look into laying out text on top of path
         
         TapInteraction(.layer("line-layer")) { feature, context in
-            print("Tapped path at \(context.coordinate)")
+            if selectedMapItemTag == .newFeature { return true }
+            
             guard let id = feature.id?.id,
                   let tag = MapFeatureTag(rawValue: id)
             else {
