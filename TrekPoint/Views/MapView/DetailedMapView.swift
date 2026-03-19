@@ -8,10 +8,11 @@ import Dependencies
 func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryColor: Color) -> UIImage {
     ImageRenderer(content: {
         Image(.teardrop)
+            .interpolation(.none)
             .foregroundStyle(baseColor)
             .overlay {
                 Image(categoryImageName)
-                    .renderingMode(.template)
+                    .interpolation(.none)
                     .foregroundStyle(categoryColor)
                     .offset(x: 0, y: -8)
             }
