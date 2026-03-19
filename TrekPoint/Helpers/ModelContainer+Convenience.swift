@@ -34,6 +34,7 @@ enum ModelContainerKey: DependencyKey {
 }
 
 extension DependencyValues {
+    /// > Warning: ModelContainer is recreated for each test run
     var modelContainer: ModelContainer {
         get { self[ModelContainerKey.self] }
         set { self[ModelContainerKey.self] = newValue }

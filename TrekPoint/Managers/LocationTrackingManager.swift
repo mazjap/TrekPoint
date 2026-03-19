@@ -35,10 +35,12 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         
         Task { @MainActor in
             locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.distanceFilter = 2.0
             
             locationManager.allowsBackgroundLocationUpdates = false
-            locationManager.pausesLocationUpdatesAutomatically = false
+            locationManager.pausesLocationUpdatesAutomatically = true
+            locationManager.showsBackgroundLocationIndicator = false
             
             if UserDefaults.standard.bool(forKey: "is_user_location_active") {
                 showUserLocation()
@@ -71,6 +73,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         locationManager.distanceFilter = 5.0
         
         locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = true
         
         locationManager.startUpdatingLocation()
@@ -89,6 +92,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         locationManager.distanceFilter = 2.0
         
         locationManager.allowsBackgroundLocationUpdates = false
+        locationManager.pausesLocationUpdatesAutomatically = true
         locationManager.showsBackgroundLocationIndicator = false
         
         locationManager.stopUpdatingLocation()
