@@ -4,19 +4,26 @@ import MapboxMaps
 import WarmToast
 import Dependencies
 
-@MainActor
 func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryColor: Color) -> UIImage {
-    ImageRenderer(content: {
-        Image(.teardrop)
-            .interpolation(.none)
-            .foregroundStyle(baseColor)
-            .overlay {
-                Image(categoryImageName)
-                    .interpolation(.none)
-                    .foregroundStyle(categoryColor)
-                    .offset(x: 0, y: -8)
-            }
-    }()).uiImage!
+    let baseImage = UIImage(named: "teardrop")!
+        .withTintColor(UIColor(baseColor), renderingMode: .alwaysOriginal)
+    let overlayImage = UIImage(named: categoryImageName)!
+        .withTintColor(UIColor(categoryColor), renderingMode: .alwaysOriginal)
+
+    let size = baseImage.size
+    let renderer = UIGraphicsImageRenderer(size: size)
+
+    return renderer.image { _ in
+        baseImage.draw(in: CGRect(origin: .zero, size: size))
+
+        let overlayRect = CGRect(
+            x: (size.width - overlayImage.size.width) / 2,
+            y: (size.height - overlayImage.size.height) / 2 - 8,
+            width: overlayImage.size.width,
+            height: overlayImage.size.height
+        )
+        overlayImage.draw(in: overlayRect)
+    }
 }
 
 struct AnnotationMapDisplayDetails: Equatable {
