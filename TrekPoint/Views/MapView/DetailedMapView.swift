@@ -361,7 +361,7 @@ struct DetailedMapView: View {
         if let selectedMapItemTag,
            case .annotation = selectedMapItemTag,
            let annotation = annotations.first(where: { $0.tag == selectedMapItemTag }) {
-            AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, foregroundColor: .orange) { newPosition in
+            AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, categoryImageName: "star") { newPosition in
                 guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                     // TODO: - Send to some analytics service
                     toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
@@ -414,8 +414,8 @@ struct DetailedMapView: View {
             AnnotationMapOverlay(
                 annotation: newAnnotationLocation,
                 shouldJiggle: annotationManager.isShowingOptions,
-                foregroundColor: .orange,
-                fillColor: .blue
+                categoryColor: .blue,
+                categoryImageName: "star"
             ) { newPosition in
                 guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
                     // TODO: - Send to some analytics service

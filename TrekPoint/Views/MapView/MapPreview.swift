@@ -27,8 +27,8 @@ struct MapPreview: View {
             AnnotationMapOverlay(
                 annotation: annotation,
                 movementEnabled: false,
-                foregroundColor: .orange,
-                fillColor: type(of: annotation) == AnnotationData.self ? .white : .blue,
+                categoryColor: type(of: annotation) == AnnotationData.self ? .white : .blue,
+                categoryImageName: "star",
                 applyNewPosition: {_ in}
             )
         case let .polyline(polyline):
