@@ -7,8 +7,18 @@ struct MaxPresentationDetentWithoutScaleEffect: CustomPresentationDetent {
 }
 
 extension PresentationDetent {
-    static let small = Self.fraction(0.15)
-    static let largeWithoutScaleEffect = Self.custom(MaxPresentationDetentWithoutScaleEffect.self)
+    
+    static let small = if #available(iOS 26, *) {
+        Self.height(80)
+    } else {
+        Self.fraction(0.15)
+    }
+    
+    static let largeWithoutScaleEffect = if #available(iOS 26, *) {
+        Self.large
+    } else {
+        Self.custom(MaxPresentationDetentWithoutScaleEffect.self)
+    }
 }
 
 extension Set where Element == PresentationDetent {
