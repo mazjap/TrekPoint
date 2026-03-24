@@ -7,9 +7,10 @@ struct MaxPresentationDetentWithoutScaleEffect: CustomPresentationDetent {
 }
 
 extension PresentationDetent {
+    static let smallDetentHeight: Double = 68
     
     static let small = if #available(iOS 26, *) {
-        Self.height(60)
+        Self.height(smallDetentHeight)
     } else {
         Self.fraction(0.15)
     }
