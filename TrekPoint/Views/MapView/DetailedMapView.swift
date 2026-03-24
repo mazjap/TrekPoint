@@ -123,6 +123,7 @@ struct DetailedMapView: View {
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
+                selectedDetent: $selectedDetent,
                 annotations: annotations,
                 polylines: polylines
             ) { newSelection in

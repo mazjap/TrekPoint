@@ -13,8 +13,12 @@ struct MapFeatureNavigator: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Dependency(\.polylinePersistenceManager) private var polylineManager
     @Dependency(\.toastManager) private var toastManager
+    @Environment(\.isSearching) private var isSearching
     
+    @State private var searchText = ""
+    @FocusState private var isSearchTextFocused: Bool
     @Binding private var selection: MapFeatureToPresent?
+    @Binding private var selectedDetent: PresentationDetent
     
     private let annotations: [AnnotationData]
     private let polylines: [PolylineData]
@@ -22,11 +26,13 @@ struct MapFeatureNavigator: View {
     
     init(
         selection: Binding<MapFeatureToPresent?>,
+        selectedDetent: Binding<PresentationDetent>,
         annotations: [AnnotationData],
         polylines: [PolylineData],
         onSelection: @escaping (MapFeature?) -> Void
     ) {
         self._selection = selection
+        self._selectedDetent = selectedDetent
         self.annotations = annotations
         self.polylines = polylines
         self.onSelection = onSelection
@@ -78,6 +84,40 @@ struct MapFeatureNavigator: View {
                     }
                 }
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack(spacing: 10) {
+                    TextField("Search...", text: $searchText)
+                        .focused($isSearchTextFocused)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 6)
+                        .modifier(VersionSpecificTextFieldBackground())
+                    
+                    Button {
+                        if isSearchTextFocused {
+                            isSearchTextFocused = false
+                        } else {
+                            // TODO: - Show settings
+                        }
+                    } label: {
+                        Image(systemName: isSearchTextFocused ? "xmark" : "gearshape.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                    .buttonStyle(VersionSpecificButtonStyle())
+                }
+                .padding(.horizontal, 18)
+                .frame(height: PresentationDetent.smallDetentHeight)
+                .padding(.top, 2)
+                .onChange(of: isSearchTextFocused) {
+                    if isSearchTextFocused {
+                        selectedDetent = .largeWithoutScaleEffect
+                    } else {
+                        selectedDetent = .medium
+                    }
+                }
+            }
             .navigationDestination(item: $selection) { currentSelection in
                 let onDismiss = {
                     onSelection(nil)
@@ -97,14 +137,6 @@ struct MapFeatureNavigator: View {
                 }
                 .navigationBarBackButtonHidden()
             }
-            .padding(.top, -20)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-            }
-            .navigationTitle("My Items")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -146,10 +178,43 @@ struct MapFeatureNavigator: View {
 }
 
 #Preview {
-    MapFeatureNavigator(
-        selection: .constant(nil),
-        annotations: [.preview],
-        polylines: [.preview],
-        onSelection: { _ in }
-    )
+    @Previewable @State var detent = PresentationDetent.small
+    
+    Color.red.ignoresSafeArea()
+        .sheet(isPresented: .constant(true)) {
+            MapFeatureNavigator(
+                selection: .constant(nil),
+                selectedDetent: $detent,
+                annotations: [.preview],
+                polylines: [.preview],
+                onSelection: { _ in }
+            )
+            .presentationDetents(.defaultMapSheetDetents)
+        }
+}
+
+fileprivate struct VersionSpecificButtonStyle: PrimitiveButtonStyle {
+    @available(iOS 26, *)
+    static private let iOS26Style = GlassButtonStyle()
+    
+    static private let backupStyle = DefaultButtonStyle()
+    
+    func makeBody(configuration: Configuration) -> some View {
+        if #available(iOS 26, *) {
+            Self.iOS26Style.makeBody(configuration: configuration)
+        } else {
+            Self.backupStyle.makeBody(configuration: configuration)
+        }
+    }
+}
+
+
+fileprivate struct VersionSpecificTextFieldBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            content.glassEffect(.regular, in: .capsule)
+        } else {
+            content.background(.gray.opacity(0.25), in: .capsule)
+        }
+    }
 }
