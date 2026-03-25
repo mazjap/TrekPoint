@@ -100,6 +100,7 @@ extension PolylineMapDisplayDetails {
 //   - [ ] Weather integration (WeatherKit?)
 //   - [ ] Public land boundaries overlay (Vapor Server with PADUS 4.0?)
 
+// TODO: When creating a new annotation, the sheet should be set to medium and the map should move so that the annotation is in the middle of the visible map content. Same for polylines
 struct DetailedMapView: View {
     @Dependency(\.locationTrackingManager) private var locationManager
     @Dependency(\.annotationPersistenceManager) private var annotationManager
@@ -220,6 +221,7 @@ struct DetailedMapView: View {
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
                 selection: $presentedMapFeature,
+                selectedDetent: $selectedDetent,
                 annotations: annotations,
                 polylines: polylines
             ) { newSelection in
