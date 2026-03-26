@@ -26,25 +26,29 @@ func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryC
     }
 }
 
-struct AnnotationMapDisplayDetails: Equatable {
-    var title: String
-    var coordinate: CLLocationCoordinate2D
+struct AnnotationSnapshot: Equatable {
+    let tag: MapFeatureTag
+    let title: String
+    let coordinate: CLLocationCoordinate2D
 }
 
-extension AnnotationMapDisplayDetails {
+extension AnnotationSnapshot {
     init(_ annotation: AnnotationProvider) {
+        self.tag = annotation.tag
         self.title = annotation.title
         self.coordinate = annotation.clCoordinate
     }
 }
 
-struct PolylineMapDisplayDetails: Equatable {
-    var title: String
-    var coordinates: [CLLocationCoordinate2D]
+struct PolylineSnapshot: Equatable {
+    let tag: MapFeatureTag
+    let title: String
+    let coordinates: [CLLocationCoordinate2D]
 }
 
-extension PolylineMapDisplayDetails {
+extension PolylineSnapshot {
     init(_ polyline: PolylineProvider) {
+        self.tag = polyline.tag
         self.title = polyline.title
         self.coordinates = polyline.clCoordinates
     }
@@ -102,10 +106,8 @@ extension PolylineMapDisplayDetails {
 
 // TODO: When creating a new annotation, the sheet should be set to medium and the map should move so that the annotation is in the middle of the visible map content. Same for polylines
 struct DetailedMapView: View {
-    @Dependency(\.locationTrackingManager) private var locationManager
-    @Dependency(\.annotationPersistenceManager) private var annotationManager
-    @Dependency(\.polylinePersistenceManager) private var polylineManager
-    @Dependency(\.toastManager) private var toastManager: ToastManager
+    @Dependency(\.toastManager) private var toastManager
+    @State private var coordinator = MapCoordinator()
     
     @Query private var annotations: [AnnotationData]
     @Query private var polylines: [PolylineData]
@@ -113,24 +115,23 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @State private var cameraPosition: Viewport = .idle
-    @State private var selectedMapItemTag: MapFeatureTag?
-    @State private var presentedMapFeature: MapFeatureToPresent?
-    @State private var selectedDetent = PresentationDetent.small
     // TODO: - Handle name changes as well
     @State private var annotationFeatureCollection: FeatureCollection?
     @State private var polylineFeatureCollection: FeatureCollection?
-    
     @Binding private var showSheet: Bool
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
-    
+
     private func ornamentOptions(height: CGFloat) -> OrnamentOptions {
         let smallDetentHeight: CGFloat =
         if UIDevice.current.userInterfaceIdiom == .pad {
             10
         } else {
-            height / 6.5
+            if #available(iOS 26, *) {
+                PresentationDetent.smallDetentHeight
+            } else {
+                height / 6.5
+            }
         }
         
         return OrnamentOptions(
@@ -141,6 +142,14 @@ struct DetailedMapView: View {
         )
     }
     
+    private var selectedTag: Binding<MapFeatureTag?> {
+        Binding {
+            coordinator.selectedMapFeature?.tag
+        } set: { tag in
+            coordinator.handleMapTagSelection(tag, annotations: annotations, polylines: polylines)
+        }
+    }
+    
     init(showSheet: Binding<Bool>) {
         self._showSheet = showSheet
     }
@@ -149,29 +158,45 @@ struct DetailedMapView: View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
-                Map(viewport: $cameraPosition) {
-                    if let annotationFeatureCollection {
-                        GeoJSONSource(id: "annotation-source")
-                            .data(.featureCollection(annotationFeatureCollection))
+                Map(viewport: $coordinator.cameraPosition) {
+                    GroupedMapContent(
+                        annotationState: coordinator.annotationOverlayState,
+                        polylineState: coordinator.polylineOverlayState,
+                        locationState: coordinator.locationOverlayState,
+                        selection: coordinator.selectedMapFeature,
+                        annotationFeatureCollection: annotationFeatureCollection,
+                        polylineFeatureCollection: polylineFeatureCollection
+                    ) { intent in
+                        guard let coordinateIntent = intent.toCoordinateIntent(proxy: proxy, annotations: annotations, polylines: polylines) else {
+                            coordinator.handleFailedIntentConversion(for: intent)
+                            return
+                        }
+                        
+                        coordinator.handle(coordinateIntent)
+                    } onSelection: { tag in
+                        if [.workingAnnotation, .workingPolyline].contains(coordinator.selectedMapFeature) { return false }
+                        
+                        switch tag {
+                        case .annotation(let id):
+                            guard let annotation = annotations.first(where: { $0.id == id }) else {
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Unable to find map annotation with tag \(tag)")))
+                                return false
+                            }
+                            coordinator.handleFeatureSelectionFromMap(.annotation(annotation))
+                        case .polyline(let id):
+                            guard let polyline = polylines.first(where: { $0.id == id }) else {
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Unable to find map polyline with tag \(tag)")))
+                                return false
+                            }
+                            coordinator.handleFeatureSelectionFromMap(.polyline(polyline))
+                        case .workingAnnotation:
+                            coordinator.handleFeatureSelectionFromMap(.workingAnnotation)
+                        case .workingPolyline:
+                            coordinator.handleFeatureSelectionFromMap(.workingPolyline)
+                        }
+                        
+                        return true
                     }
-                    
-                    if let polylineFeatureCollection {
-                        GeoJSONSource(id: "polyline-source")
-                            .data(.featureCollection(polylineFeatureCollection))
-                    }
-                    
-                    if locationManager.isUserLocationActive {
-                        // TODO: - Style puck to my liking or use Puck3D!
-                        Puck2D()
-                    }
-                    
-                    annotationViews(proxy: proxy)
-                    
-                    polylineViews(proxy: proxy)
-                    
-                    inProgressPolyline(proxy: proxy)
-                    
-                    inProgressPin(proxy: proxy)
                 }
                 .onStyleLoaded { _ in
                     // TODO: - Better error handling
@@ -188,61 +213,62 @@ struct DetailedMapView: View {
                     annotationFeatureCollection = FeatureCollection(features: annotationFeatures)
                     polylineFeatureCollection = FeatureCollection(features: polylineFeatures)
                     
-                    cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatures.compactMap(\.geometry) + polylineFeatures.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
+                    coordinator.cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatures.compactMap(\.geometry) + polylineFeatures.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
                 }
                 .ornamentOptions(ornamentOptions(height: frame.height))
                 // TODO: - Don't force unwrap and allow user to select a style from a set of like 3 or something
                 // Also, paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
                 .mapStyle(MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
                 .onTapGesture { location in
-                    guard polylineManager.isDrawingPolyline else { return }
                     guard let coordinate = proxy.map?.coordinate(for: location) else { return }
-                    
-                    polylineManager.appendWorkingPolylineCoordinate(Coordinate(coordinate))
-                    
-                    // If this is the first point, show the options UI
-                    if polylineManager.workingPolyline?.coordinates.count == 1 {
-                        selectedMapItemTag = .newFeature
-                    }
+                    coordinator.handleMapTap(at: coordinate)
                 }
                 // TODO: - Test how bad this is and look into more efficient ways than recreating the entire feature collection if needed
-                .onChange(of: annotations.map(AnnotationMapDisplayDetails.init)) {
+                .onChange(of: annotations.map(AnnotationSnapshot.init)) {
                     annotationFeatureCollection = FeatureCollection(features: annotations.map(\.feature))
                 }
-                .onChange(of: polylines.map(PolylineMapDisplayDetails.init)) {
+                .onChange(of: polylines.map(PolylineSnapshot.init)) {
                     polylineFeatureCollection = FeatureCollection(features: polylines.map(\.feature))
                 }
                 .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
-                    MapControlButtons(selectedMapItemTag: $selectedMapItemTag, selectedDetent: $selectedDetent, proxy: proxy, frame: frame, nspace: nspace, buttonSize: buttonSize)
+                    MapControlButtons(
+                        annotationState: coordinator.annotationButtonState,
+                        polylineState: coordinator.polylineButtonState,
+                        locationState: coordinator.locationButtonState,
+                        selectedDetent: coordinator.selectedDetent,
+                        proxy: proxy,
+                        nspace: nspace,
+                        buttonSize: buttonSize
+                    ) { intent in
+                        if case .beginAnnotationCreation = intent {
+                            let midPoint = CGPoint(x: frame.midX, y: frame.midY)
+                            guard let map = proxy.map else {
+                                // TODO: - Send to some analytics service
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Coordinate conversion did not occur because the map was not available")))
+                                return
+                            }
+                            
+                            let coordinate = map.coordinate(for: midPoint)
+                            
+                            coordinator.handleAnnotationCreation(at: coordinate)
+                        } else {
+                            coordinator.handle(intent)
+                        }
+                    }
                 }
             }
         }
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
-                selection: $presentedMapFeature,
-                selectedDetent: $selectedDetent,
+                selection: coordinator.selectedMapFeature,
+                selectedDetent: $coordinator.selectedDetent,
                 annotations: annotations,
                 polylines: polylines
             ) { newSelection in
-                annotationManager.clearWorkingAnnotationProgress()
-                
-                if let newSelection {
-                    selectedMapItemTag = newSelection.tag
-                    
-                    withViewportAnimation(.fly) {
-                        switch newSelection {
-                        case let .annotation(annotation):
-                            cameraPosition = .camera(center: annotation.clCoordinate, zoom: 14)
-                        case let .polyline(polyline):
-                            cameraPosition = .overview(geometry: Geometry.lineString(LineString(polyline.clCoordinates)), geometryPadding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
-                        }
-                    }
-                } else {
-                    selectedMapItemTag = nil
-                }
+                coordinator.handleNavigatorSelection(newSelection)
             }
-            .presentationDetents(detents, selection: $selectedDetent)
+            .presentationDetents(detents, selection: $coordinator.selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .interactiveDismissDisabled()
         }
@@ -252,237 +278,11 @@ struct DetailedMapView: View {
         ) { bread in
             ToastView(bread: bread)
         }
-        .onChange(of: selectedMapItemTag) {
-            switch selectedMapItemTag {
-            case let .annotation(id):
-                if let annotation = annotations.first(where: { id == $0.id }) {
-                    presentedMapFeature = .annotation(annotation)
-                } else {
-                    // TODO: - Send to some analytics service
-                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of annotation with id: \(id) was requested, but no such map feature exists")))
-                }
-            case let .polyline(id):
-                if let polyline = polylines.first(where: { id == $0.id }) {
-                    presentedMapFeature = .polyline(polyline)
-                } else {
-                    // TODO: - Send to some analytics service
-                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of polyline with id: \(id) was requested, but no such map feature exists")))
-                }
-            case .newFeature:
-                if annotationManager.workingAnnotation != nil {
-                    presentedMapFeature = .workingAnnotation
-                } else if polylineManager.workingPolyline != nil {
-                    presentedMapFeature = .workingPolyline
-                } else {
-                    // TODO: - Send to some analytics service
-                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Presentation of the currently working feature (either annotation or polyline) was requested, but none exist")))
-                }
-            case .none:
-                break
-            }
-        }
-        .onChange(of: locationManager.isUserLocationActive) {
-            if locationManager.isUserLocationActive {
-                withViewportAnimation(.fly) {
-                    cameraPosition = .followPuck(zoom: 10)
-                }
-            }
-        }
-        .onChange(of: locationManager.lastLocation) {
-            guard polylineManager.isTrackingPolyline,
-                  let lastLocation = locationManager.lastLocation?.coordinate
-            else { return }
-            
-            polylineManager.appendTrackedPolylineCoordinate(lastLocation)
-            print("New coordinate: \(lastLocation)")
-        }
-        .onChange(of: showSheet) {
-            guard !showSheet else { return }
-            
-            Task {
-                try await Task.sleep(for: .seconds(0.01))
-                showSheet = true
-            }
-        }
-        .onChange(of: polylineManager.workingPolyline?.isLocationTracked) { wasLocationTracked, _ in
-            if wasLocationTracked ?? false {
-                locationManager.stopTracking()
-            }
-        }
-        .onAppear {
-            NotificationCenter.default.addObserver(
-                forName: .restoreTrackingSession,
-                object: nil,
-                queue: .main
-            ) { notification in
-                if let trackingId = notification.userInfo?["trackingID"] as? UUID {
-                    // Restore the tracking session
-                    self.restoreTrackingSession(trackingId: trackingId)
-                }
-            }
-            
-            if locationManager.isUserLocationActive {
-                withViewportAnimation(.fly) {
-                    cameraPosition = .followPuck(zoom: 10)
-                }
-            }
-        }
-    }
-    
-    @MapContentBuilder
-    private func annotationViews(proxy: MapProxy) -> some MapContent {
-        // TODO: - Clustering
-        SymbolLayer(id: "marker-layer", source: "annotation-source")
-            .iconImage("marker")
-            .textFont(["Open Sans Bold"])
-            .iconAnchor(.bottom)
-            .textSize(12)
-            .textColor(.white)
-            .textAnchor(.top)
-            .textHaloWidth(2)
-            .textHaloColor(.black)
-            .textHaloBlur(1)
-            .textOffset(x: 0, y: 0.25)
-            .iconAllowOverlap(true)
-            .textOptional(true)
-            .textField(Exp(.get) { "title" })
-        
-        TapInteraction(.layer("marker-layer")) { feature, context in
-            if selectedMapItemTag == .newFeature { return true }
-            
-            guard let id = feature.id?.id,
-                  let tag = MapFeatureTag(rawValue: id)
-            else {
-                return false
-            }
-            
-            selectedMapItemTag = tag
-            return true
-        }
-        
-        if let selectedMapItemTag,
-           case .annotation = selectedMapItemTag,
-           let annotation = annotations.first(where: { $0.tag == selectedMapItemTag }) {
-            AnnotationMapOverlay(annotation: annotation, movementEnabled: true, shouldJiggle: false, categoryImageName: "star") { newPosition in
-                guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
-                    // TODO: - Send to some analytics service
-                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
-                    return
-                }
-                
-                annotation.coordinate = Coordinate(newCoordinate)
-                
-                do {
-                    try annotationManager.save()
-                } catch {
-                    // TODO: Do somehthing other than swallowing
-                    print(error)
-                }
-            }
-        }
-    }
-    
-    @MapContentBuilder
-    private func polylineViews(proxy: MapProxy) -> some MapContent {
-        LineLayer(id: "line-layer", source: "polyline-source")
-            .lineWidth(5)
-            .lineJoin(.round)
-            .lineDashArray([3, 2])
-            .lineColor(Exp(.switchCase) {
-                Exp(.boolean) { Exp(.get) { "isLocationTracked" } }
-                Exp(.toColor) { "#FF8D28" }
-                Exp(.toColor) { "#FE383C" }
-            })
-        
-        // TODO: - Look into laying out text on top of path
-        
-        TapInteraction(.layer("line-layer")) { feature, context in
-            if selectedMapItemTag == .newFeature { return true }
-            
-            guard let id = feature.id?.id,
-                  let tag = MapFeatureTag(rawValue: id)
-            else {
-                return false
-            }
-            
-            selectedMapItemTag = tag
-            return true
-        }
-    }
-    
-    @MapContentBuilder
-    private func inProgressPin(proxy: MapProxy) -> some MapContent {
-        if let newAnnotationLocation = annotationManager.workingAnnotation {
-            AnnotationMapOverlay(
-                annotation: newAnnotationLocation,
-                shouldJiggle: annotationManager.isShowingOptions,
-                categoryColor: .blue,
-                categoryImageName: "star"
-            ) { newPosition in
-                guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
-                    // TODO: - Send to some analytics service
-                    toastManager.addBreadForToasting(.somethingWentWrong(.message("Working annotation movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
-                    return
-                }
-                
-                annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(newCoordinate))
-            }
-        }
-    }
-    
-    @MapContentBuilder
-    private func inProgressPolyline(proxy: MapProxy) -> some MapContent {
-        if let workingPolyline = polylineManager.workingPolyline, !workingPolyline.coordinates.isEmpty {
-            PolylineAnnotation(id: workingPolyline.tag.id, lineCoordinates: workingPolyline.clCoordinates, isSelected: false, isDraggable: false)
-                .lineColor(UIColor(polylineManager.isTrackingPolyline ? .purple : .blue))
-                .lineWidth(3)
-                .lineJoin(.round)
-            
-            // Add markers for each point
-            ForEvery(Array(workingPolyline.coordinates.enumerated()), id: \.1.id) { index, coordinate in
-                MapViewAnnotation(coordinate: CLLocationCoordinate2D(coordinate)) {
-                    DraggablePolylinePoint(
-                        movementEnabled: !workingPolyline.isLocationTracked,
-                        fillColor: polylineManager.isTrackingPolyline ? .purple : .blue
-                    ) { newPosition in
-                        guard let newCoordinate = proxy.map?.coordinate(for: newPosition) else {
-                            // TODO: - Send to some analytics service
-                            toastManager.addBreadForToasting(.somethingWentWrong(.message("Working polyline point movement was not possible. (\(newPosition) could not be converted to a map coordinate")))
-                            return
-                        }
-                        
-                        polylineManager.moveWorkingPolylineCoordinate(at: index, to: newCoordinate)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func restoreTrackingSession(trackingId: UUID) {
-        let pendingLocations = locationManager.getPendingLocations(forTrackingId: trackingId)
-        
-        // Create a new polyline with these locations
-        if !pendingLocations.isEmpty {
-            // Start a new tracked polyline
-            polylineManager.startNewLocationTrackedPolyline()
-            
-            // Add all the pending locations
-            for location in pendingLocations {
-                polylineManager.appendTrackedPolylineCoordinate(location)
-            }
-            
-            // Clear the pending locations now that we've restored them
-            locationManager.clearPendingLocations(for: trackingId)
-            
-            // Continue tracking
-            let _ = locationManager.startTracking()
-            selectedMapItemTag = .newFeature
-        }
     }
 }
 
 #Preview {
-    @Dependency(\.modelContainer) var modelContainer 
+    @Dependency(\.modelContainer) var modelContainer
     
     DetailedMapView(showSheet: .constant(true))
         .modelContainer(modelContainer)

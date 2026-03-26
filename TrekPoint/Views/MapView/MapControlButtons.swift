@@ -4,18 +4,16 @@ import Dependencies
 
 struct MapControlButtons: View {
     @Environment(\.colorScheme) private var colorScheme
-    @Dependency(\.annotationPersistenceManager) private var annotationManager
-    @Dependency(\.polylinePersistenceManager) private var polylineManager
-    @Dependency(\.locationTrackingManager) private var locationManager
-    @Dependency(\.toastManager) private var toastManager
     
-    @Binding private var selectedMapItemTag: MapFeatureTag?
-    @Binding private var selectedDetent: PresentationDetent
-    
-    private let proxy: MapProxy
-    private let frame: CGRect
-    private let nspace: Namespace.ID
-    private let buttonSize: Double
+    let annotationState: AnnotationButtonState
+    let polylineState: PolylineButtonState
+    let locationState: LocationButtonState
+    let selectedDetent: PresentationDetent
+    let proxy: MapProxy
+    let nspace: Namespace.ID
+    let buttonSize: Double
+    let onIntent: (MapButtonIntent) -> Void
+
     
     private let padding: Double
     private let cornerRadius: Double
@@ -30,21 +28,22 @@ struct MapControlButtons: View {
     }
     
     private var userLocationShape: AnyShape {
-        if locationManager.isUserLocationActive {
+        if locationState.isActive {
             AnyShape(Rectangle())
         } else {
             AnyShape(UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
         }
     }
     
-    init(selectedMapItemTag: Binding<MapFeatureTag?>, selectedDetent: Binding<PresentationDetent>, proxy: MapProxy, frame: CGRect, nspace: Namespace.ID, buttonSize: Double) {
-        self._selectedMapItemTag = selectedMapItemTag
-        self._selectedDetent = selectedDetent
+    init(annotationState: AnnotationButtonState, polylineState: PolylineButtonState, locationState: LocationButtonState, selectedDetent: PresentationDetent, proxy: MapProxy, nspace: Namespace.ID, buttonSize: Double, onIntent: @escaping (MapButtonIntent) -> Void) {
+        self.annotationState = annotationState
+        self.polylineState = polylineState
+        self.locationState = locationState
+        self.selectedDetent = selectedDetent
         self.proxy = proxy
-        self.frame = frame
         self.nspace = nspace
         self.buttonSize = buttonSize
-        
+        self.onIntent = onIntent
         self.padding = buttonSize / 4
         self.cornerRadius = buttonSize / 3
     }
@@ -64,7 +63,7 @@ struct MapControlButtons: View {
                 
                 locationButton
                 
-                if locationManager.isUserLocationActive {
+                if locationState.isActive {
                     Divider()
                         .frame(width: buttonSize)
                     
@@ -73,25 +72,17 @@ struct MapControlButtons: View {
             }
             .opacity(selectedDetent == .largeWithoutScaleEffect ? 0 : 1)
             .animation(.easeOut(duration: 0.2), value: selectedDetent)
-            .animation(.easeInOut(duration: 0.2), value: locationManager.isUserLocationActive)
+            .animation(.easeInOut(duration: 0.2), value: locationState.isActive)
         }
         .padding(.horizontal)
     }
     
     private var newAnnotationButton: some View {
         HStack(spacing: 0) {
-            if annotationManager.isShowingOptions {
+            if annotationState.isShowingOptions {
                 HStack {
                     Button {
-                        do {
-                            try annotationManager.finalizeWorkingAnnotation()
-                            
-                            selectedMapItemTag = nil
-                            selectedDetent = .small
-                        } catch {
-                            // TODO: - Send to some analytics service
-                            toastManager.commitFeatureCreationError(error)
-                        }
+                        onIntent(.confirmAnnotation)
                     } label: {
                         Label("Confirm", systemImage: "checkmark.circle")
                             .frame(maxHeight: .infinity)
@@ -100,38 +91,19 @@ struct MapControlButtons: View {
                     Divider()
                     
                     Button {
-                        annotationManager.undo()
+                        onIntent(.undoAnnotation)
                     } label: {
                         Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             .frame(maxHeight: .infinity)
                     }
-                    .disabled(!annotationManager.canUndo)
+                    .disabled(!annotationState.canUndo)
                 }
                 .padding(.horizontal)
                 .toolTipVersionSpecificBackground(triangleSize: CGSize(width: 10, height: 20), cornerRadius: cornerRadius)
             }
             
             Button {
-                if annotationManager.workingAnnotation == nil {
-                    let midPoint = CGPoint(x: frame.midX, y: frame.midY)
-                    
-                    guard let map = proxy.map else {
-                        // TODO: - Send to some analytics service
-                        toastManager.addBreadForToasting(.somethingWentWrong(.message("Coordinate conversion did not occur because the map was not available")))
-                        return
-                    }
-                    
-                    let coordinate = map.coordinate(for: midPoint)
-                    
-                    annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
-                    selectedMapItemTag = .newFeature
-                } else {
-                    // TODO: - Show an alert to confirm that the user wants to clear progress (same with working polyline)
-                    // Also, creating a polyline and creating an annotation should be mutually exclusive
-                    annotationManager.clearWorkingAnnotationProgress()
-                    selectedMapItemTag = nil
-                    selectedDetent = .small
-                }
+                onIntent(.beginAnnotationCreation)
             } label: {
                 Image(systemName: "mappin")
                     .resizable()
@@ -140,7 +112,7 @@ struct MapControlButtons: View {
                     .accessibilityLabel("Create New Marker")
             }
             .frame(width: buttonSize)
-            .foregroundStyle(annotationManager.isShowingOptions ? activeColor : inactiveColor)
+            .foregroundStyle(annotationState.isShowingOptions ? activeColor : inactiveColor)
             .versionSpecificBackground(in: UnevenRoundedRectangle(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius))
         }
         .frame(height: buttonSize)
@@ -148,18 +120,10 @@ struct MapControlButtons: View {
     
     private var newDrawnPolylineButton: some View {
         HStack(spacing: 0) {
-            if polylineManager.isShowingOptions && polylineManager.isDrawingPolyline {
+            if polylineState.isShowingOptions && polylineState.isDrawing {
                 HStack {
                     Button {
-                        do {
-                            _ = try polylineManager.finalizeWorkingPolyline()
-                            
-                            selectedMapItemTag = nil
-                            selectedDetent = .small
-                        } catch {
-                            // TODO: - Send to some analytics service
-                            toastManager.commitFeatureCreationError(error)
-                        }
+                        onIntent(.confirmPolyline)
                     } label: {
                         Label("Confirm", systemImage: "checkmark.circle")
                             .frame(maxHeight: .infinity)
@@ -168,35 +132,28 @@ struct MapControlButtons: View {
                     Divider()
                     
                     Button {
-                        polylineManager.undo()
+                        onIntent(.undoPolyline)
                     } label: {
                         Label("Undo", systemImage: "arrow.uturn.backward.circle")
                             .frame(maxHeight: .infinity)
                     }
-                    .disabled(!polylineManager.canUndo)
+                    .disabled(!polylineState.canUndo)
                 }
                 .padding(.horizontal)
                 .toolTipVersionSpecificBackground(triangleSize: CGSize(width: 10, height: 20), cornerRadius: cornerRadius)
             }
             
             Button {
-                if polylineManager.workingPolyline != nil {
-                    polylineManager.clearWorkingPolylineProgress()
-                    selectedMapItemTag = nil
-                    selectedDetent = .small
-                } else {
-                    polylineManager.startNewWorkingPolyline()
-                    selectedMapItemTag = .newFeature
-                }
+                onIntent(.beginPolylineDrawing)
             } label: {
-                Image(systemName: polylineManager.isDrawingPolyline ? "hand.draw.fill" : "hand.draw")
+                Image(systemName: polylineState.isDrawing ? "hand.draw.fill" : "hand.draw")
                     .resizable()
                     .scaledToFit()
                     .padding(padding)
-                    .accessibilityLabel(polylineManager.isDrawingPolyline ? "Stop Drawing Path" : "Draw Path")
+                    .accessibilityLabel(polylineState.isDrawing ? "Stop Drawing Path" : "Draw Path")
             }
             .frame(width: buttonSize, height: buttonSize)
-            .foregroundStyle(polylineManager.isDrawingPolyline ? activeColor : inactiveColor)
+            .foregroundStyle(polylineState.isDrawing ? activeColor : inactiveColor)
             .versionSpecificBackground(in: Rectangle())
         }
         .frame(height: buttonSize)
@@ -204,28 +161,27 @@ struct MapControlButtons: View {
     
     private var locationButton: some View {
         Button {
-            if locationManager.isUserLocationActive {
-                // TODO: - Also cancel user-tracked working polyline and/or alert user that turning off location will stop the in-progress polyline
-                locationManager.hideUserLocation()
+            if locationState.isActive {
+                onIntent(.hideUserLocation)
             } else {
-                locationManager.showUserLocation()
+                onIntent(.showUserLocation)
             }
         } label: {
-            Image(systemName: locationManager.isUserLocationActive ? "location.north.circle.fill" : "location.north.circle")
+            Image(systemName: locationState.isActive ? "location.north.circle.fill" : "location.north.circle")
                 .resizable()
                 .scaledToFit()
                 .padding(padding)
-                .accessibilityLabel((locationManager.isUserLocationActive ? "Hide" : "Show") + " Current Location")
+                .accessibilityLabel((locationState.isActive ? "Hide" : "Show") + " Current Location")
         }
         .frame(width: buttonSize)
-        .foregroundStyle(locationManager.isUserLocationActive ? activeColor : inactiveColor)
+        .foregroundStyle(locationState.isActive ? activeColor : inactiveColor)
         .versionSpecificBackground(in: userLocationShape)
         .frame(height: buttonSize)
     }
     
     private var locationTrackedPolylineButton: some View {
         HStack(spacing: 0) {
-            if polylineManager.isTrackingPolyline {
+            if polylineState.isTracking {
                 HStack {
                     // TODO: - Make a button and alert user that their location is being recorded and how to turn it off, if they'd like
                     Text("R")
@@ -240,17 +196,7 @@ struct MapControlButtons: View {
                     
                     HStack(spacing: 0) {
                         Button {
-                            do {
-                                _ = try polylineManager.finalizeWorkingPolyline()
-                                
-                                locationManager.stopTracking()
-                            } catch let PolylineFinalizationError.tooFewCoordinates(required, have) {
-                                toastManager.addBreadForToasting(.polylineCreationError(.tooFewCoordinates(required: required, have: have)))
-                            } catch PolylineFinalizationError.emptyTitle {
-                                toastManager.addBreadForToasting(.polylineCreationError(.emptyTitle))
-                            } catch {
-                                toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
-                            }
+                            onIntent(.confirmTrackedPolyline)
                         } label: {
                             Label("Confirm", systemImage: "checkmark.circle")
                                 .frame(maxHeight: .infinity)
@@ -263,24 +209,16 @@ struct MapControlButtons: View {
             }
             
             Button {
-                if polylineManager.workingPolyline != nil {
-                    polylineManager.clearWorkingPolylineProgress()
-                    selectedMapItemTag = nil
-                    selectedDetent = .small
-                    locationManager.stopTracking()
-                } else {
-                    polylineManager.startNewLocationTrackedPolyline(withUserCoordinate: locationManager.startTracking())
-                    selectedMapItemTag = .newFeature
-                }
+                onIntent(.beginTracking)
             } label: {
-                Image(systemName: polylineManager.isTrackingPolyline ? "location.north.line.fill" : "location.north.line")
+                Image(systemName: polylineState.isTracking ? "location.north.line.fill" : "location.north.line")
                     .resizable()
                     .scaledToFit()
                     .padding(padding)
-                    .accessibilityLabel(polylineManager.isTrackingPolyline ? "Stop Tracking" : "Track My Path")
+                    .accessibilityLabel(polylineState.isTracking ? "Stop Tracking" : "Track My Path")
             }
             .frame(width: buttonSize)
-            .foregroundStyle(polylineManager.isTrackingPolyline ? activeColor : inactiveColor)
+            .foregroundStyle(polylineState.isTracking ? activeColor : inactiveColor)
             .versionSpecificBackground(in: UnevenRoundedRectangle(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
         }
         .frame(height: buttonSize)

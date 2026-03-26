@@ -1,18 +1,11 @@
 import Foundation
 import SwiftData
 import CoreLocation
+import Dependencies
 
 @Observable
 class BackgroundPersistenceManager {
-    private let container: ModelContainer
-    
-    init() {
-        do {
-            container = try ModelContainer(for: Schema(CurrentModelVersion.models))
-        } catch {
-            fatalError("Failed to initialize CoreData: \(error)")
-        }
-    }
+    @ObservationIgnored @Dependency(\.modelContainer) private var container
     
     func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void) {
         Task {
@@ -60,6 +53,17 @@ class BackgroundPersistenceManager {
             for location in pendingLocations {
                 context.delete(location)
             }
+            try context.save()
+        } catch {
+            print("Failed to clear pending locations: \(error)")
+        }
+    }
+    
+    func clearAllPendingLocations() {
+        let context = ModelContext(container)
+        
+        do {
+            try context.delete(model: PendingTrackingLocation.self)
             try context.save()
         } catch {
             print("Failed to clear pending locations: \(error)")

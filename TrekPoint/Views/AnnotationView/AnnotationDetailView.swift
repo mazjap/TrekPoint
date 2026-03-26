@@ -3,14 +3,59 @@ import AVKit
 
 struct AnnotationDetailView: View {
     private enum Storage {
-        case annotationData(AnnotationData)
+        case annotationData(Bindable<AnnotationData>)
         case workingAnnotation(Binding<WorkingAnnotation>)
+        
+        var wrappedValue: any AnnotationProvider {
+            switch self {
+            case let .annotationData(annotation): annotation.wrappedValue
+            case let .workingAnnotation(annotation): annotation.wrappedValue
+            }
+        }
+        
+        var coordinate: Binding<Coordinate> {
+            switch self {
+            case let .annotationData(annotation): annotation.coordinate
+            case let .workingAnnotation(annotation): annotation.coordinate
+            }
+        }
+        
+        var title: Binding<String> {
+            switch self {
+            case let .annotationData(annotation): annotation.title
+            case let .workingAnnotation(annotation): annotation.title
+            }
+        }
+        
+        var userDescription: Binding<String> {
+            switch self {
+            case let .annotationData(annotation): annotation.userDescription
+            case let .workingAnnotation(annotation): annotation.userDescription
+            }
+        }
+        
+        var attachments: Binding<[Attachment]> {
+            switch self {
+            case let .annotationData(annotation): annotation.attachments
+            case let .workingAnnotation(annotation): annotation.attachments
+            }
+        }
+        
+        var type: AnnotationType {
+            switch self {
+            case let .annotationData(annotation): .model(annotation.wrappedValue)
+            case let .workingAnnotation(annotation): .working(annotation.wrappedValue)
+            }
+        }
     }
+    
+    @State private var previewId = UUID()
+    @State private var isBrowsingPhotos = false
     
     private let storage: Storage
     
     init(annotation: AnnotationData) {
-        self.storage = .annotationData(annotation)
+        self.storage = .annotationData(Bindable(annotation))
     }
     
     init(annotation: Binding<WorkingAnnotation>) {
@@ -18,47 +63,18 @@ struct AnnotationDetailView: View {
     }
     
     var body: some View {
-        switch storage {
-        case let .annotationData(annotation):
-            let bindable = Bindable(annotation)
-            AnnotationDetailViewImplementation(annotation: .model(annotation), coordinate: bindable.coordinate, title: bindable.title, attachments: bindable.attachments, notes: bindable.userDescription)
-        case let .workingAnnotation(annotation):
-            AnnotationDetailViewImplementation(annotation: .working(annotation.wrappedValue), coordinate: annotation.coordinate, title: annotation.title, attachments: annotation.attachments, notes: annotation.userDescription)
-        }
-    }
-}
-
-fileprivate struct AnnotationDetailViewImplementation: View {
-    @State private var previewId = UUID()
-    @State private var isBrowsingPhotos = false
-    @Binding private var coordinate: Coordinate
-    @Binding private var title: String
-    @Binding private var attachments: [Attachment]
-    @Binding private var notes: String
-    
-    private let annotation: AnnotationType
-    
-    init(annotation: AnnotationType, coordinate: Binding<Coordinate>, title: Binding<String>, attachments: Binding<[Attachment]>, notes: Binding<String>) {
-        self.annotation = annotation
-        self._coordinate = coordinate
-        self._title = title
-        self._attachments = attachments
-        self._notes = notes
-    }
-    
-    var body: some View {
         Form {
-            MapPreview(feature: .annotation(annotation))
+            AnnotationMapPreview(annotation: storage.wrappedValue)
                 .id(previewId)
                 .frame(height: 260)
-                .onChange(of: coordinate) {
+                .onChange(of: storage.coordinate.wrappedValue) {
                     previewId = UUID()
                 }
             
-            TextField("Name this marker", text: $title)
+            TextField("Name this marker", text: storage.title)
                 .font(.title2.bold())
                 .overlay {
-                    if title.isEmpty {
+                    if storage.title.wrappedValue.isEmpty {
                         Color.red.opacity(0.2)
                             .allowsHitTesting(false)
                             // TODO: - Don't use magic number
@@ -75,15 +91,15 @@ fileprivate struct AnnotationDetailViewImplementation: View {
                 }
                 
                 GridRow {
-                    TextField("", value: $coordinate.latitude, format: .number)
+                    TextField("", value: storage.coordinate.latitude, format: .number)
                     
-                    TextField("", value: $coordinate.longitude, format: .number)
+                    TextField("", value: storage.coordinate.longitude, format: .number)
                 }
                 .textFieldStyle(.roundedBorder)
             }
             
             DisclosureGroup("Attachments") {
-                AttachmentsView(annotation: annotation)
+                AttachmentsView(annotation: storage.type)
                     .frame(height: 350)
             }
             
@@ -91,12 +107,12 @@ fileprivate struct AnnotationDetailViewImplementation: View {
                 HStack(spacing: 0) {
                     Divider()
                     
-                    TextEditor(text: $notes)
+                    TextEditor(text: storage.userDescription)
                         .frame(height: 200)
                 }
             }
         }
-        .navigationTitle(title)
+        .navigationTitle(storage.title.wrappedValue)
     }
 }
 

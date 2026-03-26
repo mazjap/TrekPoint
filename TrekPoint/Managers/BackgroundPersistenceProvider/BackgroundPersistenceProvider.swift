@@ -5,6 +5,7 @@ protocol BackgroundPersistenceProvider {
     func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void)
     func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D]
     func clearPendingLocations(for trackingID: UUID)
+    func clearAllPendingLocations()
 }
 
 extension BackgroundPersistenceManager: BackgroundPersistenceProvider {}

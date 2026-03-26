@@ -66,6 +66,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
     }
     
+    @discardableResult
     func startTracking() -> CLLocationCoordinate2D? {
         activeTrackingID = UUID()
         
@@ -154,5 +155,9 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     
     func clearPendingLocations(for trackingId: UUID) {
         backgroundManager.clearPendingLocations(for: trackingId)
+    }
+    
+    func clearAllPendingLocations() {
+        backgroundManager.clearAllPendingLocations()
     }
 }

@@ -1,52 +1,36 @@
-enum MapFeature {
-    case annotation(any AnnotationProvider)
-    case polyline(any PolylineProvider)
+import Foundation
+
+enum ResolvedMapFeature: Hashable {
+    case annotation(AnnotationData)
+    case polyline(PolylineData)
+    case workingAnnotation
+    case workingPolyline
     
     var tag: MapFeatureTag {
         switch self {
         case let .annotation(annotation):
-            return annotation.tag
+            annotation.tag
         case let .polyline(polyline):
-            return polyline.tag
-        }
-    }
-    
-    var geometry: MapFeatureGeometry {
-        switch self {
-        case let .annotation(annotation):
-            return .annotation(annotation.clCoordinate)
-        case let .polyline(polyline):
-            return .polyline(polyline.clCoordinates)
-        }
-    }
-    
-    var title: String {
-        switch self {
-        case let .annotation(annotation):
-            return annotation.title
-        case let .polyline(polyline):
-            return polyline.title
+            polyline.tag
+        case .workingPolyline:
+            .workingPolyline
+        case .workingAnnotation:
+            .workingAnnotation
         }
     }
 }
-
-import struct CoreLocation.CLLocationCoordinate2D
-
-enum MapFeatureGeometry: Equatable {
-    case annotation(CLLocationCoordinate2D)
-    case polyline([CLLocationCoordinate2D])
-}
-
-import struct Foundation.UUID
 
 enum MapFeatureTag: Hashable, Identifiable {
     case annotation(UUID)
     case polyline(UUID)
-    case newFeature
+    case workingAnnotation
+    case workingPolyline
     
     init?(rawValue: String) {
-        if rawValue == "new_feature" {
-            self = .newFeature
+        if rawValue == "working_annotation" {
+            self = .workingAnnotation
+        } else if rawValue == "working_polyline" {
+            self = .workingPolyline
         } else {
             let splitString = rawValue.split(separator: "_")
             
@@ -72,8 +56,10 @@ enum MapFeatureTag: Hashable, Identifiable {
             "annotation_" + id.uuidString
         case let .polyline(id):
             "polyline_" + id.uuidString
-        case .newFeature:
-            "new_feature"
+        case .workingAnnotation:
+            "working_annotation"
+        case .workingPolyline:
+            "working_polyline"
         }
     }
 }

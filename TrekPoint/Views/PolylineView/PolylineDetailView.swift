@@ -2,14 +2,43 @@ import SwiftUI
 
 struct PolylineDetailView: View {
     private enum Storage {
-        case polylineData(PolylineData)
+        case polylineData(Bindable<PolylineData>)
         case workingPolyline(Binding<WorkingPolyline>)
+        
+        var wrappedValue: any PolylineProvider {
+            switch self {
+            case let .polylineData(polyline): polyline.wrappedValue
+            case let .workingPolyline(polyline): polyline.wrappedValue
+            }
+        }
+        
+        var coordinates: Binding<[Coordinate]> {
+            switch self {
+            case let .polylineData(polyline): polyline.coordinates
+            case let .workingPolyline(polyline): polyline.coordinates
+            }
+        }
+        
+        var title: Binding<String> {
+            switch self {
+            case let .polylineData(polyline): polyline.title
+            case let .workingPolyline(polyline): polyline.title
+            }
+        }
+        
+        var userDescription: Binding<String> {
+            switch self {
+            case let .polylineData(polyline): polyline.userDescription
+            case let .workingPolyline(polyline): polyline.userDescription
+            }
+        }
     }
     
+    @State private var previewId = UUID()
     private let storage: Storage
     
     init(polyline: PolylineData) {
-        self.storage = .polylineData(polyline)
+        self.storage = .polylineData(Bindable(polyline))
     }
     
     init(polyline: Binding<WorkingPolyline>) {
@@ -17,43 +46,18 @@ struct PolylineDetailView: View {
     }
     
     var body: some View {
-        switch storage {
-        case let .polylineData(polyline):
-            let bindable = Bindable(polyline)
-            PolylineDetailViewImplementation(polyline: polyline, coordinates: bindable.coordinates, title: bindable.title, notes: bindable.userDescription)
-        case let .workingPolyline(polyline):
-            PolylineDetailViewImplementation(polyline: polyline.wrappedValue, coordinates: polyline.coordinates, title: polyline.title, notes: polyline.userDescription)
-        }
-    }
-}
-
-fileprivate struct PolylineDetailViewImplementation: View {
-    private let feature: MapFeature
-    @State private var previewId = UUID()
-    @Binding private var coordinates: [Coordinate]
-    @Binding private var title: String
-    @Binding private var notes: String
-    
-    init(polyline: any PolylineProvider, coordinates: Binding<[Coordinate]>, title: Binding<String>, notes: Binding<String>) {
-        self.feature = .polyline(polyline)
-        self._coordinates = coordinates
-        self._title = title
-        self._notes = notes
-    }
-    
-    var body: some View {
         Form {
-            MapPreview(feature: feature)
+            PolylineMapPreview(polyline: storage.wrappedValue)
                 .id(previewId)
                 .frame(height: 260)
-                .onChange(of: coordinates) {
+                .onChange(of: storage.coordinates.wrappedValue) {
                     previewId = UUID()
                 }
             
-            TextField("Name this path", text: $title)
+            TextField("Name this path", text: storage.title)
                 .font(.title2.bold())
                 .overlay {
-                    if title.isEmpty {
+                    if storage.title.wrappedValue.isEmpty {
                         Color.red.opacity(0.2)
                             .allowsHitTesting(false)
                             // TODO: - Don't use magic number
@@ -76,11 +80,11 @@ fileprivate struct PolylineDetailViewImplementation: View {
                             .frame(maxWidth: .infinity)
                     }
                     
-                    if !coordinates.isEmpty {
+                    if !storage.coordinates.wrappedValue.isEmpty {
                         Divider()
                     }
                     
-                    ForEach(Array(coordinates.enumerated()), id: \.1.id) { (index, coordinate) in
+                    ForEach(Array(storage.coordinates.wrappedValue.enumerated()), id: \.1.id) { (index, coordinate) in
                         Spacer()
                             .frame(height: 10)
                         
@@ -90,13 +94,13 @@ fileprivate struct PolylineDetailViewImplementation: View {
                             let latBinding = Binding {
                                 coordinate.latitude
                             } set: {
-                                coordinates[index].latitude = $0
+                                storage.coordinates.wrappedValue[index].latitude = $0
                             }
                             
                             let lngBinding = Binding {
                                 coordinate.longitude
                             } set: {
-                                coordinates[index].longitude = $0
+                                storage.coordinates.wrappedValue[index].longitude = $0
                             }
                             
                             TextField("", value: latBinding, format: .number)
@@ -105,14 +109,14 @@ fileprivate struct PolylineDetailViewImplementation: View {
                         }
                         .textFieldStyle(.roundedBorder)
                         
-                        if index != coordinates.count - 1 {
+                        if index != storage.coordinates.wrappedValue.count - 1 {
                             Divider()
                         }
                     }
                 }
             }
             .overlay {
-                if coordinates.isEmpty {
+                if storage.coordinates.wrappedValue.isEmpty {
                     Color.red.opacity(0.2)
                         .padding(-40)
                 }
@@ -122,12 +126,12 @@ fileprivate struct PolylineDetailViewImplementation: View {
                 HStack(spacing: 0) {
                     Divider()
                     
-                    TextEditor(text: $notes)
+                    TextEditor(text: storage.userDescription)
                         .frame(height: 200)
                 }
             }
         }
-        .navigationTitle(title)
+        .navigationTitle(storage.title.wrappedValue)
     }
 }
 
