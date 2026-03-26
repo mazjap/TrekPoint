@@ -2,13 +2,6 @@ import SwiftUI
 import SwiftData
 import Dependencies
 
-enum MapFeatureToPresent: Hashable {
-    case annotation(AnnotationData)
-    case polyline(PolylineData)
-    case workingAnnotation
-    case workingPolyline
-}
-
 struct MapFeatureNavigator: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Dependency(\.polylinePersistenceManager) private var polylineManager
@@ -16,10 +9,11 @@ struct MapFeatureNavigator: View {
     @Dependency(\.modelContainer) private var container
     @Environment(\.modelContext) private var mainContext
     
+    @State private var navigationPath: [ResolvedMapFeature] = []
     @State private var searchTask: Task<Void, Never>?
     @State private var searchText = ""
     @FocusState private var isSearchTextFocused: Bool
-    @Binding private var selection: MapFeatureToPresent?
+    
     @Binding private var selectedDetent: PresentationDetent
     
     @State private var filteredAnnotations: [AnnotationData] = []
@@ -33,22 +27,23 @@ struct MapFeatureNavigator: View {
         isSearching ? filteredPolylines : polylines
     }
     
+    private let selection: ResolvedMapFeature?
     private let annotations: [AnnotationData]
     private let polylines: [PolylineData]
-    private let onSelection: (MapFeature?) -> Void
+    private let onSelection: (ResolvedMapFeature?) -> Void
     
     private var isSearching: Bool {
         !searchText.isEmpty
     }
     
     init(
-        selection: Binding<MapFeatureToPresent?>,
+        selection: ResolvedMapFeature?,
         selectedDetent: Binding<PresentationDetent>,
         annotations: [AnnotationData],
         polylines: [PolylineData],
-        onSelection: @escaping (MapFeature?) -> Void
+        onSelection: @escaping (ResolvedMapFeature?) -> Void
     ) {
-        self._selection = selection
+        self.selection = selection
         self._selectedDetent = selectedDetent
         self.annotations = annotations
         self.polylines = polylines
@@ -57,7 +52,7 @@ struct MapFeatureNavigator: View {
     
     var body: some View {
         // TODO: - Add sorting options (sort by date, sort by type of feature, etc.)
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             List {
                 listContent
             }
@@ -65,8 +60,16 @@ struct MapFeatureNavigator: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 searchBar
             }
-            .navigationDestination(item: $selection) { currentSelection in
+            .navigationDestination(for: ResolvedMapFeature.self) { currentSelection in
                 navigationDestination(for: currentSelection)
+            }
+        }
+        .onChange(of: selection) {
+            navigationPath = selection.map { [$0] } ?? []
+        }
+        .onAppear {
+            if let selection {
+                navigationPath = [selection]
             }
         }
     }
@@ -81,7 +84,6 @@ struct MapFeatureNavigator: View {
             Section("Markers") {
                 ForEach(displayedAnnotations) { item in
                     Button {
-                        selection = .annotation(item)
                         onSelection(.annotation(item))
                     } label: {
                         HStack {
@@ -100,7 +102,6 @@ struct MapFeatureNavigator: View {
             Section("Paths") {
                 ForEach(displayedPolylines) { item in
                     Button {
-                        selection = .polyline(item)
                         onSelection(.polyline(item))
                     } label: {
                         HStack {
@@ -164,7 +165,7 @@ struct MapFeatureNavigator: View {
     }
     
     @ViewBuilder
-    func navigationDestination(for feature: MapFeatureToPresent) -> some View {
+    func navigationDestination(for feature: ResolvedMapFeature) -> some View {
         let onDismiss = {
             onSelection(nil)
         }
@@ -286,7 +287,7 @@ struct MapFeatureNavigator: View {
     Color.red.ignoresSafeArea()
         .sheet(isPresented: .constant(true)) {
             MapFeatureNavigator(
-                selection: .constant(nil),
+                selection: nil,
                 selectedDetent: $detent,
                 annotations: [.preview],
                 polylines: [.preview],

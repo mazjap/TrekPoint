@@ -3,18 +3,18 @@ import SwiftData
 import Dependencies
 
 struct ContentView: View {
-    @Binding private var showSheet: Bool
-    
-    init(showSheet: Binding<Bool>) {
-        self._showSheet = showSheet
-    }
+    @State private var isAnimationComplete = false
 
     var body: some View {
         NavigationStack {
-            DetailedMapView(showSheet: $showSheet)
+            DetailedMapView(showSheet: $isAnimationComplete)
                 .navigationTitle("Map")
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)
+        }
+        .overlay {
+            LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
+                .ignoresSafeArea()
         }
     }
 }
@@ -22,6 +22,6 @@ struct ContentView: View {
 #Preview {
     @Dependency(\.modelContainer) var modelContainer
     
-    ContentView(showSheet: .constant(true))
+    ContentView()
         .modelContainer(modelContainer)
 }

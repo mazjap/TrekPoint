@@ -6,14 +6,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     @Dependency(\.locationTrackingManager) private var locationManager
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        // Check if an ongoing tracking session exists
-        if let trackingID = locationManager.checkForPendingTracks() {
-            // Restore the tracking state
-            NotificationCenter.default.post(
-                name: .restoreTrackingSession,
-                object: nil,
-                userInfo: ["trackingID" : trackingID]
-            )
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            if let trackingID = locationManager.checkForPendingTracks() {
+                NotificationCenter.default.post(
+                    name: .restoreTrackingSession,
+                    object: nil,
+                    userInfo: ["trackingID" : trackingID]
+                )
+            }
         }
         
         return true

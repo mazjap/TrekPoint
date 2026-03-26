@@ -17,7 +17,7 @@ struct WorkingAnnotation: AnnotationProvider, Hashable {
     var title: String
     var attachments: [Attachment] = []
     var userDescription: String = ""
-    let tag = MapFeatureTag.newFeature
+    let tag = MapFeatureTag.workingAnnotation
     var clCoordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(coordinate)
     }

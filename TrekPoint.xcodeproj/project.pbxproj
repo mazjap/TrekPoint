@@ -26,6 +26,10 @@
 		0E3DACAD2F64017500158EF3 /* PolylineManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */; };
 		0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */; };
 		0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */; };
+		0E5553512F73D05300337212 /* MapCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553502F73D05300337212 /* MapCoordinator.swift */; };
+		0E5553532F73D0C500337212 /* GroupedMapContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553522F73D0C500337212 /* GroupedMapContent.swift */; };
+		0E5553552F748C4200337212 /* GroupedMapContentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553542F748C4200337212 /* GroupedMapContentState.swift */; };
+		0E5553592F748CC100337212 /* MapControlButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553582F748CC100337212 /* MapControlButtonState.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -110,6 +114,10 @@
 		0E4E2ABB2DA1925900AABFDE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		0E4E2ABC2DA1925900AABFDE /* landing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing.png; sourceTree = "<group>"; };
 		0E4E2ABD2DA1925900AABFDE /* my_items.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_items.png; sourceTree = "<group>"; };
+		0E5553502F73D05300337212 /* MapCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCoordinator.swift; sourceTree = "<group>"; };
+		0E5553522F73D0C500337212 /* GroupedMapContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapContent.swift; sourceTree = "<group>"; };
+		0E5553542F748C4200337212 /* GroupedMapContentState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapContentState.swift; sourceTree = "<group>"; };
+		0E5553582F748CC100337212 /* MapControlButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControlButtonState.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -272,6 +280,8 @@
 				0E36EA902D74F33100C163E9 /* SwiftData */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
+				0E5553542F748C4200337212 /* GroupedMapContentState.swift */,
+				0E5553582F748CC100337212 /* MapControlButtonState.swift */,
 				0EA4BD5F2B93D2BB005259B4 /* Coordinate.swift */,
 				0EE4530A2BAD619E007C40DE /* MapFeature.swift */,
 			);
@@ -340,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */,
+				0E5553502F73D05300337212 /* MapCoordinator.swift */,
 				0EBD38FA2DC7E13A0033B4D1 /* BackgroundPersistenceProvider */,
 				0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */,
 				0EBD38F42DC7DBEF0033B4D1 /* LocationManagerProvider.swift */,
@@ -381,6 +392,7 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
+				0E5553522F73D0C500337212 /* GroupedMapContent.swift */,
 				0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
@@ -520,6 +532,7 @@
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0E80B5B82DC8238700FF2FDC /* MapControlButtons.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
+				0E5553552F748C4200337212 /* GroupedMapContentState.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
@@ -529,18 +542,21 @@
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */,
+				0E5553512F73D05300337212 /* MapCoordinator.swift in Sources */,
 				0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */,
 				0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */,
 				0E9512CB2BB533E900E9CA83 /* Binding+Extension.swift in Sources */,
 				0EA4BD472B9151AF005259B4 /* TrekPointApp.swift in Sources */,
 				0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */,
 				0E9B1AF32D3DF0D600174ECE /* PersistentEditableModel.swift in Sources */,
+				0E5553532F73D0C500337212 /* GroupedMapContent.swift in Sources */,
 				0E8EF05B2D70528E006145C0 /* PolylineData.swift in Sources */,
 				0EBD38F22DC7D70D0033B4D1 /* AttachmentProvider.swift in Sources */,
 				0EA4BD592B91C848005259B4 /* AnnotationDetailView.swift in Sources */,
 				0E36EA8F2D73FF1200C163E9 /* DraggablePolylinePoint.swift in Sources */,
 				0E2952A02D72ED140079479A /* AnnotationMapOverlay.swift in Sources */,
 				0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */,
+				0E5553592F748CC100337212 /* MapControlButtonState.swift in Sources */,
 				0EA7FC502D854F8D001828BB /* ModelContainer+Convenience.swift in Sources */,
 				0E7E00902D8216FD0019A92A /* AttachmentStore.swift in Sources */,
 				0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */,

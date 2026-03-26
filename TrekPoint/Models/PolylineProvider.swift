@@ -19,7 +19,7 @@ struct WorkingPolyline: PolylineProvider, Hashable {
     var coordinates: [Coordinate]
     var isLocationTracked: Bool
     let startedAt: Date = .now
-    let tag = MapFeatureTag.newFeature
+    let tag = MapFeatureTag.workingPolyline
     var clCoordinates: [CLLocationCoordinate2D] { coordinates.map { CLLocationCoordinate2D($0) } }
     
     static let example: WorkingPolyline = .init(
