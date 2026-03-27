@@ -140,6 +140,10 @@ struct DetailedMapView: View {
                 }
             }
             .mapScope(nspace)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear
+                    .frame(height: PresentationDetent.smallDetentHeight)
+            }
         }
         .sheet(isPresented: $showSheet) {
             MapFeatureNavigator(
