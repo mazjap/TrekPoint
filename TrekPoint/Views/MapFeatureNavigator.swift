@@ -6,10 +6,8 @@ struct MapFeatureNavigator: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Dependency(\.polylinePersistenceManager) private var polylineManager
     @Dependency(\.toastManager) private var toastManager
-    @Dependency(\.modelContainer) private var container
     @Environment(\.modelContext) private var mainContext
     
-    @State private var navigationPath: [ResolvedMapFeature] = []
     @State private var searchTask: Task<Void, Never>?
     @State private var searchText = ""
     @FocusState private var isSearchTextFocused: Bool
@@ -36,6 +34,14 @@ struct MapFeatureNavigator: View {
         !searchText.isEmpty
     }
     
+    private var navigationPath: Binding<[ResolvedMapFeature]> {
+        Binding {
+            selection.map { [$0] } ?? []
+        } set: { newPath in
+            onSelection(newPath.last)
+        }
+    }
+    
     init(
         selection: ResolvedMapFeature?,
         selectedDetent: Binding<PresentationDetent>,
@@ -52,7 +58,7 @@ struct MapFeatureNavigator: View {
     
     var body: some View {
         // TODO: - Add sorting options (sort by date, sort by type of feature, etc.)
-        NavigationStack(path: $navigationPath) {
+        NavigationStack(path: navigationPath) {
             List {
                 listContent
             }
@@ -62,14 +68,6 @@ struct MapFeatureNavigator: View {
             }
             .navigationDestination(for: ResolvedMapFeature.self) { currentSelection in
                 navigationDestination(for: currentSelection)
-            }
-        }
-        .onChange(of: selection) {
-            navigationPath = selection.map { [$0] } ?? []
-        }
-        .onAppear {
-            if let selection {
-                navigationPath = [selection]
             }
         }
     }
