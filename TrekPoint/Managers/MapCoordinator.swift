@@ -9,6 +9,7 @@ class MapCoordinator {
     var cameraPosition: MapCameraPosition = .automatic
     var selectedMapFeature: ResolvedMapFeature?
     var selectedDetent: PresentationDetent = .small
+    var featureLibraryCoordinator = FeatureLibraryCoordinator()
     
     @ObservationIgnored private var subscription: AnyCancellable?
     
@@ -34,6 +35,18 @@ class MapCoordinator {
             withAnimation {
                 cameraPosition = .userLocation(fallback: .automatic)
             }
+        }
+        
+        featureLibraryCoordinator.onSearchFocusChanged = { [weak self] isFocused in
+            if isFocused {
+                self?.selectedDetent = .largeWithoutScaleEffect
+            } else {
+                self?.selectedDetent = .medium
+            }
+        }
+        
+        featureLibraryCoordinator.onSelection = { [weak self] feature in
+            self?.handleNavigatorSelection(feature)
         }
     }
 }

@@ -146,9 +146,9 @@ struct DetailedMapView: View {
             }
         }
         .sheet(isPresented: $showSheet) {
-            MapFeatureNavigator(
+            FeatureLibrary(
+                coordinator: coordinator.featureLibraryCoordinator,
                 selection: coordinator.selectedMapFeature,
-                selectedDetent: $coordinator.selectedDetent,
                 annotations: annotations,
                 polylines: polylines
             ) { newSelection in
