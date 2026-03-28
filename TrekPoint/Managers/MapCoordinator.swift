@@ -8,7 +8,7 @@ import Combine
 class MapCoordinator {
     var cameraPosition: MapCameraPosition = .automatic
     var selectedMapFeature: ResolvedMapFeature?
-    var selectedDetent: PresentationDetent = .small
+    var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
     
     @ObservationIgnored private var subscription: AnyCancellable?
@@ -39,9 +39,9 @@ class MapCoordinator {
         
         featureLibraryCoordinator.onSearchFocusChanged = { [weak self] isFocused in
             if isFocused {
-                self?.selectedDetent = .largeWithoutScaleEffect
+                self?.selectedDetent = .tpLarge
             } else {
-                self?.selectedDetent = .medium
+                self?.selectedDetent = .tpMedium
             }
         }
         
@@ -115,7 +115,7 @@ extension MapCoordinator {
                 try annotationManager.finalizeWorkingAnnotation()
                 
                 selectedMapFeature = nil
-                selectedDetent = .small
+                selectedDetent = .tpSmall
             } catch {
                 // TODO: - Send to some analytics service
                 toastManager.commitFeatureCreationError(error)
@@ -125,7 +125,7 @@ extension MapCoordinator {
             // Also, creating a polyline and creating an annotation should be mutually exclusive
             annotationManager.clearWorkingAnnotationProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
         case .undoAnnotation:
             annotationManager.undo()
         case .beginPolylineDrawing:
@@ -140,7 +140,7 @@ extension MapCoordinator {
                 _ = try polylineManager.finalizeWorkingPolyline()
                 
                 selectedMapFeature = nil
-                selectedDetent = .small
+                selectedDetent = .tpSmall
             } catch {
                 // TODO: - Send to some analytics service
                 toastManager.commitFeatureCreationError(error)
@@ -148,7 +148,7 @@ extension MapCoordinator {
         case .cancelPolyline:
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -173,7 +173,7 @@ extension MapCoordinator {
         case .cancelTracking:
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
             locationManager.stopTracking()
         case .showUserLocation:
             locationManager.showUserLocation()

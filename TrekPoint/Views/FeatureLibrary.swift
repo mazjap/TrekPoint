@@ -178,7 +178,7 @@ struct FeatureLibrary: View {
 }
 
 #Preview {
-    @Previewable @State var detent = PresentationDetent.small
+    @Previewable @State var detent = PresentationDetent.tpSmall
     
     Color.red.ignoresSafeArea()
         .sheet(isPresented: .constant(true)) {

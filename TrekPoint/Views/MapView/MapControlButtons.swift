@@ -76,7 +76,7 @@ struct MapControlButtons: View {
                     locationTrackedPolylineButton
                 }
             }
-            .opacity(selectedDetent == .largeWithoutScaleEffect ? 0 : 1)
+            .opacity(selectedDetent == .tpLarge ? 0 : 1)
             .animation(.easeOut(duration: 0.2), value: selectedDetent)
             .animation(.easeInOut(duration: 0.2), value: locationState.isActive)
         }
