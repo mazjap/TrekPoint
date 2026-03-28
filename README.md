@@ -63,34 +63,33 @@ The following features are planned:
 
 High Priority:
 
-- Refactoring to better decouple views and business logic
+- Settings page with customization options:
+  - Map style (standard, satellite, hybrid, topographic)
+  - Distance units and coordinate format preferences
+  - GPS tracking sensitivity/battery optimization settings
+  - Map overlay visibility options (Scale & Compass)
+- Cache map tiles for offline use
+- Search and sort functionality for markers and paths
+- Live Activity support for tracking sessions
 
 Medium Priority:
 
-- Cache map tiles for offline use
-- Settings page with customization options:
-  - Map style (standard, satellite, hybrid, topographic)
-  - Marker and paths styling options
-  - Distance units and coordinate format preferences
-  - GPS tracking sensitivity/battery optimization settings
-  - Map overlay visibility options
-  - Theme settings
-- Search and sort functionality for markers and paths
-
-Lower Priority:
-
 - iCloud sync for cross-device usage
-- Categorized markers (custom categories for different types of locations)
+- Map feature categories (with customizable colors!)
 
-Unlikely to Implement (but interesting ideas):
+Low Priority:
 
 - Stats dashboard (distance tracking, elevation changes, etc.)
-- Live Activity support for tracking sessions
+- More Settings
+  - Marker and paths styling options
+  - Theme settings
+  - Coordinate format preferences
+  - Map overlay visibility options (Scale & Compass)
 - Import/Export functionality (GPX format)
 - Area calculation tool for measuring polygons
 - Sharing map features via standard iOS share sheet
 
-Very Unlikely to Implement:
+Unlikely to Implement (but interesting ideas):
 
 - Elevation data display
 - Weather integration
