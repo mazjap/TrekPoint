@@ -11,12 +11,29 @@ class MapCoordinator {
     var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
     
+    @ObservationIgnored private var shelvedPresentationDetent: PresentationDetent?
     @ObservationIgnored private var subscription: AnyCancellable?
     
+    @ObservationIgnored @Dependency(\.appSettings) private var appSettings
     @ObservationIgnored @Dependency(\.annotationPersistenceManager) fileprivate var annotationManager
     @ObservationIgnored @Dependency(\.polylinePersistenceManager) fileprivate var polylineManager
     @ObservationIgnored @Dependency(\.locationTrackingManager) fileprivate var locationManager
     @ObservationIgnored @Dependency(\.toastManager) fileprivate var toastManager
+    
+    var currentMapStyle: MapStyle {
+        switch appSettings.mapStyle {
+        case .hybrid:
+            return .hybrid(elevation: .realistic)
+        case .satellite:
+            return .imagery(elevation: .realistic)
+        case .standard:
+            return .standard(elevation: .realistic)
+        }
+    }
+    
+    var distanceUnit: DistanceUnit {
+        appSettings.distanceUnit
+    }
     
     init() {
         subscription = NotificationCenter.default.publisher(for: .restoreTrackingSession)
@@ -47,6 +64,20 @@ class MapCoordinator {
         
         featureLibraryCoordinator.onSelection = { [weak self] feature in
             self?.handleNavigatorSelection(feature)
+        }
+        
+        featureLibraryCoordinator.onSettingsPresented = { [weak self] in
+            if self?.selectedDetent == .tpLarge {
+                self?.shelvedPresentationDetent = self?.selectedDetent
+                self?.selectedDetent = .tpSmall
+            }
+        }
+        
+        featureLibraryCoordinator.onSettingsDismissed = { [weak self] in
+            if let detentBeforeSettigsPresented = self?.shelvedPresentationDetent {
+                self?.selectedDetent = detentBeforeSettigsPresented
+                self?.shelvedPresentationDetent = nil
+            }
         }
     }
 }

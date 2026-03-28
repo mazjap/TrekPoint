@@ -101,7 +101,7 @@ struct DetailedMapView: View {
                         coordinator.handle(coordinateIntent)
                     }
                 }
-                .mapStyle(.hybrid(elevation: .realistic))
+                .mapStyle(coordinator.currentMapStyle)
                 .mapControlVisibility(.hidden)
                 .onTapGesture { location in
                     guard let coordinate = proxy.convert(

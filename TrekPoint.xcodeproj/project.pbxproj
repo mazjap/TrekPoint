@@ -33,6 +33,8 @@
 		0E5553F72F76231700337212 /* FeatureLibraryCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553F62F76231700337212 /* FeatureLibraryCoordinator.swift */; };
 		0E5553FB2F7784A800337212 /* View+VersionSpecificBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */; };
 		0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */; };
+		0E5553FF2F77BE6000337212 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FE2F77BE6000337212 /* AppSettings.swift */; };
+		0E5554012F77C42B00337212 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554002F77C42B00337212 /* SettingsView.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -124,6 +126,8 @@
 		0E5553F62F76231700337212 /* FeatureLibraryCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureLibraryCoordinator.swift; sourceTree = "<group>"; };
 		0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+VersionSpecificBackground.swift"; sourceTree = "<group>"; };
 		0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleWithTrailingLeadingFacedTriangle.swift; sourceTree = "<group>"; };
+		0E5553FE2F77BE6000337212 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		0E5554002F77C42B00337212 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -329,6 +333,7 @@
 				0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */,
 				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
+				0E5554002F77C42B00337212 /* SettingsView.swift */,
 				0E29527A2D7107030079479A /* FeatureLibrary.swift */,
 				0EE4530C2BAD62B3007C40DE /* MapView */,
 				0EA4BD632B93F819005259B4 /* AnnotationView */,
@@ -359,6 +364,7 @@
 			children = (
 				0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */,
 				0E5553502F73D05300337212 /* MapCoordinator.swift */,
+				0E5553FE2F77BE6000337212 /* AppSettings.swift */,
 				0E5553F62F76231700337212 /* FeatureLibraryCoordinator.swift */,
 				0EBD38FA2DC7E13A0033B4D1 /* BackgroundPersistenceProvider */,
 				0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */,
@@ -544,6 +550,7 @@
 				0E80B5B82DC8238700FF2FDC /* MapControlButtons.swift in Sources */,
 				0EA4BD572B9151E6005259B4 /* DetailedMapView.swift in Sources */,
 				0E5553552F748C4200337212 /* GroupedMapContentState.swift in Sources */,
+				0E5554012F77C42B00337212 /* SettingsView.swift in Sources */,
 				0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */,
 				0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
@@ -554,6 +561,7 @@
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */,
 				0E5553512F73D05300337212 /* MapCoordinator.swift in Sources */,
+				0E5553FF2F77BE6000337212 /* AppSettings.swift in Sources */,
 				0E5553F72F76231700337212 /* FeatureLibraryCoordinator.swift in Sources */,
 				0E7E00942D82516A0019A92A /* AttachmentPicker.swift in Sources */,
 				0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */,

@@ -54,6 +54,17 @@ struct FeatureLibrary: View {
                 navigationDestination(for: feature)
             }
         }
+        .sheet(
+            isPresented: $coordinator.isSettingsSheetPresented,
+            onDismiss: {
+                coordinator.handleSettingsDismissed()
+            },
+            content: {
+                SettingsView()
+                    .interactiveDismissDisabled()
+                    .presentationDetents([.medium])
+            }
+        )
     }
     
     @ViewBuilder
@@ -129,8 +140,7 @@ struct FeatureLibrary: View {
             
             Button {
                 if coordinator.searchText.isEmpty {
-                    // TODO: - Show settings
-                    print("Show settings")
+                    coordinator.handleSettingsTapped()
                 } else {
                     coordinator.searchText = ""
                     isSearchFocused = false
