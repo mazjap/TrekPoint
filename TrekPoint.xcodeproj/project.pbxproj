@@ -31,6 +31,8 @@
 		0E5553552F748C4200337212 /* GroupedMapContentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553542F748C4200337212 /* GroupedMapContentState.swift */; };
 		0E5553592F748CC100337212 /* MapControlButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553582F748CC100337212 /* MapControlButtonState.swift */; };
 		0E5553F72F76231700337212 /* FeatureLibraryCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553F62F76231700337212 /* FeatureLibraryCoordinator.swift */; };
+		0E5553FB2F7784A800337212 /* View+VersionSpecificBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */; };
+		0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -120,6 +122,8 @@
 		0E5553542F748C4200337212 /* GroupedMapContentState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapContentState.swift; sourceTree = "<group>"; };
 		0E5553582F748CC100337212 /* MapControlButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControlButtonState.swift; sourceTree = "<group>"; };
 		0E5553F62F76231700337212 /* FeatureLibraryCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureLibraryCoordinator.swift; sourceTree = "<group>"; };
+		0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+VersionSpecificBackground.swift"; sourceTree = "<group>"; };
+		0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleWithTrailingLeadingFacedTriangle.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -322,6 +326,7 @@
 			children = (
 				0EA4BD482B9151AF005259B4 /* ContentView.swift */,
 				0E80B5BB2DC827B900FF2FDC /* ToastView.swift */,
+				0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */,
 				0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */,
 				0E9512CC2BB5342D00E9CA83 /* Triangle.swift */,
 				0E29527A2D7107030079479A /* FeatureLibrary.swift */,
@@ -344,6 +349,7 @@
 				0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */,
 				0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */,
 				0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */,
+				0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -519,6 +525,7 @@
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0EBD38F52DC7DBEF0033B4D1 /* LocationManagerProvider.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
+				0E5553FB2F7784A800337212 /* View+VersionSpecificBackground.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
 				0EBD38FC2DC7F92F0033B4D1 /* FileManagerProvider.swift in Sources */,
@@ -530,6 +537,7 @@
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
 				0E29527B2D7107030079479A /* FeatureLibrary.swift in Sources */,
 				0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */,
+				0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */,
 				0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,

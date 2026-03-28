@@ -107,17 +107,25 @@ struct FeatureLibrary: View {
         // TODO: - Show search results based on ABC order (mix annotations and paths) with name matches taking priority over description matches
         // TODO: - Have closure which alerts DetailedMapView to filter features so that only features contained in current search are shown
         HStack(spacing: 10) {
-            TextField("Search...", text: $coordinator.searchText)
-                .focused($isSearchFocused)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 8)
-                .background(Color.gray.opacity(0.25), in: .capsule)
-                .onChange(of: coordinator.searchText) {
-                    coordinator.handleSearchTextChange(annotations: annotations, polylines: polylines)
-                }
-                .onChange(of: isSearchFocused) {
-                    coordinator.handleSearchFocusChange(isFocused: isSearchFocused)
-                }
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.primary)
+                
+                TextField("", text: $coordinator.searchText, prompt: Text("Search...").foregroundStyle(.gray))
+                    .focused($isSearchFocused)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .versionSpecificBackground(in: .capsule)
+            .onTapGesture {
+                isSearchFocused = true
+            }
+            .onChange(of: coordinator.searchText) {
+                coordinator.handleSearchTextChange(annotations: annotations, polylines: polylines)
+            }
+            .onChange(of: isSearchFocused) {
+                coordinator.handleSearchFocusChange(isFocused: isSearchFocused)
+            }
             
             Button {
                 if coordinator.searchText.isEmpty {
@@ -133,7 +141,7 @@ struct FeatureLibrary: View {
                     .scaledToFit()
                     .rotationEffect(.degrees(coordinator.searchText.isEmpty ? 0 : 45))
                     .padding(6)
-                    .background(Color.gray.opacity(0.25), in: .circle)
+                    .versionSpecificBackground(in: .circle)
                     .padding(.vertical, 15)
             }
             .buttonStyle(.plain)
