@@ -201,22 +201,23 @@ struct DetailedMapView: View {
                     guard !coordinator.styleWasInitiallyLoaded else { return }
                     coordinator.styleWasInitiallyLoaded = true
                     
-                    // TODO: - Better error handling
-                    guard let map = proxy.map else { fatalError("No map") }
+                    guard let map = proxy.map else {
+                        toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to start up the map. Please try again later", .message("Map proxy's map was nil!")))
+                        return
+                    }
                     
                     do {
                         try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
                     } catch {
-                        fatalError("error: \(error)")
+                        toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to add markers to the map. Please try again later", .error(error)))
                     }
                     
                     coordinator.handleFeatureChange(annotations: annotations, polylines: polylines)
                     coordinator.fitMapToFeatures()
                 }
                 .ornamentOptions(ornamentOptions(height: frame.height))
-                // TODO: - Don't force unwrap and allow user to select a style from a set of like 3 or something
-                // Also, paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
-                .mapStyle(coordinator.currentMapStyle)//MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
+                // TODO: - Paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
+                .mapStyle(coordinator.currentMapStyle)
                 .onTapGesture { location in
                     guard let coordinate = proxy.map?.coordinate(for: location) else { return }
                     coordinator.handleMapTap(at: coordinate)
@@ -263,6 +264,24 @@ struct DetailedMapView: View {
                 annotations: annotations,
                 polylines: polylines
             )
+            .confirmationDialog(
+                cancelConfirmationTitle,
+                isPresented: Binding(
+                    get: { coordinator.pendingCancelAction != nil },
+                    set: {
+                        if !$0 {
+                            coordinator.dismissPendingCancel()
+                        }
+                    }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Discard", role: .destructive) {
+                    coordinator.confirmPendingCancel()
+                }
+            } message: {
+                Text(cancelConfirmationMessage)
+            }
             .presentationDetents(detents, selection: $coordinator.selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .tpMedium))
             .interactiveDismissDisabled()
@@ -272,6 +291,26 @@ struct DetailedMapView: View {
             options: .toasterStrudel(type: .error)
         ) { bread in
             ToastView(bread: bread)
+        }
+    }
+
+    private var cancelConfirmationTitle: String {
+        switch coordinator.pendingCancelAction {
+        case .annotation: return "Discard Annotation?"
+        case .polyline: return "Discard Path?"
+        case .tracking: return "Discard Tracked Path?"
+        case .hideLocationWhileTracking: return "Stop Tracking?"
+        case nil: return ""
+        }
+    }
+
+    private var cancelConfirmationMessage: String {
+        switch coordinator.pendingCancelAction {
+        case .annotation: return "Your in-progress annotation will be discarded."
+        case .polyline: return "Your in-progress path will be discarded."
+        case .tracking: return "Your in-progress tracked path will be discarded."
+        case .hideLocationWhileTracking: return "Hiding your location will stop path tracking. Your unsaved progress will be discarded."
+        case nil: return ""
         }
     }
 }

@@ -17,13 +17,13 @@ enum RealReasonForSomethingGoingWrong: Identifiable {
 enum ToastReason: Identifiable {
     case annotationCreationError(AnnotationFinalizationError)
     case polylineCreationError(PolylineFinalizationError)
-    case somethingWentWrong(RealReasonForSomethingGoingWrong)
+    case somethingWentWrong(messageToShowUser: String? = nil, RealReasonForSomethingGoingWrong)
     
     var id: String {
         switch self {
         case let .annotationCreationError(reason): reason.id
         case let .polylineCreationError(reason): reason.id
-        case let .somethingWentWrong(reason): reason.id
+        case let .somethingWentWrong(message, reason): (message ?? "") + reason.id
         }
     }
 }

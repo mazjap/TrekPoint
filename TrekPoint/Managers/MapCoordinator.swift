@@ -3,6 +3,10 @@ import MapboxMaps
 import Dependencies
 import Combine
 
+enum PendingCancelAction {
+    case annotation, polyline, tracking, hideLocationWhileTracking
+}
+
 @Observable
 @MainActor
 class MapCoordinator {
@@ -11,6 +15,7 @@ class MapCoordinator {
     var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
     var styleWasInitiallyLoaded = false
+    var pendingCancelAction: PendingCancelAction? = nil
     
     // TODO: - Handle name changes as well
     var annotationFeatureCollection = FeatureCollection(features: [])
@@ -178,11 +183,8 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelAnnotation:
-            // TODO: - Show an alert to confirm that the user wants to clear progress (same with working polyline)
             // Also, creating a polyline and creating an annotation should be mutually exclusive
-            annotationManager.clearWorkingAnnotationProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
+            pendingCancelAction = .annotation
         case .undoAnnotation:
             annotationManager.undo()
         case .beginPolylineDrawing:
@@ -203,9 +205,7 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelPolyline:
-            polylineManager.clearWorkingPolylineProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
+            pendingCancelAction = .polyline
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -228,15 +228,15 @@ extension MapCoordinator {
                 toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
             }
         case .cancelTracking:
-            polylineManager.clearWorkingPolylineProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
-            locationManager.stopTracking()
+            pendingCancelAction = .tracking
         case .showUserLocation:
             locationManager.showUserLocation()
         case .hideUserLocation:
-            // TODO: - Also cancel user-tracked working polyline and/or alert user that turning off location will stop the in-progress polyline
-            locationManager.hideUserLocation()
+            if polylineManager.isTrackingPolyline {
+                pendingCancelAction = .hideLocationWhileTracking
+            } else {
+                locationManager.hideUserLocation()
+            }
         }
     }
     
@@ -272,6 +272,38 @@ extension MapCoordinator {
         }
     }
     
+    func confirmPendingCancel() {
+        defer { pendingCancelAction = nil }
+
+        switch pendingCancelAction {
+        case .annotation:
+            annotationManager.clearWorkingAnnotationProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+        case .polyline:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+        case .tracking:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+            locationManager.stopTracking()
+        case .hideLocationWhileTracking:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+            locationManager.stopTracking()
+            locationManager.hideUserLocation()
+        case nil:
+            break
+        }
+    }
+
+    func dismissPendingCancel() {
+        pendingCancelAction = nil
+    }
+
     func handleAnnotationCreation(at coordinate: CLLocationCoordinate2D) {
         if annotationManager.workingAnnotation == nil {
             annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
