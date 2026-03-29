@@ -63,11 +63,6 @@ The following features are planned:
 
 High Priority:
 
-- Settings page with customization options:
-  - Map style (standard, satellite, hybrid, topographic)
-  - Distance units and coordinate format preferences
-  - GPS tracking sensitivity/battery optimization settings
-  - Map overlay visibility options (Scale & Compass)
 - Cache map tiles for offline use
 - Search and sort functionality for markers and paths
 - Live Activity support for tracking sessions
