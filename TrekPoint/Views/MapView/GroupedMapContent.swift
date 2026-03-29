@@ -25,12 +25,12 @@ struct GroupedMapContent: MapContent {
     
     var body: some MapContent {
         if let annotationFeatureCollection {
-            GeoJSONSource(id: "annotation-source")
+            GeoJSONSource(id: "trekpoint-annotation-source")
                 .data(.featureCollection(annotationFeatureCollection))
         }
         
         if let polylineFeatureCollection {
-            GeoJSONSource(id: "polyline-source")
+            GeoJSONSource(id: "trekpoint-polyline-source")
                 .data(.featureCollection(polylineFeatureCollection))
         }
         
@@ -50,8 +50,8 @@ struct GroupedMapContent: MapContent {
     @MapContentBuilder
     private var annotationViews: some MapContent {
         // TODO: - Clustering
-        SymbolLayer(id: "marker-layer", source: "annotation-source")
-            .iconImage("marker")
+        SymbolLayer(id: "marker-layer", source: "trekpoint-annotation-source")
+            .iconImage("trekpoint-marker-image")
             .textFont(["Open Sans Bold"])
             .iconAnchor(.bottom)
             .textSize(12)
@@ -84,7 +84,7 @@ struct GroupedMapContent: MapContent {
     
     @MapContentBuilder
     private var polylineViews: some MapContent {
-        LineLayer(id: "line-layer", source: "polyline-source")
+        LineLayer(id: "line-layer", source: "trekpoint-polyline-source")
             .lineWidth(5)
             .lineJoin(.round)
             .lineDashArray([3, 2])

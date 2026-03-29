@@ -207,7 +207,7 @@ struct DetailedMapView: View {
                     }
                     
                     do {
-                        try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
+                        try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "trekpoint-marker-image", sdf: false)
                     } catch {
                         toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to add markers to the map. Please try again later", .error(error)))
                     }
