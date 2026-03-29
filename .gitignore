@@ -31,3 +31,6 @@ timeline.xctimeline
 playground.xcworkspace
 .build/
 iOSInjectionProject/
+
+### Secrets ###
+*.xcconfig

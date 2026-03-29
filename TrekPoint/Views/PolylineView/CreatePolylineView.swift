@@ -4,22 +4,23 @@ import Dependencies
 struct CreatePolylineView: View {
     @Environment(\.dismiss) private var dismiss
     @Dependency(\.polylinePersistenceManager) private var polylineManager
+    @State private var showCancelConfirmation = false
     private let onDismiss: () -> Void
     private let commitError: (Error) -> Void
-    
+
     init(onDismiss: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
         self.onDismiss = onDismiss
         self.commitError = commitError
     }
-    
+
     var body: some View {
         let polylineBinding = Bindable(polylineManager).workingPolyline.safelyUnwrapped(.init(title: "", userDescription: "", coordinates: [], isLocationTracked: false))
-        
+
         PolylineDetailView(polyline: polylineBinding)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        polylineManager.clearWorkingPolylineProgress()
+                        showCancelConfirmation = true
                     }
                 }
                 
@@ -38,6 +39,17 @@ struct CreatePolylineView: View {
                     onDismiss()
                     dismiss()
                 }
+            }
+            .confirmationDialog(
+                "Discard Path?",
+                isPresented: $showCancelConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Discard", role: .destructive) {
+                    polylineManager.clearWorkingPolylineProgress()
+                }
+            } message: {
+                Text("Your in-progress path will be discarded.")
             }
     }
 }

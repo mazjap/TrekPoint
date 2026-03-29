@@ -1,5 +1,5 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 
 struct PolylineMapOverlay: MapContent {
     let polyline: any PolylineProvider
@@ -20,15 +20,10 @@ struct PolylineMapOverlay: MapContent {
     }
     
     var body: some MapContent {
-        MapPolyline(coordinates: polyline.clCoordinates)
-            .stroke(strokeColor, style: StrokeStyle(
-                lineWidth: lineWidth,
-                lineCap: .round,
-                lineJoin: .round,
-                miterLimit: 5,
-                dash: dashPattern ?? []
-            ))
-            .tag(polyline.tag)
+        PolylineAnnotation(id: polyline.tag.id, lineCoordinates: polyline.clCoordinates, isSelected: false, isDraggable: false)
+            .lineColor(UIColor(strokeColor))
+            .lineWidth(lineWidth)
+            .lineJoin(.round)
     }
 }
 

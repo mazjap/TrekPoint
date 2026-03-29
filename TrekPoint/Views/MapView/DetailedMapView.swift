@@ -1,8 +1,58 @@
 import SwiftUI
 import SwiftData
-import MapKit
+import MapboxMaps
 import WarmToast
 import Dependencies
+
+func joinMarkerImage(with categoryImageName: String, baseColor: Color, categoryColor: Color) -> UIImage {
+    let baseImage = UIImage(named: "teardrop")!
+        .withTintColor(UIColor(baseColor), renderingMode: .alwaysOriginal)
+    let overlayImage = UIImage(named: categoryImageName)!
+        .withTintColor(UIColor(categoryColor), renderingMode: .alwaysOriginal)
+
+    let size = baseImage.size
+    let renderer = UIGraphicsImageRenderer(size: size)
+
+    return renderer.image { _ in
+        baseImage.draw(in: CGRect(origin: .zero, size: size))
+
+        let overlayRect = CGRect(
+            x: (size.width - overlayImage.size.width) / 2,
+            y: (size.height - overlayImage.size.height) / 2 - 8,
+            width: overlayImage.size.width,
+            height: overlayImage.size.height
+        )
+        overlayImage.draw(in: overlayRect)
+    }
+}
+
+struct AnnotationSnapshot: Equatable {
+    let tag: MapFeatureTag
+    let title: String
+    let coordinate: CLLocationCoordinate2D
+}
+
+extension AnnotationSnapshot {
+    init(_ annotation: AnnotationProvider) {
+        self.tag = annotation.tag
+        self.title = annotation.title
+        self.coordinate = annotation.clCoordinate
+    }
+}
+
+struct PolylineSnapshot: Equatable {
+    let tag: MapFeatureTag
+    let title: String
+    let coordinates: [CLLocationCoordinate2D]
+}
+
+extension PolylineSnapshot {
+    init(_ polyline: PolylineProvider) {
+        self.tag = polyline.tag
+        self.title = polyline.title
+        self.coordinates = polyline.clCoordinates
+    }
+}
 
 // Tasks:
 // - [x] Get user's location working
@@ -68,6 +118,26 @@ struct DetailedMapView: View {
     @Binding private var showSheet: Bool
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
+
+    private func ornamentOptions(height: CGFloat) -> OrnamentOptions {
+        let smallDetentHeight: CGFloat =
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            10
+        } else {
+            if #available(iOS 26, *) {
+                PresentationDetent.smallDetentHeight
+            } else {
+                height / 6.5
+            }
+        }
+        
+        return OrnamentOptions(
+            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 0), visibility: .visible, units: coordinator.distanceUnit),
+            compass: CompassViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 30), image: nil, visibility: .visible),
+            logo: LogoViewOptions(position: .bottomLeft, margins: CGPoint(x: 10, y: smallDetentHeight)),
+            attributionButton: AttributionButtonOptions(position: .bottomRight, margins: CGPoint(x: 10, y: smallDetentHeight), tintColor: nil)
+        )
+    }
     
     private var selectedTag: Binding<MapFeatureTag?> {
         Binding {
@@ -85,52 +155,99 @@ struct DetailedMapView: View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
-                Map(position: $coordinator.cameraPosition, bounds: MapCameraBounds(minimumDistance: 0, maximumDistance: .infinity), selection: selectedTag, scope: nspace) {
+                Map(viewport: $coordinator.cameraPosition) {
+                    GroupedMapStyle(show3DTerrain: coordinator.showTerrain, showContor: coordinator.showContour, usesMetric: coordinator.distanceUnit == .metric)
+                    
                     GroupedMapContent(
                         annotationState: coordinator.annotationOverlayState,
                         polylineState: coordinator.polylineOverlayState,
                         locationState: coordinator.locationOverlayState,
-                        annotations: annotations,
-                        polylines: polylines
+                        selection: coordinator.selectedMapFeature,
+                        annotationFeatureCollection: coordinator.annotationFeatureCollection,
+                        polylineFeatureCollection: coordinator.polylineFeatureCollection
                     ) { intent in
-                        guard let coordinateIntent = intent.toCoordinateIntent(proxy: proxy) else {
+                        guard let coordinateIntent = intent.toCoordinateIntent(proxy: proxy, annotations: annotations, polylines: polylines) else {
                             coordinator.handleFailedIntentConversion(for: intent)
                             return
                         }
                         
                         coordinator.handle(coordinateIntent)
+                    } onSelection: { tag in
+                        if [.workingAnnotation, .workingPolyline].contains(coordinator.selectedMapFeature) { return false }
+                        
+                        switch tag {
+                        case .annotation(let id):
+                            guard let annotation = annotations.first(where: { $0.id == id }) else {
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Unable to find map annotation with tag \(tag)")))
+                                return false
+                            }
+                            coordinator.handleFeatureSelectionFromMap(.annotation(annotation))
+                        case .polyline(let id):
+                            guard let polyline = polylines.first(where: { $0.id == id }) else {
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Unable to find map polyline with tag \(tag)")))
+                                return false
+                            }
+                            coordinator.handleFeatureSelectionFromMap(.polyline(polyline))
+                        case .workingAnnotation:
+                            coordinator.handleFeatureSelectionFromMap(.workingAnnotation)
+                        case .workingPolyline:
+                            coordinator.handleFeatureSelectionFromMap(.workingPolyline)
+                        }
+                        
+                        return true
                     }
                 }
-                .mapStyle(coordinator.currentMapStyle)
-                .mapControlVisibility(.hidden)
-                .onTapGesture { location in
-                    guard let coordinate = proxy.convert(
-                        location,
-                        from: .local
-                    ) else {
+                .onStyleLoaded { _ in
+                    guard !coordinator.styleWasInitiallyLoaded else { return }
+                    coordinator.styleWasInitiallyLoaded = true
+                    
+                    guard let map = proxy.map else {
+                        toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to start up the map. Please try again later", .message("Map proxy's map was nil!")))
                         return
                     }
                     
+                    do {
+                        try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
+                    } catch {
+                        toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to add markers to the map. Please try again later", .error(error)))
+                    }
+                    
+                    coordinator.handleFeatureChange(annotations: annotations, polylines: polylines)
+                    coordinator.fitMapToFeatures()
+                }
+                .ornamentOptions(ornamentOptions(height: frame.height))
+                // TODO: - Paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
+                .mapStyle(coordinator.currentMapStyle)
+                .onTapGesture { location in
+                    guard let coordinate = proxy.map?.coordinate(for: location) else { return }
                     coordinator.handleMapTap(at: coordinate)
                 }
+                // TODO: - Test how bad this is and look into more efficient ways than recreating the entire feature collection if needed
+                .onChange(of: annotations.map(AnnotationSnapshot.init)) {
+                    coordinator.handleFeatureChange(annotations: annotations)
+                }
+                .onChange(of: polylines.map(PolylineSnapshot.init)) {
+                    coordinator.handleFeatureChange(polylines: polylines)
+                }
+                .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
                     MapControlButtons(
                         annotationState: coordinator.annotationButtonState,
                         polylineState: coordinator.polylineButtonState,
                         locationState: coordinator.locationButtonState,
-                        selectedDetent: coordinator.selectedDetent,
-                        proxy: proxy,
+                        isHidden: coordinator.isSheetMaximized,
                         nspace: nspace,
                         buttonSize: buttonSize
                     ) { intent in
                         if case .beginAnnotationCreation = intent {
                             let midPoint = CGPoint(x: frame.midX, y: frame.midY)
-                            guard let coordinate = proxy.convert(midPoint, from: .global) else {
+                            guard let map = proxy.map else {
                                 // TODO: - Send to some analytics service
-                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Annotation creation was not possible. (\(midPoint) could not be converted to a map coordinate")))
-                                
+                                toastManager.addBreadForToasting(.somethingWentWrong(.message("Coordinate conversion did not occur because the map was not available")))
                                 return
                             }
+                            
+                            let coordinate = map.coordinate(for: midPoint)
                             
                             coordinator.handleAnnotationCreation(at: coordinate)
                         } else {
@@ -139,11 +256,6 @@ struct DetailedMapView: View {
                     }
                 }
             }
-            .mapScope(nspace)
-            .safeAreaInset(edge: .bottom) {
-                Color.clear
-                    .frame(height: PresentationDetent.smallDetentHeight)
-            }
         }
         .sheet(isPresented: $showSheet) {
             FeatureLibrary(
@@ -151,8 +263,24 @@ struct DetailedMapView: View {
                 selection: coordinator.selectedMapFeature,
                 annotations: annotations,
                 polylines: polylines
-            ) { newSelection in
-                coordinator.handleNavigatorSelection(newSelection)
+            )
+            .confirmationDialog(
+                cancelConfirmationTitle,
+                isPresented: Binding(
+                    get: { coordinator.pendingCancelAction != nil },
+                    set: {
+                        if !$0 {
+                            coordinator.dismissPendingCancel()
+                        }
+                    }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Discard", role: .destructive) {
+                    coordinator.confirmPendingCancel()
+                }
+            } message: {
+                Text(cancelConfirmationMessage)
             }
             .presentationDetents(detents, selection: $coordinator.selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .tpMedium))
@@ -163,6 +291,26 @@ struct DetailedMapView: View {
             options: .toasterStrudel(type: .error)
         ) { bread in
             ToastView(bread: bread)
+        }
+    }
+
+    private var cancelConfirmationTitle: String {
+        switch coordinator.pendingCancelAction {
+        case .annotation: return "Discard Annotation?"
+        case .polyline: return "Discard Path?"
+        case .tracking: return "Discard Tracked Path?"
+        case .hideLocationWhileTracking: return "Stop Tracking?"
+        case nil: return ""
+        }
+    }
+
+    private var cancelConfirmationMessage: String {
+        switch coordinator.pendingCancelAction {
+        case .annotation: return "Your in-progress annotation will be discarded."
+        case .polyline: return "Your in-progress path will be discarded."
+        case .tracking: return "Your in-progress tracked path will be discarded."
+        case .hideLocationWhileTracking: return "Hiding your location will stop path tracking. Your unsaved progress will be discarded."
+        case nil: return ""
         }
     }
 }

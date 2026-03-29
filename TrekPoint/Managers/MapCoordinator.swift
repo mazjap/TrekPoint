@@ -1,15 +1,25 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 import Dependencies
 import Combine
+
+enum PendingCancelAction {
+    case annotation, polyline, tracking, hideLocationWhileTracking
+}
 
 @Observable
 @MainActor
 class MapCoordinator {
-    var cameraPosition: MapCameraPosition = .automatic
+    var cameraPosition: Viewport = .idle
     var selectedMapFeature: ResolvedMapFeature?
     var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
+    var styleWasInitiallyLoaded = false
+    var pendingCancelAction: PendingCancelAction? = nil
+    
+    // TODO: - Handle name changes as well
+    var annotationFeatureCollection = FeatureCollection(features: [])
+    var polylineFeatureCollection = FeatureCollection(features: [])
     
     @ObservationIgnored private var shelvedPresentationDetent: PresentationDetent?
     @ObservationIgnored private var subscription: AnyCancellable?
@@ -23,16 +33,33 @@ class MapCoordinator {
     var currentMapStyle: MapStyle {
         switch appSettings.mapStyle {
         case .hybrid:
-            return .hybrid(elevation: .realistic)
+            return .satelliteStreets
         case .satellite:
-            return .imagery(elevation: .realistic)
+            return .satellite
         case .standard:
-            return .standard(elevation: .realistic)
+            return .standard
         }
     }
     
-    var distanceUnit: DistanceUnit {
-        appSettings.distanceUnit
+    var distanceUnit: ScaleBarViewOptions.Units {
+        switch appSettings.distanceUnit {
+        case .imperial:
+            return .imperial
+        case .metric:
+            return .metric
+        }
+    }
+    
+    var isSheetMaximized: Bool {
+        selectedDetent == .tpLarge
+    }
+    
+    var showTerrain: Bool {
+        appSettings.isTerrainEnabled
+    }
+    
+    var showContour: Bool {
+        appSettings.isContourEnabled
     }
     
     init() {
@@ -49,8 +76,8 @@ class MapCoordinator {
         registerForLocationUpdates()
         
         if locationManager.isUserLocationActive {
-            withAnimation {
-                cameraPosition = .userLocation(fallback: .automatic)
+            withViewportAnimation(.default) {
+                cameraPosition = .followPuck(zoom: 10)
             }
         }
         
@@ -102,23 +129,27 @@ extension MapCoordinator {
         selectedMapFeature = newSelection
         
         if let newSelection {
-            withAnimation(.easeOut) {
+            withViewportAnimation(.fly) {
                 switch newSelection {
                 case let .annotation(annotation):
-                    cameraPosition = .region(MKCoordinateRegion(center: annotation.clCoordinate, latitudinalMeters: 15_000, longitudinalMeters: 15_000))
+                    cameraPosition = .camera(center: annotation.clCoordinate, zoom: 14)
                 case let .polyline(polyline):
-                    cameraPosition = .rect(MKMapRect(coordinates: polyline.clCoordinates))
+                    cameraPosition = .overview(geometry: Geometry.lineString(LineString(polyline.clCoordinates)), geometryPadding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
                 case .workingAnnotation:
                     if let workingAnnotation = annotationManager.workingAnnotation {
-                        cameraPosition = .region(MKCoordinateRegion(center: workingAnnotation.clCoordinate, latitudinalMeters: 15_000, longitudinalMeters: 15_000))
+                        cameraPosition = .camera(center: workingAnnotation.clCoordinate, zoom: 14)
                     }
                 case .workingPolyline:
                     if let workingPolyline = polylineManager.workingPolyline {
-                        cameraPosition = .rect(MKMapRect(coordinates: workingPolyline.clCoordinates))
+                        cameraPosition = .overview(geometry: Geometry.lineString(LineString(workingPolyline.clCoordinates)), geometryPadding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
                     }
                 }
             }
         }
+    }
+    
+    func handleFeatureSelectionFromMap(_ newSelection: ResolvedMapFeature?) {
+        selectedMapFeature = newSelection
     }
     
     func handleLocationUpdate() {
@@ -131,8 +162,8 @@ extension MapCoordinator {
     
     func handleUserLocationStatusUpdate() {
         if locationManager.isUserLocationActive {
-            withAnimation(.easeOut) {
-                cameraPosition = .userLocation(fallback: .automatic)
+            withViewportAnimation(.fly) {
+                cameraPosition = .followPuck(zoom: 10)
             }
         }
     }
@@ -140,7 +171,7 @@ extension MapCoordinator {
     func handle(_ intent: MapButtonIntent) {
         switch intent {
         case .beginAnnotationCreation:
-            fatalError("This case should be handled by the caller and redirected to handleAnnotationCreation(at:)")
+            assertionFailure("This case should be handled by the caller and redirected to handleAnnotationCreation(at:)")
         case .confirmAnnotation:
             do {
                 try annotationManager.finalizeWorkingAnnotation()
@@ -152,11 +183,8 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelAnnotation:
-            // TODO: - Show an alert to confirm that the user wants to clear progress (same with working polyline)
             // Also, creating a polyline and creating an annotation should be mutually exclusive
-            annotationManager.clearWorkingAnnotationProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
+            pendingCancelAction = .annotation
         case .undoAnnotation:
             annotationManager.undo()
         case .beginPolylineDrawing:
@@ -177,9 +205,7 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelPolyline:
-            polylineManager.clearWorkingPolylineProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
+            pendingCancelAction = .polyline
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -202,15 +228,15 @@ extension MapCoordinator {
                 toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
             }
         case .cancelTracking:
-            polylineManager.clearWorkingPolylineProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
-            locationManager.stopTracking()
+            pendingCancelAction = .tracking
         case .showUserLocation:
             locationManager.showUserLocation()
         case .hideUserLocation:
-            // TODO: - Also cancel user-tracked working polyline and/or alert user that turning off location will stop the in-progress polyline
-            locationManager.hideUserLocation()
+            if polylineManager.isTrackingPolyline {
+                pendingCancelAction = .hideLocationWhileTracking
+            } else {
+                locationManager.hideUserLocation()
+            }
         }
     }
     
@@ -218,6 +244,12 @@ extension MapCoordinator {
         switch intent {
         case let .moveAnnotation(annotation, coordinate):
             annotation.coordinate = Coordinate(coordinate)
+            
+            do {
+                try annotationManager.save()
+            } catch {
+                toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
+            }
         case let .moveWorkingAnnotation(coordinate):
             annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
         case let .moveWorkingPolyline(index, coordinate):
@@ -239,6 +271,38 @@ extension MapCoordinator {
         }
     }
     
+    func confirmPendingCancel() {
+        defer { pendingCancelAction = nil }
+
+        switch pendingCancelAction {
+        case .annotation:
+            annotationManager.clearWorkingAnnotationProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+        case .polyline:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+        case .tracking:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+            locationManager.stopTracking()
+        case .hideLocationWhileTracking:
+            polylineManager.clearWorkingPolylineProgress()
+            selectedMapFeature = nil
+            selectedDetent = .tpSmall
+            locationManager.stopTracking()
+            locationManager.hideUserLocation()
+        case nil:
+            break
+        }
+    }
+
+    func dismissPendingCancel() {
+        pendingCancelAction = nil
+    }
+
     func handleAnnotationCreation(at coordinate: CLLocationCoordinate2D) {
         if annotationManager.workingAnnotation == nil {
             annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))
@@ -246,6 +310,24 @@ extension MapCoordinator {
         } else {
             handle(.cancelAnnotation)
         }
+    }
+    
+    func handleFeatureChange(annotations: [AnnotationData]? = nil, polylines: [PolylineData]? = nil) {
+        if let annotations {
+            let annotationFeatures = annotations.map(\.feature)
+            annotationFeatureCollection = FeatureCollection(features: annotationFeatures)
+        }
+        
+        if let polylines {
+            let polylineFeatures = polylines.map(\.feature)
+            polylineFeatureCollection = FeatureCollection(features: polylineFeatures)
+        }
+    }
+    
+    func fitMapToFeatures() {
+        guard !(annotationFeatureCollection.features.isEmpty && polylineFeatureCollection.features.isEmpty) else { return }
+        
+        cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatureCollection.features.compactMap(\.geometry) + polylineFeatureCollection.features.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
     }
     
     func handleMapTap(at coordinate: CLLocationCoordinate2D) {

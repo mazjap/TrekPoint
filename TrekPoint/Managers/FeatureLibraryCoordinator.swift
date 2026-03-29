@@ -96,6 +96,10 @@ class FeatureLibraryCoordinator {
         onSettingsDismissed?()
     }
     
+    func handleFeatureSelection(_ feature: ResolvedMapFeature?) {
+        onSelection?(feature)
+    }
+    
     private func performSearch(annotations: [AnnotationData], polylines: [PolylineData]) {
         searchTask?.cancel()
         

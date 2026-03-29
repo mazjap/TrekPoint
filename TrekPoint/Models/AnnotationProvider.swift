@@ -1,4 +1,5 @@
 import struct CoreLocation.CLLocationCoordinate2D
+import Turf
 
 protocol AnnotationProvider {
     var clCoordinate: CLLocationCoordinate2D { get }
@@ -6,6 +7,19 @@ protocol AnnotationProvider {
     var attachments: [Attachment] { get }
     var userDescription: String { get }
     var tag: MapFeatureTag { get }
+}
+
+extension AnnotationProvider {
+    var feature: Feature {
+        var feature = Feature(geometry: .point(Point(clCoordinate)))
+        feature.identifier = FeatureIdentifier(tag.id)
+        feature.properties = [
+            "title" : .string(title),
+            "categoryIcon" : .string("star")
+        ]
+        
+        return feature
+    }
 }
 
 extension AnnotationData: AnnotationProvider {
@@ -25,52 +39,3 @@ struct WorkingAnnotation: AnnotationProvider, Hashable {
     static let example = WorkingAnnotation(coordinate: Coordinate(latitude: 40.049478, longitude: -111.670115), title: "Home")
 }
 
-enum AnnotationType: AnnotationProvider {
-    case working(WorkingAnnotation)
-    case model(AnnotationData)
-    
-    var clCoordinate: CLLocationCoordinate2D {
-        switch self {
-        case .working(let annotation):
-            annotation.clCoordinate
-        case .model(let annotation):
-            annotation.clCoordinate
-        }
-    }
-    
-    var title: String {
-        switch self {
-        case .working(let annotation):
-            annotation.title
-        case .model(let annotation):
-            annotation.title
-        }
-    }
-    
-    var attachments: [Attachment] {
-        switch self {
-        case .working(let annotation):
-            annotation.attachments
-        case .model(let annotation):
-            annotation.attachments
-        }
-    }
-    
-    var userDescription: String {
-        switch self {
-        case .working(let annotation):
-            annotation.userDescription
-        case .model(let annotation):
-            annotation.userDescription
-        }
-    }
-    
-    var tag: MapFeatureTag {
-        switch self {
-        case .working(let annotation):
-            annotation.tag
-        case .model(let annotation):
-            annotation.tag
-        }
-    }
-}

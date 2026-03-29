@@ -1,5 +1,6 @@
 import struct CoreLocation.CLLocationCoordinate2D
 import struct Foundation.Date
+import Turf
 
 protocol PolylineProvider {
     var clCoordinates: [CLLocationCoordinate2D] { get }
@@ -7,6 +8,19 @@ protocol PolylineProvider {
     var userDescription: String { get }
     var isLocationTracked: Bool { get }
     var tag: MapFeatureTag { get }
+}
+
+extension PolylineProvider {
+    var feature: Feature {
+        var feature = Feature(geometry: .lineString(LineString(clCoordinates)))
+        feature.identifier = FeatureIdentifier(tag.id)
+        feature.properties = [
+            "title" : .string(title),
+            "isLocationTracked" : .boolean(isLocationTracked)
+        ]
+        
+        return feature
+    }
 }
 
 extension PolylineData: PolylineProvider {

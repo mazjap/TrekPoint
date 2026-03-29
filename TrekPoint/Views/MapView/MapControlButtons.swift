@@ -1,5 +1,5 @@
 import SwiftUI
-import MapKit
+import MapboxMaps
 import Dependencies
 
 struct MapControlButtons: View {
@@ -8,12 +8,10 @@ struct MapControlButtons: View {
     let annotationState: AnnotationButtonState
     let polylineState: PolylineButtonState
     let locationState: LocationButtonState
-    let selectedDetent: PresentationDetent
-    let proxy: MapProxy
+    let isHidden: Bool
     let nspace: Namespace.ID
     let buttonSize: Double
     let onIntent: (MapButtonIntent) -> Void
-
     
     private let padding: Double
     private let cornerRadius: Double
@@ -35,12 +33,11 @@ struct MapControlButtons: View {
         }
     }
     
-    init(annotationState: AnnotationButtonState, polylineState: PolylineButtonState, locationState: LocationButtonState, selectedDetent: PresentationDetent, proxy: MapProxy, nspace: Namespace.ID, buttonSize: Double, onIntent: @escaping (MapButtonIntent) -> Void) {
+    init(annotationState: AnnotationButtonState, polylineState: PolylineButtonState, locationState: LocationButtonState, isHidden: Bool, nspace: Namespace.ID, buttonSize: Double, onIntent: @escaping (MapButtonIntent) -> Void) {
         self.annotationState = annotationState
         self.polylineState = polylineState
         self.locationState = locationState
-        self.selectedDetent = selectedDetent
-        self.proxy = proxy
+        self.isHidden = isHidden
         self.nspace = nspace
         self.buttonSize = buttonSize
         self.onIntent = onIntent
@@ -50,12 +47,6 @@ struct MapControlButtons: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            HStack {
-                mapControls
-                
-                Spacer()
-            }
-            
             VStack(alignment: .trailing, spacing: 0) {
                 newAnnotationButton
                 
@@ -76,20 +67,11 @@ struct MapControlButtons: View {
                     locationTrackedPolylineButton
                 }
             }
-            .opacity(selectedDetent == .tpLarge ? 0 : 1)
-            .animation(.easeOut(duration: 0.2), value: selectedDetent)
+            .opacity(isHidden ? 0 : 1)
+            .animation(.easeOut(duration: 0.2), value: isHidden)
             .animation(.easeInOut(duration: 0.2), value: locationState.isActive)
         }
         .padding(.horizontal)
-    }
-    
-    private var mapControls: some View {
-        VStack(alignment: .leading, spacing: 40) {
-            MapScaleView(scope: nspace)
-            
-            MapCompass(scope: nspace)
-        }
-        .mapControlVisibility(.visible) // TODO: - Use a setting to determine whether controls are visible
     }
     
     private var newAnnotationButton: some View {

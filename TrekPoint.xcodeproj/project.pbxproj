@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0E29527B2D7107030079479A /* FeatureLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527A2D7107030079479A /* FeatureLibrary.swift */; };
-		0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */; };
 		0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29527F2D711AC00079479A /* CreatePolylineView.swift */; };
 		0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2952812D711B0F0079479A /* ModifyPolylineView.swift */; };
 		0E29529E2D72EBA50079479A /* PolylineMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29529D2D72EBA50079479A /* PolylineMapOverlay.swift */; };
@@ -35,6 +34,13 @@
 		0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */; };
 		0E5553FF2F77BE6000337212 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FE2F77BE6000337212 /* AppSettings.swift */; };
 		0E5554012F77C42B00337212 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554002F77C42B00337212 /* SettingsView.swift */; };
+		0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554022F78EE5300337212 /* GroupedMapStyle.swift */; };
+		0E5554052F790AD600337212 /* MapStyleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554042F790AD600337212 /* MapStyleSetting.swift */; };
+		0E5554072F790AF100337212 /* DistanceUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554062F790AF100337212 /* DistanceUnit.swift */; };
+		0E5554092F790B0100337212 /* GPSAccuracyMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554082F790B0100337212 /* GPSAccuracyMode.swift */; };
+		0E55540B2F790B0D00337212 /* ToastReason.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540A2F790B0D00337212 /* ToastReason.swift */; };
+		0E55540D2F790B2600337212 /* AnnotationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540C2F790B2600337212 /* AnnotationType.swift */; };
+		0E55540F2F790B3900337212 /* GroupedMapContentIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -67,6 +73,8 @@
 		0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */; };
 		0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */; };
 		0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC552D87C0AC001828BB /* ToastManager.swift */; };
+		0EBA0C7C2F67A16A0069BF38 /* Prod.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0EBA0C7B2F67A16A0069BF38 /* Prod.xcconfig */; };
+		0EBA0C7E2F67A2530069BF38 /* Dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0EBA0C7D2F67A2530069BF38 /* Dev.xcconfig */; };
 		0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38E82DC7D46B0033B4D1 /* Dependencies */; };
 		0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EA2DC7D46B0033B4D1 /* DependenciesMacros */; };
 		0EBD38F02DC7D6A90033B4D1 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */; };
@@ -75,6 +83,9 @@
 		0EBD38F72DC7DD8F0033B4D1 /* UserDefaultsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */; };
 		0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38F82DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift */; };
 		0EBD38FC2DC7F92F0033B4D1 /* FileManagerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBD38FB2DC7F92F0033B4D1 /* FileManagerProvider.swift */; };
+		0EC8C8A52F67B7DD00502C65 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0EC8C8A42F67B7DD00502C65 /* MapboxMaps */; };
+		0EC8C8A82F67E0E600502C65 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0EC8C8A72F67E0E600502C65 /* MapboxMaps */; };
+		0EC8C8AB2F67E3E300502C65 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0EC8C8AA2F67E3E300502C65 /* MapboxMaps */; };
 		0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453042BAD3F05007C40DE /* PresentationDetent+Extension.swift */; };
 		0EE453072BAD5639007C40DE /* DraggablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453062BAD5639007C40DE /* DraggablePin.swift */; };
 		0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE453082BAD5FF3007C40DE /* MapPreview.swift */; };
@@ -93,7 +104,6 @@
 
 /* Begin PBXFileReference section */
 		0E29527A2D7107030079479A /* FeatureLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureLibrary.swift; sourceTree = "<group>"; };
-		0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapRect+CoordinateArray.swift"; sourceTree = "<group>"; };
 		0E29527F2D711AC00079479A /* CreatePolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePolylineView.swift; sourceTree = "<group>"; };
 		0E2952812D711B0F0079479A /* ModifyPolylineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyPolylineView.swift; sourceTree = "<group>"; };
 		0E29529D2D72EBA50079479A /* PolylineMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineMapOverlay.swift; sourceTree = "<group>"; };
@@ -128,6 +138,13 @@
 		0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleWithTrailingLeadingFacedTriangle.swift; sourceTree = "<group>"; };
 		0E5553FE2F77BE6000337212 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		0E5554002F77C42B00337212 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0E5554022F78EE5300337212 /* GroupedMapStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapStyle.swift; sourceTree = "<group>"; };
+		0E5554042F790AD600337212 /* MapStyleSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapStyleSetting.swift; sourceTree = "<group>"; };
+		0E5554062F790AF100337212 /* DistanceUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceUnit.swift; sourceTree = "<group>"; };
+		0E5554082F790B0100337212 /* GPSAccuracyMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSAccuracyMode.swift; sourceTree = "<group>"; };
+		0E55540A2F790B0D00337212 /* ToastReason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastReason.swift; sourceTree = "<group>"; };
+		0E55540C2F790B2600337212 /* AnnotationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationType.swift; sourceTree = "<group>"; };
+		0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapContentIntent.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -160,6 +177,8 @@
 		0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationPersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylinePersistenceManager.swift; sourceTree = "<group>"; };
 		0EA7FC552D87C0AC001828BB /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
+		0EBA0C7B2F67A16A0069BF38 /* Prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Prod.xcconfig; sourceTree = "<group>"; };
+		0EBA0C7D2F67A2530069BF38 /* Dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Dev.xcconfig; sourceTree = "<group>"; };
 		0EBD38F12DC7D70D0033B4D1 /* AttachmentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentProvider.swift; sourceTree = "<group>"; };
 		0EBD38F42DC7DBEF0033B4D1 /* LocationManagerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManagerProvider.swift; sourceTree = "<group>"; };
 		0EBD38F62DC7DD8F0033B4D1 /* UserDefaultsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsProvider.swift; sourceTree = "<group>"; };
@@ -177,9 +196,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EC8C8AB2F67E3E300502C65 /* MapboxMaps in Frameworks */,
 				0E98C6E32D777D700046115A /* WarmToast in Frameworks */,
 				0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */,
+				0EC8C8A52F67B7DD00502C65 /* MapboxMaps in Frameworks */,
 				0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */,
+				0EC8C8A82F67E0E600502C65 /* MapboxMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +311,12 @@
 			children = (
 				0E36EA902D74F33100C163E9 /* SwiftData */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
+				0E5554042F790AD600337212 /* MapStyleSetting.swift */,
+				0E55540A2F790B0D00337212 /* ToastReason.swift */,
+				0E55540C2F790B2600337212 /* AnnotationType.swift */,
+				0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */,
+				0E5554082F790B0100337212 /* GPSAccuracyMode.swift */,
+				0E5554062F790AF100337212 /* DistanceUnit.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0E5553542F748C4200337212 /* GroupedMapContentState.swift */,
 				0E5553582F748CC100337212 /* MapControlButtonState.swift */,
@@ -320,6 +348,8 @@
 				0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
 				0E36EAEF2D7525F000C163E9 /* Info.plist */,
+				0EBA0C7B2F67A16A0069BF38 /* Prod.xcconfig */,
+				0EBA0C7D2F67A2530069BF38 /* Dev.xcconfig */,
 				0EA4BD4E2B9151B0005259B4 /* Preview Content */,
 			);
 			path = Resources;
@@ -351,7 +381,6 @@
 				0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */,
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
-				0E29527C2D7113D10079479A /* MKMapRect+CoordinateArray.swift */,
 				0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */,
 				0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */,
 				0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */,
@@ -408,6 +437,7 @@
 			children = (
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
 				0E5553522F73D0C500337212 /* GroupedMapContent.swift */,
+				0E5554022F78EE5300337212 /* GroupedMapStyle.swift */,
 				0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
@@ -486,6 +516,7 @@
 			packageReferences = (
 				0E98C6E12D777D700046115A /* XCRemoteSwiftPackageReference "warmtoast" */,
 				0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */,
+				0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 			);
 			productRefGroup = 0EA4BD442B9151AF005259B4 /* Products */;
 			projectDirPath = "";
@@ -503,6 +534,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */,
+				0EBA0C7C2F67A16A0069BF38 /* Prod.xcconfig in Resources */,
+				0EBA0C7E2F67A2530069BF38 /* Dev.xcconfig in Resources */,
 				0EA4BD502B9151B0005259B4 /* Preview Assets.xcassets in Resources */,
 				0EA4BD4D2B9151B0005259B4 /* Assets.xcassets in Resources */,
 			);
@@ -527,10 +560,12 @@
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
+				0E5554052F790AD600337212 /* MapStyleSetting.swift in Sources */,
 				0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0EBD38F52DC7DBEF0033B4D1 /* LocationManagerProvider.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
+				0E5554092F790B0100337212 /* GPSAccuracyMode.swift in Sources */,
 				0E5553FB2F7784A800337212 /* View+VersionSpecificBackground.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
@@ -539,8 +574,11 @@
 				0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
+				0E55540B2F790B0D00337212 /* ToastReason.swift in Sources */,
 				0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */,
+				0E55540F2F790B3900337212 /* GroupedMapContentIntent.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
+				0E5554072F790AF100337212 /* DistanceUnit.swift in Sources */,
 				0E29527B2D7107030079479A /* FeatureLibrary.swift in Sources */,
 				0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */,
 				0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */,
@@ -555,8 +593,9 @@
 				0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */,
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
-				0E29527D2D7113D10079479A /* MKMapRect+CoordinateArray.swift in Sources */,
 				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
+				0E55540D2F790B2600337212 /* AnnotationType.swift in Sources */,
+				0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */,
@@ -744,6 +783,7 @@
 		};
 		0EA4BD542B9151B0005259B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EBA0C7D2F67A2530069BF38 /* Dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -782,6 +822,7 @@
 		};
 		0EA4BD552B9151B0005259B4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EBA0C7B2F67A16A0069BF38 /* Prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -915,6 +956,30 @@
 				minimumVersion = 1.9.2;
 			};
 		};
+		0EC8C8A32F67B7DD00502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.20.0;
+			};
+		};
+		0EC8C8A62F67E0E600502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios-binary" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios-binary.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.20.0;
+			};
+		};
+		0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.20.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -937,6 +1002,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0EBD38E72DC7D46B0033B4D1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
 			productName = DependenciesTestSupport;
+		};
+		0EC8C8A42F67B7DD00502C65 /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EC8C8A32F67B7DD00502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
+		};
+		0EC8C8A72F67E0E600502C65 /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EC8C8A62F67E0E600502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios-binary" */;
+			productName = MapboxMaps;
+		};
+		0EC8C8AA2F67E3E300502C65 /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EC8C8A92F67E3E300502C65 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

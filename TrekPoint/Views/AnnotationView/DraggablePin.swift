@@ -7,78 +7,66 @@ struct DraggablePin: View {
     @State private var isActive: Bool = false
     @State private var isJigglingActive: Bool = false
     
-    @ScaledMetric(relativeTo: .title) private var iconSize: Double = 48
+    private let iconSize = CGSize(width: 33, height: 48)
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     
+    private let categoryImageName: String
     private let movementEnabled: Bool
     private let shouldJiggle: Bool
-    private let accentColor: Color
-    private let fillColor: Color
+    private let categoryColor: Color
+    private let baseColor: Color
     private let anchor: UnitPoint
     private let applyNewPosition: (CGPoint) -> Void
     
-    init(movementEnabled: Bool, shouldJiggle: Bool, fillColor: Color?, accentColor: Color?, anchor: UnitPoint, applyNewPosition: @escaping (CGPoint) -> Void) {
+    init(movementEnabled: Bool, shouldJiggle: Bool, baseColor: Color, categoryColor: Color?, categoryImageName: String, anchor: UnitPoint, applyNewPosition: @escaping (CGPoint) -> Void) {
         self.movementEnabled = movementEnabled
         self.shouldJiggle = shouldJiggle
-        self.fillColor = fillColor ?? .white
-        self.accentColor = accentColor ?? fillColor ?? .white
+        self.baseColor = baseColor
+        self.categoryColor = categoryColor ?? .white
         self.anchor = anchor
         self.applyNewPosition = applyNewPosition
+        self.categoryImageName = categoryImageName
     }
     
     var body: some View {
         GeometryReader { geometry in
             let frame = geometry.frame(in: .global)
             
-            ZStack {
-                Image(systemName: "drop.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .rotationEffect(.radians(.pi))
-                
-                ZStack {
-                    Image(systemName: "star.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(fillColor)
+            Image(.teardrop)
+                .foregroundStyle(baseColor)
+                .overlay {
+                    Image(categoryImageName)
+                        .foregroundStyle(categoryColor)
+                        .offset(x: 0, y: -8)
+                }
+                .rotationEffect(isJigglingActive && shouldJiggle && !isActive && !reduceMotion ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
+                .animation(isJigglingActive && shouldJiggle && !isActive ? .easeInOut(duration: 0.2).repeatForever(autoreverses: true) : .default, value: isJigglingActive)
+                .animation(.snappy, value: isActive)
+                .scaleEffect(isActive ? 1.3 : 1, anchor: .center)
+                .onChange(of: isActive) {
+                    let maxX = frame.maxX - frame.minX
+                    let maxY = frame.maxY - frame.minY
                     
-                    Image(systemName: "star")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(accentColor)
-                        .padding(.horizontal, -2)
+                    let x = maxX * anchor.x + frame.minX
+                    let y = maxY * anchor.y + frame.minY
+                    
+                    applyNewPosition(CGPoint(x: x, y: y))
+                    translation = .zero
+                    
+                    Task {
+                        await updateJigglability()
+                    }
                 }
-                .padding(.horizontal, 13)
-                .padding(.bottom, 15)
-            }
-            .rotationEffect(isJigglingActive && shouldJiggle && !isActive && !reduceMotion ? .degrees(isJigglingActive ? 5 : -5) : .zero, anchor: .bottom)
-            .animation(isJigglingActive && shouldJiggle && !isActive ? .easeInOut(duration: 0.2).repeatForever(autoreverses: true) : .default, value: isJigglingActive)
-            .animation(.snappy, value: isActive)
-            .scaleEffect(isActive ? 1.3 : 1, anchor: .center)
-            .onChange(of: isActive) {
-                let maxX = frame.maxX - frame.minX
-                let maxY = frame.maxY - frame.minY
-                
-                let x = maxX * anchor.x + frame.minX
-                let y = maxY * anchor.y + frame.minY
-                
-                applyNewPosition(CGPoint(x: x, y: y))
-                translation = .zero
-                
-                Task {
+                .onChange(of: shouldJiggle) {
+                    Task {
+                        await updateJigglability()
+                    }
+                }
+                .task {
                     await updateJigglability()
                 }
-            }
-            .onChange(of: shouldJiggle) {
-                Task {
-                    await updateJigglability()
-                }
-            }
-            .task {
-                await updateJigglability()
-            }
         }
-        .frame(width: iconSize, height: iconSize)
+        .frame(width: iconSize.width, height: iconSize.height)
         .contentShape(.rect)
         .offset(translation)
         .gesture(LongPressGesture(minimumDuration: 0.2)
@@ -113,7 +101,7 @@ struct DraggablePin: View {
     }
 }
 
-import MapKit
+import MapboxMaps
 
 #Preview {
     @Previewable @State var isJiggling = true
@@ -126,24 +114,26 @@ import MapKit
     }()
     
     Map {
-        Annotation("No Jiggle", coordinate: coordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: coordinate) {
             DraggablePin(
                 movementEnabled: true,
                 shouldJiggle: false,
-                fillColor: .white,
-                accentColor: .black,
+                baseColor: .orange,
+                categoryColor: .black,
+                categoryImageName: "star",
                 anchor: .bottom,
                 applyNewPosition: {_ in}
             )
             .foregroundStyle(.orange)
         }
         
-        Annotation("Jiggle", coordinate: otherCoordinate, anchor: .bottom) {
+        MapViewAnnotation(coordinate: otherCoordinate) {
             DraggablePin(
                 movementEnabled: true,
                 shouldJiggle: isJiggling,
-                fillColor: .yellow,
-                accentColor: .white,
+                baseColor: .orange,
+                categoryColor: .yellow,
+                categoryImageName: "star",
                 anchor: .bottom,
                 applyNewPosition: {_ in}
             )
@@ -171,8 +161,9 @@ import MapKit
             DraggablePin(
                 movementEnabled: true,
                 shouldJiggle: false,
-                fillColor: .yellow,
-                accentColor: .blue,
+                baseColor: .yellow,
+                categoryColor: .blue,
+                categoryImageName: "star",
                 anchor: .bottom
             ) {_ in}
             .scaleEffect(2)
