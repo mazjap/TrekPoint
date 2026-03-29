@@ -34,6 +34,7 @@
 		0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */; };
 		0E5553FF2F77BE6000337212 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FE2F77BE6000337212 /* AppSettings.swift */; };
 		0E5554012F77C42B00337212 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554002F77C42B00337212 /* SettingsView.swift */; };
+		0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554022F78EE5300337212 /* GroupedMapStyle.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -131,6 +132,7 @@
 		0E5553FC2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleWithTrailingLeadingFacedTriangle.swift; sourceTree = "<group>"; };
 		0E5553FE2F77BE6000337212 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		0E5554002F77C42B00337212 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0E5554022F78EE5300337212 /* GroupedMapStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapStyle.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 			children = (
 				0EA4BD562B9151E6005259B4 /* DetailedMapView.swift */,
 				0E5553522F73D0C500337212 /* GroupedMapContent.swift */,
+				0E5554022F78EE5300337212 /* GroupedMapStyle.swift */,
 				0E80B5B72DC8238700FF2FDC /* MapControlButtons.swift */,
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
@@ -568,6 +571,7 @@
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
 				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
+				0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
 				0EBD38F92DC7DFFF0033B4D1 /* BackgroundPersistenceProvider.swift in Sources */,

@@ -10,6 +10,11 @@ class MapCoordinator {
     var selectedMapFeature: ResolvedMapFeature?
     var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
+    var styleWasInitiallyLoaded = false
+    
+    // TODO: - Handle name changes as well
+    var annotationFeatureCollection = FeatureCollection(features: [])
+    var polylineFeatureCollection = FeatureCollection(features: [])
     
     @ObservationIgnored private var shelvedPresentationDetent: PresentationDetent?
     @ObservationIgnored private var subscription: AnyCancellable?
@@ -266,6 +271,22 @@ extension MapCoordinator {
         } else {
             handle(.cancelAnnotation)
         }
+    }
+    
+    func handleFeatureChange(annotations: [AnnotationData]? = nil, polylines: [PolylineData]? = nil) {
+        if let annotations {
+            let annotationFeatures = annotations.map(\.feature)
+            annotationFeatureCollection = FeatureCollection(features: annotationFeatures)
+        }
+        
+        if let polylines {
+            let polylineFeatures = polylines.map(\.feature)
+            polylineFeatureCollection = FeatureCollection(features: polylineFeatures)
+        }
+    }
+    
+    func fitMapToFeatures() {
+        cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatureCollection.features.compactMap(\.geometry) + polylineFeatureCollection.features.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
     }
     
     func handleMapTap(at coordinate: CLLocationCoordinate2D) {

@@ -107,9 +107,11 @@ class AppSettings {
         @Dependency(\.userDefaultsProvider) var userDefaults
         self.userDefaults = userDefaults
         self.mapStyle = MapStyleSetting(rawValue: userDefaults.string(forKey: "map_style") ?? "") ?? .hybrid
-        self.distanceUnit = DistanceUnit(rawValue: userDefaults.string(forKey: "distance_unit") ?? "") ?? .imperial
+        self.distanceUnit = DistanceUnit(rawValue: userDefaults.string(forKey: "distance_unit") ?? "") ?? Self.standardDistanceUnitInLocale
         self.gpsAccuracy = GPSAccuracyMode(rawValue: userDefaults.string(forKey: "gps_accuracy") ?? "") ?? .balanced
     }
+    
+    static private let standardDistanceUnitInLocale: DistanceUnit = Locale.current.measurementSystem == .metric ? .metric : .imperial
 }
 
 enum AppSettingsKey: DependencyKey {

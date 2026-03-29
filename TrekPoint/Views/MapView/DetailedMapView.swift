@@ -115,9 +115,6 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    // TODO: - Handle name changes as well
-    @State private var annotationFeatureCollection: FeatureCollection?
-    @State private var polylineFeatureCollection: FeatureCollection?
     @Binding private var showSheet: Bool
     
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
@@ -135,7 +132,7 @@ struct DetailedMapView: View {
         }
         
         return OrnamentOptions(
-            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 0), visibility: .visible, useMetricUnits: false, units: .imperial),
+            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 0), visibility: .visible, units: coordinator.distanceUnit),
             compass: CompassViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 30), image: nil, visibility: .visible),
             logo: LogoViewOptions(position: .bottomLeft, margins: CGPoint(x: 10, y: smallDetentHeight)),
             attributionButton: AttributionButtonOptions(position: .bottomRight, margins: CGPoint(x: 10, y: smallDetentHeight), tintColor: nil)
@@ -159,13 +156,15 @@ struct DetailedMapView: View {
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
                 Map(viewport: $coordinator.cameraPosition) {
+                    GroupedMapStyle(show3DTerrain: false, showContor: false)
+                    
                     GroupedMapContent(
                         annotationState: coordinator.annotationOverlayState,
                         polylineState: coordinator.polylineOverlayState,
                         locationState: coordinator.locationOverlayState,
                         selection: coordinator.selectedMapFeature,
-                        annotationFeatureCollection: annotationFeatureCollection,
-                        polylineFeatureCollection: polylineFeatureCollection
+                        annotationFeatureCollection: coordinator.annotationFeatureCollection,
+                        polylineFeatureCollection: coordinator.polylineFeatureCollection
                     ) { intent in
                         guard let coordinateIntent = intent.toCoordinateIntent(proxy: proxy, annotations: annotations, polylines: polylines) else {
                             coordinator.handleFailedIntentConversion(for: intent)
@@ -201,6 +200,7 @@ struct DetailedMapView: View {
                 .onStyleLoaded { _ in
                     // TODO: - Better error handling
                     guard let map = proxy.map else { fatalError("No map") }
+                    guard !coordinator.styleWasInitiallyLoaded else { return }
                     
                     do {
                         try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
@@ -208,27 +208,23 @@ struct DetailedMapView: View {
                         fatalError("error: \(error)")
                     }
                     
-                    let annotationFeatures = annotations.map(\.feature)
-                    let polylineFeatures = polylines.map(\.feature)
-                    annotationFeatureCollection = FeatureCollection(features: annotationFeatures)
-                    polylineFeatureCollection = FeatureCollection(features: polylineFeatures)
-                    
-                    coordinator.cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatures.compactMap(\.geometry) + polylineFeatures.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
+                    coordinator.handleFeatureChange(annotations: annotations, polylines: polylines)
+                    coordinator.fitMapToFeatures()
                 }
                 .ornamentOptions(ornamentOptions(height: frame.height))
                 // TODO: - Don't force unwrap and allow user to select a style from a set of like 3 or something
                 // Also, paths are drawn underneath 3d models and thus are sometimes obscured. Something to look into
-                .mapStyle(MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
+                .mapStyle(coordinator.currentMapStyle)//MapboxMaps.MapStyle(uri: StyleURI(url: URL(string: "mapbox://styles/mazjap/cmmvaacbn00hh01su1kzc652h")!)!))
                 .onTapGesture { location in
                     guard let coordinate = proxy.map?.coordinate(for: location) else { return }
                     coordinator.handleMapTap(at: coordinate)
                 }
                 // TODO: - Test how bad this is and look into more efficient ways than recreating the entire feature collection if needed
                 .onChange(of: annotations.map(AnnotationSnapshot.init)) {
-                    annotationFeatureCollection = FeatureCollection(features: annotations.map(\.feature))
+                    coordinator.handleFeatureChange(annotations: annotations)
                 }
                 .onChange(of: polylines.map(PolylineSnapshot.init)) {
-                    polylineFeatureCollection = FeatureCollection(features: polylines.map(\.feature))
+                    coordinator.handleFeatureChange(polylines: polylines)
                 }
                 .ignoresSafeArea()
                 .overlay(alignment: .topTrailing) {
@@ -236,8 +232,7 @@ struct DetailedMapView: View {
                         annotationState: coordinator.annotationButtonState,
                         polylineState: coordinator.polylineButtonState,
                         locationState: coordinator.locationButtonState,
-                        selectedDetent: coordinator.selectedDetent,
-                        proxy: proxy,
+                        isHidden: coordinator.isSheetMaximized,
                         nspace: nspace,
                         buttonSize: buttonSize
                     ) { intent in
@@ -265,9 +260,7 @@ struct DetailedMapView: View {
                 selection: coordinator.selectedMapFeature,
                 annotations: annotations,
                 polylines: polylines
-            ) { newSelection in
-                coordinator.handleNavigatorSelection(newSelection)
-            }
+            )
             .presentationDetents(detents, selection: $coordinator.selectedDetent)
             .presentationBackgroundInteraction(.enabled(upThrough: .tpMedium))
             .interactiveDismissDisabled()

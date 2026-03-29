@@ -38,9 +38,9 @@ struct GroupedMapContent: MapContent {
             Puck2D(bearing: .heading)
         }
         
-        annotationViews
-        
         polylineViews
+        
+        annotationViews
         
         inProgressPolyline
         

@@ -8,13 +8,12 @@ struct FeatureLibrary: View {
     private let selection: ResolvedMapFeature?
     private let annotations: [AnnotationData]
     private let polylines: [PolylineData]
-    private let onSelection: (ResolvedMapFeature?) -> Void
     
     private var navigationPath: Binding<[ResolvedMapFeature]> {
         Binding {
             selection.map { [$0] } ?? []
         } set: { newPath in
-            onSelection(newPath.last)
+            coordinator.handleFeatureSelection(newPath.last)
         }
     }
     
@@ -30,14 +29,12 @@ struct FeatureLibrary: View {
         coordinator: FeatureLibraryCoordinator,
         selection: ResolvedMapFeature?,
         annotations: [AnnotationData],
-        polylines: [PolylineData],
-        onSelection: @escaping (ResolvedMapFeature?) -> Void
+        polylines: [PolylineData]
     ) {
         self._coordinator = Bindable(coordinator)
         self.selection = selection
         self.annotations = annotations
         self.polylines = polylines
-        self.onSelection = onSelection
     }
     
     var body: some View {
@@ -77,7 +74,7 @@ struct FeatureLibrary: View {
             Section("Markers") {
                 ForEach(displayedAnnotations) { item in
                     Button {
-                        onSelection(.annotation(item))
+                        coordinator.handleFeatureSelection(.annotation(item))
                     } label: {
                         HStack {
                             Image(systemName: "mappin.and.ellipse")
@@ -97,7 +94,7 @@ struct FeatureLibrary: View {
             Section("Paths") {
                 ForEach(displayedPolylines) { item in
                     Button {
-                        onSelection(.polyline(item))
+                        coordinator.handleFeatureSelection(.polyline(item))
                     } label: {
                         HStack {
                             Image(systemName: "scribble")
@@ -164,7 +161,7 @@ struct FeatureLibrary: View {
     @ViewBuilder
     func navigationDestination(for feature: ResolvedMapFeature) -> some View {
         let onDismiss = {
-            onSelection(nil)
+            coordinator.handleFeatureSelection(nil)
         }
         
         let commitError = { (error: Error) in
@@ -196,8 +193,7 @@ struct FeatureLibrary: View {
                 coordinator: .init(),
                 selection: nil,
                 annotations: [.preview],
-                polylines: [.preview],
-                onSelection: { _ in }
+                polylines: [.preview]
             )
             .presentationDetents(.defaultMapSheetDetents)
         }
