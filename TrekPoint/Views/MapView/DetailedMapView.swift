@@ -198,9 +198,11 @@ struct DetailedMapView: View {
                     }
                 }
                 .onStyleLoaded { _ in
+                    guard !coordinator.styleWasInitiallyLoaded else { return }
+                    coordinator.styleWasInitiallyLoaded = true
+                    
                     // TODO: - Better error handling
                     guard let map = proxy.map else { fatalError("No map") }
-                    guard !coordinator.styleWasInitiallyLoaded else { return }
                     
                     do {
                         try map.addImage(joinMarkerImage(with: "star", baseColor: .orange, categoryColor: .white), id: "marker", sdf: false)
