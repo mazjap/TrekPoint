@@ -35,6 +35,12 @@
 		0E5553FF2F77BE6000337212 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553FE2F77BE6000337212 /* AppSettings.swift */; };
 		0E5554012F77C42B00337212 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554002F77C42B00337212 /* SettingsView.swift */; };
 		0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554022F78EE5300337212 /* GroupedMapStyle.swift */; };
+		0E5554052F790AD600337212 /* MapStyleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554042F790AD600337212 /* MapStyleSetting.swift */; };
+		0E5554072F790AF100337212 /* DistanceUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554062F790AF100337212 /* DistanceUnit.swift */; };
+		0E5554092F790B0100337212 /* GPSAccuracyMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5554082F790B0100337212 /* GPSAccuracyMode.swift */; };
+		0E55540B2F790B0D00337212 /* ToastReason.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540A2F790B0D00337212 /* ToastReason.swift */; };
+		0E55540D2F790B2600337212 /* AnnotationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540C2F790B2600337212 /* AnnotationType.swift */; };
+		0E55540F2F790B3900337212 /* GroupedMapContentIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */; };
 		0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */; };
 		0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */; };
 		0E7E008E2D820F7E0019A92A /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E008D2D820F7E0019A92A /* Attachment.swift */; };
@@ -133,6 +139,12 @@
 		0E5553FE2F77BE6000337212 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		0E5554002F77C42B00337212 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0E5554022F78EE5300337212 /* GroupedMapStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapStyle.swift; sourceTree = "<group>"; };
+		0E5554042F790AD600337212 /* MapStyleSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapStyleSetting.swift; sourceTree = "<group>"; };
+		0E5554062F790AF100337212 /* DistanceUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceUnit.swift; sourceTree = "<group>"; };
+		0E5554082F790B0100337212 /* GPSAccuracyMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSAccuracyMode.swift; sourceTree = "<group>"; };
+		0E55540A2F790B0D00337212 /* ToastReason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastReason.swift; sourceTree = "<group>"; };
+		0E55540C2F790B2600337212 /* AnnotationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationType.swift; sourceTree = "<group>"; };
+		0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedMapContentIntent.swift; sourceTree = "<group>"; };
 		0E7E00852D81F1840019A92A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E7E00872D81F4440019A92A /* LaunchAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimationView.swift; sourceTree = "<group>"; };
 		0E7E008D2D820F7E0019A92A /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -299,6 +311,12 @@
 			children = (
 				0E36EA902D74F33100C163E9 /* SwiftData */,
 				0E36EA862D73A2E400C163E9 /* PolylineProvider.swift */,
+				0E5554042F790AD600337212 /* MapStyleSetting.swift */,
+				0E55540A2F790B0D00337212 /* ToastReason.swift */,
+				0E55540C2F790B2600337212 /* AnnotationType.swift */,
+				0E55540E2F790B3900337212 /* GroupedMapContentIntent.swift */,
+				0E5554082F790B0100337212 /* GPSAccuracyMode.swift */,
+				0E5554062F790AF100337212 /* DistanceUnit.swift */,
 				0E36EA842D73A25800C163E9 /* AnnotationProvider.swift */,
 				0E5553542F748C4200337212 /* GroupedMapContentState.swift */,
 				0E5553582F748CC100337212 /* MapControlButtonState.swift */,
@@ -542,10 +560,12 @@
 				0E2952822D711B0F0079479A /* ModifyPolylineView.swift in Sources */,
 				0E7E00882D81F4440019A92A /* LaunchAnimationView.swift in Sources */,
 				0EE453092BAD5FF3007C40DE /* MapPreview.swift in Sources */,
+				0E5554052F790AD600337212 /* MapStyleSetting.swift in Sources */,
 				0E7E00922D823EC80019A92A /* AttachmentsView.swift in Sources */,
 				0EA4BD5D2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift in Sources */,
 				0EBD38F52DC7DBEF0033B4D1 /* LocationManagerProvider.swift in Sources */,
 				0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */,
+				0E5554092F790B0100337212 /* GPSAccuracyMode.swift in Sources */,
 				0E5553FB2F7784A800337212 /* View+VersionSpecificBackground.swift in Sources */,
 				0E2952802D711AC00079479A /* CreatePolylineView.swift in Sources */,
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
@@ -554,8 +574,11 @@
 				0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
+				0E55540B2F790B0D00337212 /* ToastReason.swift in Sources */,
 				0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */,
+				0E55540F2F790B3900337212 /* GroupedMapContentIntent.swift in Sources */,
 				0E9512CD2BB5342D00E9CA83 /* Triangle.swift in Sources */,
+				0E5554072F790AF100337212 /* DistanceUnit.swift in Sources */,
 				0E29527B2D7107030079479A /* FeatureLibrary.swift in Sources */,
 				0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */,
 				0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */,
@@ -571,6 +594,7 @@
 				0EA4BD602B93D2BB005259B4 /* Coordinate.swift in Sources */,
 				0EA4BD4B2B9151AF005259B4 /* AnnotationData.swift in Sources */,
 				0E36EA872D73A2E400C163E9 /* PolylineProvider.swift in Sources */,
+				0E55540D2F790B2600337212 /* AnnotationType.swift in Sources */,
 				0E5554032F78EE5300337212 /* GroupedMapStyle.swift in Sources */,
 				0E9512C92BB5332F00E9CA83 /* AnnotationData+CoreLocation.swift in Sources */,
 				0EE4530B2BAD619E007C40DE /* MapFeature.swift in Sources */,
