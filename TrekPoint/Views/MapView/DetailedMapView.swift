@@ -269,7 +269,7 @@ struct DetailedMapView: View {
                 coordinator.handleNavigatorSelection(newSelection)
             }
             .presentationDetents(detents, selection: $coordinator.selectedDetent)
-            .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+            .presentationBackgroundInteraction(.enabled(upThrough: .tpMedium))
             .interactiveDismissDisabled()
         }
         .preheatToaster(

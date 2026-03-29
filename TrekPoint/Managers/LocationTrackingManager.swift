@@ -19,6 +19,8 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
     var isTracking = false
     
+    @ObservationIgnored @Dependency(\.appSettings) private var appSettings
+    
     private var activeTrackingID: UUID?
     private(set) var isUserLocationActive: Bool = false {
         didSet {
@@ -70,8 +72,19 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     func startTracking() -> CLLocationCoordinate2D? {
         activeTrackingID = UUID()
         
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        locationManager.distanceFilter = 5.0
+        let accuracy = appSettings.gpsAccuracy
+        
+        switch accuracy {
+        case .performance:
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.distanceFilter = kCLDistanceFilterNone
+        case .balanced:
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.distanceFilter = 5
+        case .batterySaver:
+            locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+            locationManager.distanceFilter = 20
+        }
         
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false

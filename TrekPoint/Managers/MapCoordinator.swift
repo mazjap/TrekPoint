@@ -8,15 +8,41 @@ import Combine
 class MapCoordinator {
     var cameraPosition: Viewport = .idle
     var selectedMapFeature: ResolvedMapFeature?
-    var selectedDetent: PresentationDetent = .small
+    var selectedDetent: PresentationDetent = .tpSmall
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
     
+    @ObservationIgnored private var shelvedPresentationDetent: PresentationDetent?
     @ObservationIgnored private var subscription: AnyCancellable?
     
+    @ObservationIgnored @Dependency(\.appSettings) private var appSettings
     @ObservationIgnored @Dependency(\.annotationPersistenceManager) fileprivate var annotationManager
     @ObservationIgnored @Dependency(\.polylinePersistenceManager) fileprivate var polylineManager
     @ObservationIgnored @Dependency(\.locationTrackingManager) fileprivate var locationManager
     @ObservationIgnored @Dependency(\.toastManager) fileprivate var toastManager
+    
+    var currentMapStyle: MapStyle {
+        switch appSettings.mapStyle {
+        case .hybrid:
+            return .satelliteStreets
+        case .satellite:
+            return .satellite
+        case .standard:
+            return .standard
+        }
+    }
+    
+    var distanceUnit: ScaleBarViewOptions.Units {
+        switch appSettings.distanceUnit {
+        case .imperial:
+            return .imperial
+        case .metric:
+            return .metric
+        }
+    }
+    
+    var isSheetMaximized: Bool {
+        selectedDetent == .tpLarge
+    }
     
     init() {
         subscription = NotificationCenter.default.publisher(for: .restoreTrackingSession)
@@ -39,14 +65,28 @@ class MapCoordinator {
         
         featureLibraryCoordinator.onSearchFocusChanged = { [weak self] isFocused in
             if isFocused {
-                self?.selectedDetent = .largeWithoutScaleEffect
+                self?.selectedDetent = .tpLarge
             } else {
-                self?.selectedDetent = .medium
+                self?.selectedDetent = .tpMedium
             }
         }
         
         featureLibraryCoordinator.onSelection = { [weak self] feature in
             self?.handleNavigatorSelection(feature)
+        }
+        
+        featureLibraryCoordinator.onSettingsPresented = { [weak self] in
+            if self?.selectedDetent == .tpLarge {
+                self?.shelvedPresentationDetent = self?.selectedDetent
+                self?.selectedDetent = .tpSmall
+            }
+        }
+        
+        featureLibraryCoordinator.onSettingsDismissed = { [weak self] in
+            if let detentBeforeSettigsPresented = self?.shelvedPresentationDetent {
+                self?.selectedDetent = detentBeforeSettigsPresented
+                self?.shelvedPresentationDetent = nil
+            }
         }
     }
 }
@@ -119,7 +159,7 @@ extension MapCoordinator {
                 try annotationManager.finalizeWorkingAnnotation()
                 
                 selectedMapFeature = nil
-                selectedDetent = .small
+                selectedDetent = .tpSmall
             } catch {
                 // TODO: - Send to some analytics service
                 toastManager.commitFeatureCreationError(error)
@@ -129,7 +169,7 @@ extension MapCoordinator {
             // Also, creating a polyline and creating an annotation should be mutually exclusive
             annotationManager.clearWorkingAnnotationProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
         case .undoAnnotation:
             annotationManager.undo()
         case .beginPolylineDrawing:
@@ -144,7 +184,7 @@ extension MapCoordinator {
                 _ = try polylineManager.finalizeWorkingPolyline()
                 
                 selectedMapFeature = nil
-                selectedDetent = .small
+                selectedDetent = .tpSmall
             } catch {
                 // TODO: - Send to some analytics service
                 toastManager.commitFeatureCreationError(error)
@@ -152,7 +192,7 @@ extension MapCoordinator {
         case .cancelPolyline:
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -177,7 +217,7 @@ extension MapCoordinator {
         case .cancelTracking:
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
-            selectedDetent = .small
+            selectedDetent = .tpSmall
             locationManager.stopTracking()
         case .showUserLocation:
             locationManager.showUserLocation()

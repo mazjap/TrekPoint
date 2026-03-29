@@ -8,9 +8,12 @@ class FeatureLibraryCoordinator {
     var searchText = ""
     var filteredAnnotations: [AnnotationData] = []
     var filteredPolylines: [PolylineData] = []
+    var isSettingsSheetPresented = false
     
     var onSelection: ((ResolvedMapFeature?) -> Void)?
     var onSearchFocusChanged: ((Bool) -> Void)?
+    var onSettingsPresented: (() -> Void)?
+    var onSettingsDismissed: (() -> Void)?
     
     var isSearching: Bool { !searchText.isEmpty }
     
@@ -80,6 +83,17 @@ class FeatureLibraryCoordinator {
     
     func handleSearchFocusChange(isFocused: Bool) {
         onSearchFocusChanged?(isFocused)
+    }
+    
+    func handleSettingsTapped() {
+        isSettingsSheetPresented = true
+        onSettingsPresented?()
+    }
+    
+    func handleSettingsDismissed() {
+        // Not necessarily needed bc SwiftUI's dismiss() sets the binding to false, but better to be consistent
+        isSettingsSheetPresented = false
+        onSettingsDismissed?()
     }
     
     private func performSearch(annotations: [AnnotationData], polylines: [PolylineData]) {
