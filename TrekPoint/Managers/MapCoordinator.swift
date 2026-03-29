@@ -171,7 +171,7 @@ extension MapCoordinator {
     func handle(_ intent: MapButtonIntent) {
         switch intent {
         case .beginAnnotationCreation:
-            fatalError("This case should be handled by the caller and redirected to handleAnnotationCreation(at:)")
+            assertionFailure("This case should be handled by the caller and redirected to handleAnnotationCreation(at:)")
         case .confirmAnnotation:
             do {
                 try annotationManager.finalizeWorkingAnnotation()
@@ -248,8 +248,7 @@ extension MapCoordinator {
             do {
                 try annotationManager.save()
             } catch {
-                // TODO: Do somehthing other than swallowing
-                print(error)
+                toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
             }
         case let .moveWorkingAnnotation(coordinate):
             annotationManager.changeWorkingAnnotationsCoordinate(to: Coordinate(coordinate))

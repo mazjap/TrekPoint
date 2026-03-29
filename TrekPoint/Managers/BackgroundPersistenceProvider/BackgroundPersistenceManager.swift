@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import SwiftData
 import CoreLocation
 import Dependencies
@@ -6,6 +7,7 @@ import Dependencies
 @Observable
 class BackgroundPersistenceManager {
     @ObservationIgnored @Dependency(\.modelContainer) private var container
+    private let logger = Logger(subsystem: "BackgroundPersistenceManager", category: "TrekPoint")
     
     func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void) {
         Task {
@@ -23,7 +25,7 @@ class BackgroundPersistenceManager {
                 try context.save()
                 completion()
             } catch {
-                print("Failed to save location: \(error)")
+                logger.error("Failed to save location: \(error)")
                 completion()
             }
         }
@@ -38,7 +40,7 @@ class BackgroundPersistenceManager {
             let pendingLocations = try context.fetch(descriptor)
             return pendingLocations.map { CLLocationCoordinate2D($0.coordinate) }
         } catch {
-            print("Failed to fetch pending locations: \(error)")
+            logger.error("Failed to fetch pending locations: \(error)")
             return []
         }
     }
@@ -55,7 +57,7 @@ class BackgroundPersistenceManager {
             }
             try context.save()
         } catch {
-            print("Failed to clear pending locations: \(error)")
+            logger.error("Failed to clear pending locations: \(error)")
         }
     }
     
@@ -66,7 +68,7 @@ class BackgroundPersistenceManager {
             try context.delete(model: PendingTrackingLocation.self)
             try context.save()
         } catch {
-            print("Failed to clear pending locations: \(error)")
+            logger.error("Failed to clear pending locations: \(error)")
         }
     }
 }
