@@ -49,6 +49,14 @@ class MapCoordinator {
         selectedDetent == .tpLarge
     }
     
+    var showTerrain: Bool {
+        appSettings.isTerrainEnabled
+    }
+    
+    var showContour: Bool {
+        appSettings.isContourEnabled
+    }
+    
     init() {
         subscription = NotificationCenter.default.publisher(for: .restoreTrackingSession)
             .sink { [weak self] notification in

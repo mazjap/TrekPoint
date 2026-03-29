@@ -38,7 +38,7 @@ struct SettingsView: View {
                         headerView
                         
                         settingsSection(
-                            title: "MAP",
+                            title: "Map",
                             icon: "map",
                             iconColor: .blue
                         ) {
@@ -46,7 +46,15 @@ struct SettingsView: View {
                         }
                         
                         settingsSection(
-                            title: "UNITS",
+                            title: "Terrain",
+                            icon: "mountain.2",
+                            iconColor: .yellow
+                        ) {
+                            MapTerrainPicker(isTerrainSelected: $settings.isTerrainEnabled, isContourSelected: $settings.isContourEnabled)
+                        }
+                        
+                        settingsSection(
+                            title: "Units",
                             icon: "ruler",
                             iconColor: .orange
                         ) {
@@ -119,6 +127,28 @@ struct SettingsView: View {
     }
 }
 
+private struct MapTerrainPicker: View {
+    @Binding var isTerrainSelected: Bool
+    @Binding var isContourSelected: Bool
+    
+    private let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+            SelectableSettingsCard(systemIconName: isTerrainSelected ? "mountain.2.fill" : "mountain.2", label: "3D Terrain", sublabel: nil, isSelected: isTerrainSelected, usesCheckmark: false) {
+                isTerrainSelected.toggle()
+            }
+            
+            SelectableSettingsCard(systemIconName: "waveform", label: "Contour lines", sublabel: nil, isSelected: isContourSelected, usesCheckmark: false) {
+                isContourSelected.toggle()
+            }
+        }
+    }
+}
+
 private struct MapStylePicker: View {
     @Binding var selection: MapStyleSetting
     
@@ -140,39 +170,73 @@ private struct MapStylePicker: View {
     }
 }
 
+private struct SelectableSettingsCard: View {
+    let systemIconName: String
+    let label: String
+    let sublabel: String?
+    let isSelected: Bool
+    let usesCheckmark: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 0) {
+                Image(systemName: systemIconName)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(isSelected ? .orange : .white.opacity(0.4))
+                    .frame(height: 16)
+                    .padding(.trailing, 8)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label)
+                        .font(.system(size: 14, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(isSelected ? .white : .white.opacity(0.6))
+                    
+                    if let sublabel {
+                        Text(sublabel)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.white.opacity(0.35))
+                    }
+                }
+                
+                Spacer(minLength: 0)
+                
+                if isSelected && usesCheckmark {
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.orange)
+                        .frame(height: 12)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? Color.orange.opacity(0.12) : Color.white.opacity(0.05))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(
+                                isSelected ? Color.orange.opacity(0.5) : Color.white.opacity(0.08),
+                                lineWidth: 1
+                            )
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+}
+
 private struct MapStyleCard: View {
     let style: MapStyleSetting
     let isSelected: Bool
     let onTap: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 10) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(isSelected ? Color.orange.opacity(0.2) : Color.white.opacity(0.05))
-                        .frame(height: 60)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .strokeBorder(
-                                    isSelected ? Color.orange : Color.white.opacity(0.1),
-                                    lineWidth: isSelected ? 1.5 : 1
-                                )
-                        )
-                    
-                    Image(systemName: style.icon)
-                        .font(.system(size: 24))
-                        .foregroundStyle(isSelected ? .orange : .white.opacity(0.5))
-                        .scaleEffect(isSelected ? 1.1 : 1.0)
-                }
-                
-                Text(style.label)
-                    .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
-                    .foregroundStyle(isSelected ? .white : .white.opacity(0.5))
-            }
-        }
-        .buttonStyle(.plain)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+        SelectableSettingsCard(systemIconName: style.icon, label: style.label, sublabel: nil, isSelected: isSelected, usesCheckmark: true, onTap: onTap)
     }
 }
 
@@ -198,48 +262,7 @@ private struct DistanceUnitCard: View {
     let onTap: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                Image(systemName: unit.icon)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(isSelected ? .orange : .white.opacity(0.4))
-                    .frame(width: 24)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(unit.label)
-                        .font(.system(size: 14, weight: isSelected ? .semibold : .regular))
-                        .foregroundStyle(isSelected ? .white : .white.opacity(0.6))
-                    
-                    Text(unit.sublabel)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.white.opacity(0.35))
-                }
-                
-                Spacer()
-                
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(.orange)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.orange.opacity(0.12) : Color.white.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(
-                                isSelected ? Color.orange.opacity(0.5) : Color.white.opacity(0.08),
-                                lineWidth: 1
-                            )
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-        .frame(maxWidth: .infinity)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+        SelectableSettingsCard(systemIconName: unit.icon, label: unit.label, sublabel: unit.sublabel, isSelected: isSelected, usesCheckmark: true, onTap: onTap)
     }
 }
 

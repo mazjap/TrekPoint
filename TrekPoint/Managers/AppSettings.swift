@@ -103,12 +103,22 @@ class AppSettings {
         didSet { userDefaults.set(gpsAccuracy.rawValue, forKey: "gps_accuracy") }
     }
     
+    var isTerrainEnabled: Bool {
+        didSet { userDefaults.set(isTerrainEnabled, forKey: "terrain_enabled") }
+    }
+    
+    var isContourEnabled: Bool {
+        didSet { userDefaults.set(isContourEnabled, forKey: "contour_enabled") }
+    }
+    
     init() {
         @Dependency(\.userDefaultsProvider) var userDefaults
         self.userDefaults = userDefaults
         self.mapStyle = MapStyleSetting(rawValue: userDefaults.string(forKey: "map_style") ?? "") ?? .hybrid
         self.distanceUnit = DistanceUnit(rawValue: userDefaults.string(forKey: "distance_unit") ?? "") ?? Self.standardDistanceUnitInLocale
         self.gpsAccuracy = GPSAccuracyMode(rawValue: userDefaults.string(forKey: "gps_accuracy") ?? "") ?? .balanced
+        self.isTerrainEnabled = userDefaults.optionalBool(forKey: "terrain_enabled") ?? true
+        self.isContourEnabled = userDefaults.optionalBool(forKey: "contour_enabled") ?? false
     }
     
     static private let standardDistanceUnitInLocale: DistanceUnit = Locale.current.measurementSystem == .metric ? .metric : .imperial

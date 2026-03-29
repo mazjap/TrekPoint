@@ -156,7 +156,7 @@ struct DetailedMapView: View {
             let frame = geometry.frame(in: .global)
             MapReader { proxy in
                 Map(viewport: $coordinator.cameraPosition) {
-                    GroupedMapStyle(show3DTerrain: false, showContor: false)
+                    GroupedMapStyle(show3DTerrain: coordinator.showTerrain, showContor: coordinator.showContour, usesMetric: coordinator.distanceUnit == .metric)
                     
                     GroupedMapContent(
                         annotationState: coordinator.annotationOverlayState,

@@ -3,10 +3,12 @@ import MapboxMaps
 struct GroupedMapStyle: MapContent {
     private let show3DTerrain: Bool
     private let showContor: Bool
+    private let usesMetric: Bool
     
-    init(show3DTerrain: Bool, showContor: Bool) {
+    init(show3DTerrain: Bool, showContor: Bool, usesMetric: Bool) {
         self.show3DTerrain = show3DTerrain
         self.showContor = showContor
+        self.usesMetric = usesMetric
     }
     
     var body: some MapContent {
@@ -51,7 +53,7 @@ struct GroupedMapStyle: MapContent {
                             Exp(.get) { "index" }
                             5
                         }
-                        0.9   // index contour opacity
+                        0.9 // index contour opacity
                         0.6 // regular contour opacity
                     }
                 )
@@ -64,8 +66,19 @@ struct GroupedMapStyle: MapContent {
                             Exp(.get) { "index" }
                             5
                         }
-                        Exp(.toString) {
-                            Exp(.get) { "ele" }
+                        Exp(.concat) {
+                            if usesMetric {
+                                Exp(.get) { "ele" }
+                                "m"
+                            } else {
+                                Exp(.round) {
+                                    Exp(.product) {
+                                        Exp(.get) { "ele" }
+                                        3.2808
+                                    }
+                                }
+                                "ft"
+                            }
                         }
                         ""
                     }
@@ -74,7 +87,7 @@ struct GroupedMapStyle: MapContent {
                 .textHaloColor(.black)
                 .textHaloWidth(1)
                 .symbolPlacement(.line)
-                .textSize(8)
+                .textSize(10)
         }
     }
 }
