@@ -294,6 +294,8 @@ extension MapCoordinator {
     }
     
     func fitMapToFeatures() {
+        guard !(annotationFeatureCollection.features.isEmpty && polylineFeatureCollection.features.isEmpty) else { return }
+        
         cameraPosition = .overview(geometry: Geometry.geometryCollection(GeometryCollection(geometries: annotationFeatureCollection.features.compactMap(\.geometry) + polylineFeatureCollection.features.compactMap(\.geometry))), geometryPadding: EdgeInsets(top: 75, leading: 75, bottom: 75, trailing: 75), maxZoom: 14)
     }
     
