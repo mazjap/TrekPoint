@@ -4,21 +4,21 @@ import Dependencies
 import Combine
 
 enum PendingCancelAction {
-    case annotation, polyline, tracking
+    case annotation, polyline(isTracked: Bool)
     case hideLocationWhileTracking // User tried to turn location off while still path tracking
     
     init(action: PendingSheetCancelAction) {
         switch action {
         case .annotation:
             self = .annotation
-        case .polyline:
-            self = .polyline
+        case .polyline(let isTracked):
+            self = .polyline(isTracked: isTracked)
         }
     }
 }
 
 enum PendingSheetCancelAction {
-    case annotation, polyline
+    case annotation, polyline(isTracked: Bool)
 }
 
 @Observable
@@ -31,13 +31,13 @@ class MapCoordinator {
     var styleWasInitiallyLoaded = false
     var pendingCancelAction: PendingCancelAction? = nil
     var showCancelConfirmation: Bool = false
+    var showSheet = false
     
     // TODO: - Handle name changes as well
     var annotationFeatureCollection = FeatureCollection(features: [])
     var polylineFeatureCollection = FeatureCollection(features: [])
     
     @ObservationIgnored private var shelvedPresentationDetent: PresentationDetent?
-    @ObservationIgnored private var subscription: AnyCancellable?
     
     @ObservationIgnored @Dependency(\.appSettings) private var appSettings
     @ObservationIgnored @Dependency(\.annotationPersistenceManager) fileprivate var annotationManager
@@ -78,19 +78,10 @@ class MapCoordinator {
     }
     
     init() {
-        subscription = NotificationCenter.default.publisher(for: .restoreTrackingSession)
-            .sink { [weak self] notification in
-                Task { @MainActor [weak self] in
-                    if let trackingId = notification.userInfo?["trackingID"] as? UUID {
-                        self?.restoreTrackingSession(trackingId: trackingId)
-                    }
-                }
-            }
-        
         registerForLocationStatusUpdates()
         registerForLocationUpdates()
         
-        if locationManager.isUserLocationActive {
+        if appSettings.isUserLocationActive {
             withViewportAnimation(.default) {
                 cameraPosition = .followPuck(zoom: 10)
             }
@@ -180,7 +171,7 @@ extension MapCoordinator {
     }
     
     func handleUserLocationStatusUpdate() {
-        if locationManager.isUserLocationActive {
+        if appSettings.isUserLocationActive {
             withViewportAnimation(.fly) {
                 cameraPosition = .followPuck(zoom: 10)
             }
@@ -224,7 +215,7 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelPolyline:
-            queueCancelAction(.polyline)
+            queueCancelAction(.polyline(isTracked: false))
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -247,7 +238,7 @@ extension MapCoordinator {
                 toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
             }
         case .cancelTracking:
-            queueCancelAction(.tracking)
+            queueCancelAction(.polyline(isTracked: true))
         case .showUserLocation:
             locationManager.showUserLocation()
         case .hideUserLocation:
@@ -306,15 +297,14 @@ extension MapCoordinator {
             annotationManager.clearWorkingAnnotationProgress()
             selectedMapFeature = nil
             selectedDetent = .tpSmall
-        case .polyline:
+        case .polyline(let isTracked):
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
             selectedDetent = .tpSmall
-        case .tracking:
-            polylineManager.clearWorkingPolylineProgress()
-            selectedMapFeature = nil
-            selectedDetent = .tpSmall
-            locationManager.stopTracking()
+            
+            if isTracked {
+                locationManager.stopTracking()
+            }
         case .hideLocationWhileTracking:
             polylineManager.clearWorkingPolylineProgress()
             selectedMapFeature = nil
@@ -365,7 +355,40 @@ extension MapCoordinator {
         selectedMapFeature = .workingPolyline
     }
     
-    func restoreTrackingSession(trackingId: UUID) {
+    func handleInitialShowSheet() {
+        if showSheet { return }
+        showSheet = true
+        
+        if let trackingId = locationManager.checkForPendingTracks() {
+            restoreTrackingSession(trackingId: trackingId)
+        }
+    }
+}
+
+extension MapCoordinator {
+    private func registerForLocationStatusUpdates() {
+        withObservationTracking {
+            _ = appSettings.isUserLocationActive
+        } onChange: {
+            Task { @MainActor [weak self] in
+                self?.handleUserLocationStatusUpdate()
+                self?.registerForLocationStatusUpdates()
+            }
+        }
+    }
+    
+    private func registerForLocationUpdates() {
+        withObservationTracking {
+            _ = locationManager.lastLocation
+        } onChange: {
+            Task { @MainActor [weak self] in
+                self?.handleLocationUpdate()
+                self?.registerForLocationUpdates()
+            }
+        }
+    }
+    
+    private func restoreTrackingSession(trackingId: UUID) {
         let pendingLocations = locationManager.getPendingLocations(forTrackingId: trackingId)
         
         // TODO: - Alert user and ask if they want to continue tracking, save as is, or discard
@@ -387,30 +410,6 @@ extension MapCoordinator {
     }
 }
 
-extension MapCoordinator {
-    private func registerForLocationStatusUpdates() {
-        withObservationTracking {
-            _ = locationManager.isUserLocationActive
-        } onChange: {
-            Task { @MainActor [weak self] in
-                self?.handleUserLocationStatusUpdate()
-                self?.registerForLocationStatusUpdates()
-            }
-        }
-    }
-    
-    private func registerForLocationUpdates() {
-        withObservationTracking {
-            _ = locationManager.lastLocation
-        } onChange: {
-            Task { @MainActor [weak self] in
-                self?.handleLocationUpdate()
-                self?.registerForLocationUpdates()
-            }
-        }
-    }
-}
-
 
 // MARK: - Computed Properties
 extension MapCoordinator {
@@ -421,7 +420,7 @@ extension MapCoordinator {
         PolylineButtonState(isDrawing: polylineManager.isDrawingPolyline, isTracking: polylineManager.isTrackingPolyline, isShowingOptions: polylineManager.isShowingOptions, canUndo: polylineManager.canUndo)
     }
     var locationButtonState: LocationButtonState {
-        LocationButtonState(isActive: locationManager.isUserLocationActive)
+        LocationButtonState(isActive: appSettings.isUserLocationActive)
     }
     
     var annotationOverlayState: AnnotationOverlayState {
@@ -431,6 +430,6 @@ extension MapCoordinator {
         PolylineOverlayState(isTracking: polylineManager.isTrackingPolyline, workingPolyline: polylineManager.workingPolyline)
     }
     var locationOverlayState: LocationOverlayState {
-        LocationOverlayState(isActive: locationManager.isUserLocationActive)
+        LocationOverlayState(isActive: appSettings.isUserLocationActive)
     }
 }

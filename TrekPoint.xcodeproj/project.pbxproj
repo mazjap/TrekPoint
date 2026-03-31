@@ -18,12 +18,10 @@
 		0E36EAEC2D75032100C163E9 /* StringInterpolation+format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAEB2D75032100C163E9 /* StringInterpolation+format.swift */; };
 		0E36EAEE2D75046100C163E9 /* LocationTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */; };
 		0E36EAF12D75273F00C163E9 /* TrackingLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */; };
-		0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36EAF22D752EA600C163E9 /* AppDelegate.swift */; };
 		0E3DACAA2F64017500158EF3 /* AnnotationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA52F64017500158EF3 /* AnnotationManagerTests.swift */; };
 		0E3DACAB2F64017500158EF3 /* AttachmentStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA62F64017500158EF3 /* AttachmentStoreTests.swift */; };
 		0E3DACAC2F64017500158EF3 /* CoordinateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA72F64017500158EF3 /* CoordinateTests.swift */; };
 		0E3DACAD2F64017500158EF3 /* PolylineManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */; };
-		0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */; };
 		0E3DF38C2D93375A00E0BEDC /* BackgroundPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */; };
 		0E5553512F73D05300337212 /* MapCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553502F73D05300337212 /* MapCoordinator.swift */; };
 		0E5553532F73D0C500337212 /* GroupedMapContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5553522F73D0C500337212 /* GroupedMapContent.swift */; };
@@ -115,12 +113,10 @@
 		0E36EAED2D75046100C163E9 /* LocationTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTrackingManager.swift; sourceTree = "<group>"; };
 		0E36EAEF2D7525F000C163E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0E36EAF02D75273F00C163E9 /* TrackingLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingLocation.swift; sourceTree = "<group>"; };
-		0E36EAF22D752EA600C163E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0E3DACA52F64017500158EF3 /* AnnotationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationManagerTests.swift; sourceTree = "<group>"; };
 		0E3DACA62F64017500158EF3 /* AttachmentStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreTests.swift; sourceTree = "<group>"; };
 		0E3DACA72F64017500158EF3 /* CoordinateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateTests.swift; sourceTree = "<group>"; };
 		0E3DACA82F64017500158EF3 /* PolylineManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineManagerTests.swift; sourceTree = "<group>"; };
-		0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Extension.swift"; sourceTree = "<group>"; };
 		0E3DF38B2D93375A00E0BEDC /* BackgroundPersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistenceManager.swift; sourceTree = "<group>"; };
 		0E4E2AB72DA1924700AABFDE /* README.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0E4E2AB82DA1925900AABFDE /* creating_marker.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = creating_marker.gif; sourceTree = "<group>"; };
@@ -344,7 +340,6 @@
 			isa = PBXGroup;
 			children = (
 				0EA4BD462B9151AF005259B4 /* TrekPointApp.swift */,
-				0E36EAF22D752EA600C163E9 /* AppDelegate.swift */,
 				0E7E00842D81F1840019A92A /* LaunchScreen.storyboard */,
 				0EA4BD4C2B9151B0005259B4 /* Assets.xcassets */,
 				0E36EAEF2D7525F000C163E9 /* Info.plist */,
@@ -382,7 +377,6 @@
 				0E9512CA2BB533E900E9CA83 /* Binding+Extension.swift */,
 				0EA4BD5C2B92C5EC005259B4 /* CLLocationCoordinate2D+Hashable.swift */,
 				0EA7FC4F2D854F8D001828BB /* ModelContainer+Convenience.swift */,
-				0E3DF3892D8EF93800E0BEDC /* Notification.Name+Extension.swift */,
 				0E5553FA2F7784A800337212 /* View+VersionSpecificBackground.swift */,
 			);
 			path = Helpers;
@@ -571,7 +565,6 @@
 				0E8EF05D2D705806006145C0 /* PolylineDetailView.swift in Sources */,
 				0EBD38FC2DC7F92F0033B4D1 /* FileManagerProvider.swift in Sources */,
 				0EBD38F72DC7DD8F0033B4D1 /* UserDefaultsProvider.swift in Sources */,
-				0E3DF38A2D8EF93800E0BEDC /* Notification.Name+Extension.swift in Sources */,
 				0EE453052BAD3F05007C40DE /* PresentationDetent+Extension.swift in Sources */,
 				0E8EF05F2D705BFA006145C0 /* PolylineData+CoreLocation.swift in Sources */,
 				0E55540B2F790B0D00337212 /* ToastReason.swift in Sources */,
@@ -582,7 +575,6 @@
 				0E29527B2D7107030079479A /* FeatureLibrary.swift in Sources */,
 				0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */,
 				0E5553FD2F77856D00337212 /* RoundedRectangleWithTrailingLeadingFacedTriangle.swift in Sources */,
-				0E36EAF32D752EA600C163E9 /* AppDelegate.swift in Sources */,
 				0E9512C72BB532FC00E9CA83 /* CurrentModelVersion.swift in Sources */,
 				0EA4BD492B9151AF005259B4 /* ContentView.swift in Sources */,
 				0E80B5B82DC8238700FF2FDC /* MapControlButtons.swift in Sources */,

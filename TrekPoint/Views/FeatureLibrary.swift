@@ -164,15 +164,8 @@ struct FeatureLibrary: View {
             coordinator.handleFeatureSelection(nil)
         }
 
-        let onCancel: () -> Void = {
-            switch feature {
-            case .workingAnnotation:
-                coordinator.onNewFeatureCancellation?(.annotation)
-            case .workingPolyline:
-                coordinator.onNewFeatureCancellation?(.polyline)
-            default:
-                coordinator.handleFeatureSelection(nil)
-            }
+        let onCancel: (PendingSheetCancelAction) -> Void = { cancelAction in
+            coordinator.onNewFeatureCancellation?(cancelAction)
         }
 
         let commitError = { (error: Error) in

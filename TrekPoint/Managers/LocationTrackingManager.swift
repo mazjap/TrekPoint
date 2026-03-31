@@ -17,17 +17,8 @@ extension DependencyValues {
 @MainActor
 class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     var lastLocation: CLLocation?
-    var isTracking = false
     
     @ObservationIgnored @Dependency(\.appSettings) private var appSettings
-    
-    private var activeTrackingID: UUID?
-    private(set) var isUserLocationActive: Bool = false {
-        didSet {
-            userDefaults.set(isUserLocationActive, forKey: "is_user_location_active")
-        }
-    }
-    
     @ObservationIgnored @Dependency(\.userDefaultsProvider) private var userDefaults
     @ObservationIgnored @Dependency(\.backgroundPersistenceProvider) private var backgroundManager: BackgroundPersistenceProvider
     @ObservationIgnored @Dependency(\.locationManagerProvider) private var locationManager
@@ -44,7 +35,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
             locationManager.pausesLocationUpdatesAutomatically = true
             locationManager.showsBackgroundLocationIndicator = false
             
-            if UserDefaults.standard.bool(forKey: "is_user_location_active") {
+            if appSettings.isUserLocationActive {
                 showUserLocation()
             }
         }
@@ -56,21 +47,21 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         switch locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.startUpdatingLocation()
-            isUserLocationActive = true
+            appSettings.isUserLocationActive = true
         case .restricted, .denied, .notDetermined: fallthrough
         @unknown default:
-            isUserLocationActive = false
+            appSettings.isUserLocationActive = false
         }
     }
     
     func hideUserLocation() {
-        isUserLocationActive = false
+        appSettings.isUserLocationActive = false
         locationManager.stopUpdatingLocation()
     }
     
     @discardableResult
     func startTracking() -> CLLocationCoordinate2D? {
-        activeTrackingID = UUID()
+        appSettings.activeTrackingId = UUID()
         
         let accuracy = appSettings.gpsAccuracy
         
@@ -91,12 +82,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         locationManager.showsBackgroundLocationIndicator = true
         
         locationManager.startUpdatingLocation()
-        isTracking = true
-        
-        UserDefaults.standard.set(true, forKey: "is_tracking_active")
-        if let trackingID = activeTrackingID {
-            UserDefaults.standard.set(trackingID.uuidString, forKey: "active_tracking_id")
-        }
+        appSettings.isTrackingActive = true
         
         return locationManager.location?.coordinate ?? lastLocation?.coordinate
     }
@@ -111,16 +97,15 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         
         locationManager.stopUpdatingLocation()
         
-        if isUserLocationActive {
+        if appSettings.isUserLocationActive {
             // Restart location tracking with non-background settings
             locationManager.startUpdatingLocation()
         }
         
-        isTracking = false
-        activeTrackingID = nil
+        appSettings.isTrackingActive = false
+        appSettings.activeTrackingId = nil
         
-        UserDefaults.standard.removeObject(forKey: "is_tracking_active")
-        UserDefaults.standard.removeObject(forKey: "active_tracking_id")
+        clearAllPendingLocations()
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -129,14 +114,14 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         Task { @MainActor in
             lastLocation = location
             
-            if isTracking {
+            if appSettings.isTrackingActive {
                 storeLocationInBackground(location)
             }
         }
     }
     
     private func storeLocationInBackground(_ location: CLLocation) {
-        guard let trackingID = activeTrackingID else { return }
+        guard let trackingID = appSettings.activeTrackingId else { return }
         
         let backgroundTaskID = UIApplication.shared.beginBackgroundTask()
         
@@ -152,14 +137,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     }
     
     func checkForPendingTracks() -> UUID? {
-        if UserDefaults.standard.bool(forKey: "is_tracking_active"),
-           let trackingIDString = UserDefaults.standard.string(forKey: "active_tracking_id"),
-           let trackingID = UUID(uuidString: trackingIDString) {
-            activeTrackingID = trackingID
-            isTracking = true
-            return trackingID
-        }
-        return nil
+        return appSettings.activeTrackingId
     }
     
     func getPendingLocations(forTrackingId trackingId: UUID) -> [CLLocationCoordinate2D] {
@@ -172,5 +150,8 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     
     func clearAllPendingLocations() {
         backgroundManager.clearAllPendingLocations()
+        
+        appSettings.isTrackingActive = false
+        appSettings.activeTrackingId = nil
     }
 }

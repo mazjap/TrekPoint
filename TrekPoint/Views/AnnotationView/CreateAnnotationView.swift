@@ -13,9 +13,9 @@ struct CreateAnnotationView: View {
     private let onCancel: () -> Void
     private let commitError: (Error) -> Void
 
-    init(onDismiss: @escaping () -> Void, onCancel: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
+    init(onDismiss: @escaping () -> Void, onCancel: @escaping (PendingSheetCancelAction) -> Void, commitError: @escaping (Error) -> Void) {
         self.onDismiss = onDismiss
-        self.onCancel = onCancel
+        self.onCancel = { onCancel(.annotation) }
         self.commitError = commitError
     }
 
@@ -49,7 +49,7 @@ struct CreateAnnotationView: View {
         CreateAnnotationView(
             onDismiss: {
                 
-            }, onCancel: {
+            }, onCancel: { _ in 
                 
             }, commitError: { error in
                 print(error)

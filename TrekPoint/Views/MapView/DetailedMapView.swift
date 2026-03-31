@@ -115,8 +115,7 @@ struct DetailedMapView: View {
     @Namespace private var nspace
     @ScaledMetric(relativeTo: .title) private var buttonSize = 52
     
-    @Binding private var showSheet: Bool
-    
+    private let canInitiallyShowSheet: Bool
     private let detents: Set<PresentationDetent> = .defaultMapSheetDetents
 
     private func ornamentOptions(height: CGFloat) -> OrnamentOptions {
@@ -147,8 +146,8 @@ struct DetailedMapView: View {
         }
     }
     
-    init(showSheet: Binding<Bool>) {
-        self._showSheet = showSheet
+    init(canInitiallyShowSheet: Bool) {
+        self.canInitiallyShowSheet = canInitiallyShowSheet
     }
     
     var body: some View {
@@ -257,14 +256,17 @@ struct DetailedMapView: View {
                 }
             }
         }
+        .onChange(of: canInitiallyShowSheet) {
+            coordinator.handleInitialShowSheet()
+        }
         .overlay(alignment: .bottom) {
-            if !showSheet {
+            if canInitiallyShowSheet, !coordinator.showSheet {
                 Button("Reshow sheet") {
-                    showSheet = true
+                    coordinator.showSheet = true
                 }
             }
         }
-        .sheet(isPresented: $showSheet) {
+        .sheet(isPresented: $coordinator.showSheet) {
             FeatureLibrary(
                 coordinator: coordinator.featureLibraryCoordinator,
                 selection: coordinator.selectedMapFeature,
@@ -297,8 +299,7 @@ struct DetailedMapView: View {
     private var cancelConfirmationTitle: String {
         switch coordinator.pendingCancelAction {
         case .annotation: return "Discard Annotation?"
-        case .polyline: return "Discard Path?"
-        case .tracking: return "Discard Tracked Path?"
+        case let .polyline(isTracked): return "Discard \(isTracked ? "Tracked " : "")Path?"
         case .hideLocationWhileTracking: return "Stop Tracking?"
         case nil: return ""
         }
@@ -307,8 +308,7 @@ struct DetailedMapView: View {
     private var cancelConfirmationMessage: String {
         switch coordinator.pendingCancelAction {
         case .annotation: return "Your in-progress annotation will be discarded."
-        case .polyline: return "Your in-progress path will be discarded."
-        case .tracking: return "Your in-progress tracked path will be discarded."
+        case let .polyline(isTracked): return "Your in-progress \(isTracked ? "tracked " : "")path will be discarded."
         case .hideLocationWhileTracking: return "Hiding your location will stop path tracking. Your unsaved progress will be discarded."
         case nil: return ""
         }
@@ -318,6 +318,6 @@ struct DetailedMapView: View {
 #Preview {
     @Dependency(\.modelContainer) var modelContainer
     
-    DetailedMapView(showSheet: .constant(true))
+    DetailedMapView(canInitiallyShowSheet: true)
         .modelContainer(modelContainer)
 }

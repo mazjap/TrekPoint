@@ -7,7 +7,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            DetailedMapView(showSheet: $isAnimationComplete)
+            DetailedMapView(canInitiallyShowSheet: isAnimationComplete)
                 .navigationTitle("Map")
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)

@@ -67,6 +67,7 @@ class BackgroundPersistenceManager {
         do {
             try context.delete(model: PendingTrackingLocation.self)
             try context.save()
+            print(try! context.fetch(FetchDescriptor<PendingTrackingLocation>()))
         } catch {
             logger.error("Failed to clear pending locations: \(error)")
         }
