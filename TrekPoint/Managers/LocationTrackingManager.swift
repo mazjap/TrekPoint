@@ -43,12 +43,16 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     
     func showUserLocation() {
         locationManager.requestAlwaysAuthorization()
-        
+
         switch locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.startUpdatingLocation()
             appSettings.isUserLocationActive = true
-        case .restricted, .denied, .notDetermined: fallthrough
+        case .notDetermined:
+            // Authorization prompt is in flight; set flag so
+            // locationManagerDidChangeAuthorization can start updates on grant.
+            appSettings.isUserLocationActive = true
+        case .restricted, .denied: fallthrough
         @unknown default:
             appSettings.isUserLocationActive = false
         }
@@ -119,17 +123,20 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     
     private func storeLocationInBackground(_ location: CLLocation) {
         guard let trackingID = appSettings.activeTrackingId else { return }
-        
-        let backgroundTaskID = UIApplication.shared.beginBackgroundTask()
-        
+
+        let task = BackgroundTaskHandle()
+        task.id = UIApplication.shared.beginBackgroundTask {
+            UIApplication.shared.endBackgroundTask(task.id)
+        }
+
         let temporaryLocation = TemporaryTrackingLocation(
             trackingID: trackingID,
             coordinate: Coordinate(location.coordinate),
             timestamp: location.timestamp
         )
-        
+
         backgroundManager.saveLocationInBackground(temporaryLocation) {
-            UIApplication.shared.endBackgroundTask(backgroundTaskID)
+            UIApplication.shared.endBackgroundTask(task.id)
         }
     }
     
@@ -151,4 +158,32 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         appSettings.isTrackingActive = false
         appSettings.activeTrackingId = nil
     }
+    
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        // Apparently CoreLocation calls this delegate method immediately when a delegate is assigned, not only on actual changes
+        // Use guard to prevent asking for auth on launch and only when the user wants to do something location-related
+        let status = manager.authorizationStatus
+        Task { @MainActor in
+            guard appSettings.isUserLocationActive else { return }
+
+            switch status {
+            case .authorizedAlways, .authorizedWhenInUse:
+                locationManager.startUpdatingLocation()
+            case .denied, .restricted:
+                appSettings.isUserLocationActive = false
+            case .notDetermined:
+                break
+            @unknown default:
+                break
+            }
+        }
+    }
+}
+
+// `UIBackgroundTaskIdentifier` must be captured by reference so the expiration
+// handler closure can read the ID assigned after it is created. `@unchecked
+// Sendable` is safe because both closures run on the main thread.
+/// DON'T USE THIS ANYWHERE EXCEPT `LocationTrackingManager.storeLocationInBackground()`!!!
+private final class BackgroundTaskHandle: @unchecked Sendable {
+    var id: UIBackgroundTaskIdentifier = .invalid
 }
