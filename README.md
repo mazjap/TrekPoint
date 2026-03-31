@@ -52,7 +52,7 @@ TrekPoint is an iOS mapping application focused on outdoor navigation and locati
 TrekPoint is built using:
 
 - SwiftUI: For the user interface
-- MapKit: For map rendering and interaction
+- Mapbox: For map rendering and interaction
 - SwiftData: For persistent storage
 - CoreLocation: For location services and tracking
 - Background Tasks: For continued tracking when the app is in background
