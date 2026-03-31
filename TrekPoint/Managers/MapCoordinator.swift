@@ -4,7 +4,21 @@ import Dependencies
 import Combine
 
 enum PendingCancelAction {
-    case annotation, polyline, tracking, hideLocationWhileTracking
+    case annotation, polyline, tracking
+    case hideLocationWhileTracking // User tried to turn location off while still path tracking
+    
+    init(action: PendingSheetCancelAction) {
+        switch action {
+        case .annotation:
+            self = .annotation
+        case .polyline:
+            self = .polyline
+        }
+    }
+}
+
+enum PendingSheetCancelAction {
+    case annotation, polyline
 }
 
 @Observable
@@ -16,6 +30,7 @@ class MapCoordinator {
     var featureLibraryCoordinator = FeatureLibraryCoordinator()
     var styleWasInitiallyLoaded = false
     var pendingCancelAction: PendingCancelAction? = nil
+    var showCancelConfirmation: Bool = false
     
     // TODO: - Handle name changes as well
     var annotationFeatureCollection = FeatureCollection(features: [])
@@ -106,6 +121,10 @@ class MapCoordinator {
                 self?.shelvedPresentationDetent = nil
             }
         }
+        
+        featureLibraryCoordinator.onNewFeatureCancellation = { [weak self] feature in
+            self?.queueCancelAction(PendingCancelAction(action: feature))
+        }
     }
 }
 
@@ -184,7 +203,7 @@ extension MapCoordinator {
             }
         case .cancelAnnotation:
             // Also, creating a polyline and creating an annotation should be mutually exclusive
-            pendingCancelAction = .annotation
+            queueCancelAction(.annotation)
         case .undoAnnotation:
             annotationManager.undo()
         case .beginPolylineDrawing:
@@ -205,7 +224,7 @@ extension MapCoordinator {
                 toastManager.commitFeatureCreationError(error)
             }
         case .cancelPolyline:
-            pendingCancelAction = .polyline
+            queueCancelAction(.polyline)
         case .undoPolyline:
             polylineManager.undo()
         case .beginTracking:
@@ -228,12 +247,12 @@ extension MapCoordinator {
                 toastManager.addBreadForToasting(.somethingWentWrong(.error(error)))
             }
         case .cancelTracking:
-            pendingCancelAction = .tracking
+            queueCancelAction(.tracking)
         case .showUserLocation:
             locationManager.showUserLocation()
         case .hideUserLocation:
             if polylineManager.isTrackingPolyline {
-                pendingCancelAction = .hideLocationWhileTracking
+                queueCancelAction(.hideLocationWhileTracking)
             } else {
                 locationManager.hideUserLocation()
             }
@@ -271,8 +290,16 @@ extension MapCoordinator {
         }
     }
     
+    func queueCancelAction(_ action: PendingCancelAction) {
+        pendingCancelAction = action
+        showCancelConfirmation = true
+    }
+
     func confirmPendingCancel() {
-        defer { pendingCancelAction = nil }
+        defer {
+            showCancelConfirmation = false
+            pendingCancelAction = nil
+        }
 
         switch pendingCancelAction {
         case .annotation:
@@ -300,6 +327,7 @@ extension MapCoordinator {
     }
 
     func dismissPendingCancel() {
+        showCancelConfirmation = false
         pendingCancelAction = nil
     }
 

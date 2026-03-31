@@ -14,6 +14,7 @@ class FeatureLibraryCoordinator {
     var onSearchFocusChanged: ((Bool) -> Void)?
     var onSettingsPresented: (() -> Void)?
     var onSettingsDismissed: (() -> Void)?
+    var onNewFeatureCancellation: ((PendingSheetCancelAction) -> Void)?
     
     var isSearching: Bool { !searchText.isEmpty }
     

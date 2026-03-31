@@ -4,7 +4,6 @@ import Dependencies
 struct ModifyPolylineView: View {
     @Dependency(\.polylinePersistenceManager) private var polylineManager
     @Dependency(\.toastManager) private var toastManager
-    @Environment(\.dismiss) private var dismiss
     private let polyline: PolylineData
     private let onDismiss: () -> Void
     private let commitError: (Error) -> Void
@@ -22,7 +21,6 @@ struct ModifyPolylineView: View {
                     Button("Cancel") {
                         polylineManager.discardChanges()
                         onDismiss()
-                        dismiss()
                     }
                 }
                 
@@ -40,7 +38,6 @@ struct ModifyPolylineView: View {
                             
                             try polylineManager.save()
                             onDismiss()
-                            dismiss()
                         } catch {
                             commitError(error)
                         }

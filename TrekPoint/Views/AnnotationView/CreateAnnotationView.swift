@@ -8,14 +8,14 @@ fileprivate enum NavigationState {
 }
 
 struct CreateAnnotationView: View {
-    @Environment(\.dismiss) private var dismiss
     @Dependency(\.annotationPersistenceManager) private var annotationManager
-    @State private var showCancelConfirmation = false
     private let onDismiss: () -> Void
+    private let onCancel: () -> Void
     private let commitError: (Error) -> Void
 
-    init(onDismiss: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
+    init(onDismiss: @escaping () -> Void, onCancel: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
         self.onDismiss = onDismiss
+        self.onCancel = onCancel
         self.commitError = commitError
     }
 
@@ -24,7 +24,7 @@ struct CreateAnnotationView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        showCancelConfirmation = true
+                        onCancel()
                     }
                 }
                 
@@ -32,28 +32,12 @@ struct CreateAnnotationView: View {
                     Button("Create") {
                         do {
                             try annotationManager.finalizeWorkingAnnotation()
+                            onDismiss()
                         } catch {
                             commitError(error)
                         }
                     }
                 }
-            }
-            .onChange(of: annotationManager.workingAnnotation) {
-                if annotationManager.workingAnnotation == nil {
-                    onDismiss()
-                    dismiss()
-                }
-            }
-            .confirmationDialog(
-                "Discard Annotation?",
-                isPresented: $showCancelConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Discard", role: .destructive) {
-                    annotationManager.clearWorkingAnnotationProgress()
-                }
-            } message: {
-                Text("Your in-progress annotation will be discarded.")
             }
     }
 }
@@ -62,6 +46,14 @@ struct CreateAnnotationView: View {
     withDependencies { dependencies in
         dependencies.annotationPersistenceManager.changeWorkingAnnotationsCoordinate(to: Coordinate.random)
     } operation: {
-        CreateAnnotationView(onDismiss: {}) { print($0) }
+        CreateAnnotationView(
+            onDismiss: {
+                
+            }, onCancel: {
+                
+            }, commitError: { error in
+                print(error)
+            }
+        )
     }
 }

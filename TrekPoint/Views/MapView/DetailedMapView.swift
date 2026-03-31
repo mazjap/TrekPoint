@@ -257,6 +257,13 @@ struct DetailedMapView: View {
                 }
             }
         }
+        .overlay(alignment: .bottom) {
+            if !showSheet {
+                Button("Reshow sheet") {
+                    showSheet = true
+                }
+            }
+        }
         .sheet(isPresented: $showSheet) {
             FeatureLibrary(
                 coordinator: coordinator.featureLibraryCoordinator,
@@ -266,14 +273,7 @@ struct DetailedMapView: View {
             )
             .confirmationDialog(
                 cancelConfirmationTitle,
-                isPresented: Binding(
-                    get: { coordinator.pendingCancelAction != nil },
-                    set: {
-                        if !$0 {
-                            coordinator.dismissPendingCancel()
-                        }
-                    }
-                ),
+                isPresented: $coordinator.showCancelConfirmation,
                 titleVisibility: .visible
             ) {
                 Button("Discard", role: .destructive) {

@@ -4,7 +4,6 @@ import Dependencies
 struct ModifyAnnotationView: View {
     @Dependency(\.annotationPersistenceManager) private var annotationManager
     @Dependency(\.toastManager) private var toastManager
-    @Environment(\.dismiss) private var dismiss
     private let annotation: AnnotationData
     private let onDismiss: () -> Void
     private let commitError: (Error) -> Void
@@ -22,7 +21,6 @@ struct ModifyAnnotationView: View {
                     Button("Cancel") {
                         annotationManager.discardChanges()
                         onDismiss()
-                        dismiss()
                     }
                 }
                 
@@ -36,7 +34,6 @@ struct ModifyAnnotationView: View {
                             
                             try annotationManager.save()
                             onDismiss()
-                            dismiss()
                         } catch {
                             commitError(error)
                         }

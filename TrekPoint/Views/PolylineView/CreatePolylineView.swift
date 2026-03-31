@@ -2,14 +2,14 @@ import SwiftUI
 import Dependencies
 
 struct CreatePolylineView: View {
-    @Environment(\.dismiss) private var dismiss
     @Dependency(\.polylinePersistenceManager) private var polylineManager
-    @State private var showCancelConfirmation = false
     private let onDismiss: () -> Void
+    private let onCancel: () -> Void
     private let commitError: (Error) -> Void
 
-    init(onDismiss: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
+    init(onDismiss: @escaping () -> Void, onCancel: @escaping () -> Void, commitError: @escaping (Error) -> Void) {
         self.onDismiss = onDismiss
+        self.onCancel = onCancel
         self.commitError = commitError
     }
 
@@ -20,7 +20,7 @@ struct CreatePolylineView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        showCancelConfirmation = true
+                        onCancel()
                     }
                 }
                 
@@ -28,28 +28,12 @@ struct CreatePolylineView: View {
                     Button("Create") {
                         do {
                             try polylineManager.finalizeWorkingPolyline()
+                            onDismiss()
                         } catch {
                             commitError(error)
                         }
                     }
                 }
-            }
-            .onChange(of: polylineManager.workingPolyline) {
-                if polylineManager.workingPolyline == nil {
-                    onDismiss()
-                    dismiss()
-                }
-            }
-            .confirmationDialog(
-                "Discard Path?",
-                isPresented: $showCancelConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Discard", role: .destructive) {
-                    polylineManager.clearWorkingPolylineProgress()
-                }
-            } message: {
-                Text("Your in-progress path will be discarded.")
             }
     }
 }
@@ -59,6 +43,13 @@ struct CreatePolylineView: View {
         dependencies.polylinePersistenceManager.startNewWorkingPolyline(with: .random)
         dependencies.polylinePersistenceManager.appendWorkingPolylineCoordinate(.random)
     } operation: {
-        CreatePolylineView(onDismiss: {}) { print($0) }
+        
+        CreatePolylineView(
+            onDismiss: {},
+            onCancel: {},
+            commitError: { error in
+                print(error)
+            }
+        )
     }
 }

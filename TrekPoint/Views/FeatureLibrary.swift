@@ -160,14 +160,25 @@ struct FeatureLibrary: View {
     
     @ViewBuilder
     func navigationDestination(for feature: ResolvedMapFeature) -> some View {
-        let onDismiss = {
+        let onDismiss: () -> Void = {
             coordinator.handleFeatureSelection(nil)
         }
-        
+
+        let onCancel: () -> Void = {
+            switch feature {
+            case .workingAnnotation:
+                coordinator.onNewFeatureCancellation?(.annotation)
+            case .workingPolyline:
+                coordinator.onNewFeatureCancellation?(.polyline)
+            default:
+                coordinator.handleFeatureSelection(nil)
+            }
+        }
+
         let commitError = { (error: Error) in
             coordinator.handleFeatureCreationError(error)
         }
-        
+
         Group {
             switch feature {
             case let .annotation(annotation):
@@ -175,9 +186,9 @@ struct FeatureLibrary: View {
             case let .polyline(polyline):
                 ModifyPolylineView(polyline: polyline, onDismiss: onDismiss, commitError: commitError)
             case .workingAnnotation:
-                CreateAnnotationView(onDismiss: onDismiss, commitError: commitError)
+                CreateAnnotationView(onDismiss: onDismiss, onCancel: onCancel, commitError: commitError)
             case .workingPolyline:
-                CreatePolylineView(onDismiss: onDismiss, commitError: commitError)
+                CreatePolylineView(onDismiss: onDismiss, onCancel: onCancel, commitError: commitError)
             }
         }
         .navigationBarBackButtonHidden()
