@@ -46,7 +46,7 @@ class AppSettings {
         self.isTerrainEnabled = userDefaults.optionalBool(forKey: Self.isTerrainEnabledKey) ?? true
         self.isContourEnabled = userDefaults.optionalBool(forKey: Self.isContourEnabledKey) ?? false
         self.isUserLocationActive = userDefaults.optionalBool(forKey: Self.isUserLocationActiveKey) ?? false
-        self.isTrackingActive = userDefaults.optionalBool(forKey: Self.isUserLocationActiveKey) ?? false
+        self.isTrackingActive = userDefaults.optionalBool(forKey: Self.isTrackingActiveKey) ?? false
         self.activeTrackingId = userDefaults.string(forKey: Self.activeTrackingIdKey).flatMap { UUID(uuidString: $0) }
     }
     

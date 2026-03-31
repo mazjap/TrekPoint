@@ -95,11 +95,8 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         locationManager.pausesLocationUpdatesAutomatically = true
         locationManager.showsBackgroundLocationIndicator = false
         
-        locationManager.stopUpdatingLocation()
-        
-        if appSettings.isUserLocationActive {
-            // Restart location tracking with non-background settings
-            locationManager.startUpdatingLocation()
+        if !appSettings.isUserLocationActive {
+            locationManager.stopUpdatingLocation()
         }
         
         appSettings.isTrackingActive = false
