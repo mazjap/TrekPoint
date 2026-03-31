@@ -197,9 +197,6 @@ struct DetailedMapView: View {
                     }
                 }
                 .onStyleLoaded { _ in
-                    guard !coordinator.styleWasInitiallyLoaded else { return }
-                    coordinator.styleWasInitiallyLoaded = true
-                    
                     guard let map = proxy.map else {
                         toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to start up the map. Please try again later", .message("Map proxy's map was nil!")))
                         return
@@ -210,6 +207,9 @@ struct DetailedMapView: View {
                     } catch {
                         toastManager.addBreadForToasting(.somethingWentWrong(messageToShowUser: "Failed to add markers to the map. Please try again later", .error(error)))
                     }
+                    
+                    guard !coordinator.styleWasInitiallyLoaded else { return }
+                    coordinator.styleWasInitiallyLoaded = true
                     
                     coordinator.handleFeatureChange(annotations: annotations, polylines: polylines)
                     coordinator.fitMapToFeatures()
