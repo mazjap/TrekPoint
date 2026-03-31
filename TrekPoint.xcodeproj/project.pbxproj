@@ -71,8 +71,6 @@
 		0EA7FC522D878103001828BB /* AnnotationPersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC512D878103001828BB /* AnnotationPersistenceManager.swift */; };
 		0EA7FC542D878B57001828BB /* PolylinePersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC532D878B57001828BB /* PolylinePersistenceManager.swift */; };
 		0EA7FC562D87C0AC001828BB /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7FC552D87C0AC001828BB /* ToastManager.swift */; };
-		0EBA0C7C2F67A16A0069BF38 /* Prod.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0EBA0C7B2F67A16A0069BF38 /* Prod.xcconfig */; };
-		0EBA0C7E2F67A2530069BF38 /* Dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0EBA0C7D2F67A2530069BF38 /* Dev.xcconfig */; };
 		0EBD38E92DC7D46B0033B4D1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38E82DC7D46B0033B4D1 /* Dependencies */; };
 		0EBD38EB2DC7D46B0033B4D1 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EA2DC7D46B0033B4D1 /* DependenciesMacros */; };
 		0EBD38F02DC7D6A90033B4D1 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0EBD38EF2DC7D6A90033B4D1 /* DependenciesTestSupport */; };
@@ -487,7 +485,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 2620;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					0EA4BD422B9151AF005259B4 = {
 						CreatedOnToolsVersion = 15.2;
@@ -528,8 +526,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7E00862D81F1840019A92A /* LaunchScreen.storyboard in Resources */,
-				0EBA0C7C2F67A16A0069BF38 /* Prod.xcconfig in Resources */,
-				0EBA0C7E2F67A2530069BF38 /* Dev.xcconfig in Resources */,
 				0EA4BD502B9151B0005259B4 /* Preview Assets.xcassets in Resources */,
 				0EA4BD4D2B9151B0005259B4 /* Assets.xcassets in Resources */,
 			);
