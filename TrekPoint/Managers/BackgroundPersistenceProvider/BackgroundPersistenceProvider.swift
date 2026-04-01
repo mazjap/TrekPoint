@@ -1,8 +1,9 @@
 import CoreLocation
 import Dependencies
 
+@MainActor
 protocol BackgroundPersistenceProvider {
-    func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void)
+    func persistLocation(_ location: TemporaryTrackingLocation)
     func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D]
     func clearPendingLocations(for trackingID: UUID)
     func clearAllPendingLocations()

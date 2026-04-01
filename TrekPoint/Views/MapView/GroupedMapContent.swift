@@ -35,7 +35,7 @@ struct GroupedMapContent: MapContent {
         }
         
         if locationState.isActive {
-            Puck2D(bearing: .heading)
+            Puck2D()
         }
         
         polylineViews

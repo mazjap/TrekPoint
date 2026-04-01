@@ -15,6 +15,7 @@ class FeatureLibraryCoordinator {
     var onSettingsPresented: (() -> Void)?
     var onSettingsDismissed: (() -> Void)?
     var onNewFeatureCancellation: ((PendingSheetCancelAction) -> Void)?
+    var onTrackedPolylineCreation: (() -> Void)?
     
     var isSearching: Bool { !searchText.isEmpty }
     

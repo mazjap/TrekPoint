@@ -26,9 +26,9 @@ struct ToastView: View {
                 Text("Something went wrong")
             case .polylineCreationError(.tooFewCoordinates(let required, let have)):
                 VStack(alignment: .leading) {
-                    Text("Paths need at least \(required) coordinates")
+                    Text("^[Paths need at least \(required) coordinates](inflect: true)")
                     
-                    Text("This path currently has \(have) coordinates. Try adding more points to complete the path.")
+                    Text("^[This path currently has \(have) coordinates](inflect: true). Try adding more points to complete the path.")
                         .font(.body)
                 }
             case .somethingWentWrong:

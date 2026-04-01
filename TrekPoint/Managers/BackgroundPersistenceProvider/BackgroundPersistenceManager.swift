@@ -4,35 +4,34 @@ import SwiftData
 import CoreLocation
 import Dependencies
 
+@MainActor
 @Observable
 class BackgroundPersistenceManager {
     @ObservationIgnored @Dependency(\.modelContainer) private var container
     private let logger = Logger(subsystem: "BackgroundPersistenceManager", category: "TrekPoint")
     
-    func saveLocationInBackground(_ location: TemporaryTrackingLocation, completion: @escaping () -> Void) {
-        Task {
-            let context = ModelContext(container)
-            
-            let pendingLocation = PendingTrackingLocation(
-                trackingID: location.trackingID,
-                coordinate: location.coordinate,
-                timestamp: location.timestamp
-            )
-            
-            context.insert(pendingLocation)
-            
-            do {
-                try context.save()
-                completion()
-            } catch {
-                logger.error("Failed to save location: \(error)")
-                completion()
-            }
+    nonisolated init() {}
+    
+    func persistLocation(_ location: TemporaryTrackingLocation) {
+        let context = container.mainContext
+        
+        let pendingLocation = PendingTrackingLocation(
+            trackingID: location.trackingID,
+            coordinate: location.coordinate,
+            timestamp: location.timestamp
+        )
+        
+        context.insert(pendingLocation)
+        
+        do {
+            try context.save()
+        } catch {
+            logger.error("Failed to save location: \(error)")
         }
     }
     
     func getPendingLocations(for trackingID: UUID) -> [CLLocationCoordinate2D] {
-        let context = ModelContext(container)
+        let context = container.mainContext
         let predicate = #Predicate<PendingTrackingLocation> { $0.trackingID == trackingID }
         let descriptor = FetchDescriptor<PendingTrackingLocation>(predicate: predicate, sortBy: [SortDescriptor(\.timestamp)])
         
@@ -46,7 +45,7 @@ class BackgroundPersistenceManager {
     }
     
     func clearPendingLocations(for trackingID: UUID) {
-        let context = ModelContext(container)
+        let context = container.mainContext
         let predicate = #Predicate<PendingTrackingLocation> { $0.trackingID == trackingID }
         let descriptor = FetchDescriptor<PendingTrackingLocation>(predicate: predicate)
         
@@ -62,7 +61,7 @@ class BackgroundPersistenceManager {
     }
     
     func clearAllPendingLocations() {
-        let context = ModelContext(container)
+        let context = container.mainContext
         
         do {
             try context.delete(model: PendingTrackingLocation.self)

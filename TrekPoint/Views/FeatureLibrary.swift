@@ -181,7 +181,13 @@ struct FeatureLibrary: View {
             case .workingAnnotation:
                 CreateAnnotationView(onDismiss: onDismiss, onCancel: onCancel, commitError: commitError)
             case .workingPolyline:
-                CreatePolylineView(onDismiss: onDismiss, onCancel: onCancel, commitError: commitError)
+                CreatePolylineView(onDismiss: { isTracked in
+                    if isTracked {
+                        coordinator.onTrackedPolylineCreation?()
+                    } else {
+                        onDismiss()
+                    }
+                }, onCancel: onCancel, commitError: commitError)
             }
         }
         .navigationBarBackButtonHidden()

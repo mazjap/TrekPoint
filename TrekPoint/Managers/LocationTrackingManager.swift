@@ -28,8 +28,8 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         
         Task { @MainActor in
             locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.distanceFilter = 2.0
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.distanceFilter = 15
             
             locationManager.allowsBackgroundLocationUpdates = false
             locationManager.pausesLocationUpdatesAutomatically = true
@@ -43,14 +43,12 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     
     func showUserLocation() {
         locationManager.requestAlwaysAuthorization()
-
+        
         switch locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.startUpdatingLocation()
             appSettings.isUserLocationActive = true
         case .notDetermined:
-            // Authorization prompt is in flight; set flag so
-            // locationManagerDidChangeAuthorization can start updates on grant.
             appSettings.isUserLocationActive = true
         case .restricted, .denied: fallthrough
         @unknown default:
@@ -72,13 +70,13 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         switch accuracy {
         case .performance:
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.distanceFilter = kCLDistanceFilterNone
+            locationManager.distanceFilter = 5
         case .balanced:
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            locationManager.distanceFilter = 5
+            locationManager.distanceFilter = 10
         case .batterySaver:
-            locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-            locationManager.distanceFilter = 20
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.distanceFilter = 25
         }
         
         locationManager.allowsBackgroundLocationUpdates = true
@@ -92,8 +90,8 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     }
     
     func stopTracking() {
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.distanceFilter = 2.0
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.distanceFilter = 15
         
         locationManager.allowsBackgroundLocationUpdates = false
         locationManager.pausesLocationUpdatesAutomatically = true
@@ -110,34 +108,36 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
+        guard !locations.isEmpty else { return }
         
         Task { @MainActor in
-            lastLocation = location
+            lastLocation = locations.last
             
             if appSettings.isTrackingActive {
-                storeLocationInBackground(location)
+                for location in locations {
+                    // TODO: - Check for horizontalAccuracy being negative
+                    storeLocationInBackground(location)
+                }
             }
         }
     }
     
     private func storeLocationInBackground(_ location: CLLocation) {
         guard let trackingID = appSettings.activeTrackingId else { return }
-
+        
         let task = BackgroundTaskHandle()
         task.id = UIApplication.shared.beginBackgroundTask {
             UIApplication.shared.endBackgroundTask(task.id)
         }
-
+        
         let temporaryLocation = TemporaryTrackingLocation(
             trackingID: trackingID,
             coordinate: Coordinate(location.coordinate),
             timestamp: location.timestamp
         )
-
-        backgroundManager.saveLocationInBackground(temporaryLocation) {
-            UIApplication.shared.endBackgroundTask(task.id)
-        }
+        
+        backgroundManager.persistLocation(temporaryLocation)
+        UIApplication.shared.endBackgroundTask(task.id)
     }
     
     func checkForPendingTracks() -> UUID? {
@@ -165,7 +165,7 @@ class LocationTrackingManager: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             guard appSettings.isUserLocationActive else { return }
-
+            
             switch status {
             case .authorizedAlways, .authorizedWhenInUse:
                 locationManager.startUpdatingLocation()

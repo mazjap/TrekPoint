@@ -3,11 +3,11 @@ import Dependencies
 
 struct CreatePolylineView: View {
     @Dependency(\.polylinePersistenceManager) private var polylineManager
-    private let onDismiss: () -> Void
+    private let onDismiss: (Bool) -> Void
     private let onCancel: (PendingSheetCancelAction) -> Void
     private let commitError: (Error) -> Void
 
-    init(onDismiss: @escaping () -> Void, onCancel: @escaping (PendingSheetCancelAction) -> Void, commitError: @escaping (Error) -> Void) {
+    init(onDismiss: @escaping (Bool) -> Void, onCancel: @escaping (PendingSheetCancelAction) -> Void, commitError: @escaping (Error) -> Void) {
         self.onDismiss = onDismiss
         self.onCancel = onCancel
         self.commitError = commitError
@@ -26,12 +26,7 @@ struct CreatePolylineView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") {
-                        do {
-                            try polylineManager.finalizeWorkingPolyline()
-                            onDismiss()
-                        } catch {
-                            commitError(error)
-                        }
+                        onDismiss(polylineManager.isTrackingPolyline)
                     }
                 }
             }
@@ -45,7 +40,7 @@ struct CreatePolylineView: View {
     } operation: {
         
         CreatePolylineView(
-            onDismiss: {
+            onDismiss: { _ in
                 
             },
             onCancel: { _ in

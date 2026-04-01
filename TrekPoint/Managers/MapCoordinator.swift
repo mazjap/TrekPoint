@@ -116,6 +116,10 @@ class MapCoordinator {
         featureLibraryCoordinator.onNewFeatureCancellation = { [weak self] feature in
             self?.queueCancelAction(PendingCancelAction(action: feature))
         }
+        
+        featureLibraryCoordinator.onTrackedPolylineCreation = { [weak self] in
+            self?.handle(.confirmTrackedPolyline)
+        }
     }
 }
 
