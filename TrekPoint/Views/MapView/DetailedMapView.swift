@@ -130,11 +130,23 @@ struct DetailedMapView: View {
             }
         }
         
+        let scaleCompassHOffset: CGFloat = 10
+        let scaleBarVOffset: CGFloat = 0
+        let compassVOffset: CGFloat = 30
+        
+        #if APP_STORE_PREVIEW_MODE // In Other Swift Flags in the current Target's build settings, change -DAPP_STORE_PREVIEW_MODE_false to -DAPP_STORE_PREVIEW_MODE (remove _false suffix)
+        let logoAttrHOffset: CGFloat = 50
+        let logoAttrVOffset: CGFloat = 10
+        #else
+        let logoAttrHOffset: CGFloat = 10
+        let logoAttrVOffset: CGFloat = smallDetentHeight
+        #endif
+        
         return OrnamentOptions(
-            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 0), visibility: .visible, units: coordinator.distanceUnit),
-            compass: CompassViewOptions(position: .topLeft, margins: CGPoint(x: 10, y: 30), image: nil, visibility: .visible),
-            logo: LogoViewOptions(position: .bottomLeft, margins: CGPoint(x: 10, y: smallDetentHeight)),
-            attributionButton: AttributionButtonOptions(position: .bottomRight, margins: CGPoint(x: 10, y: smallDetentHeight), tintColor: nil)
+            scaleBar: ScaleBarViewOptions(position: .topLeft, margins: CGPoint(x: scaleCompassHOffset, y: scaleBarVOffset), visibility: .visible, units: coordinator.distanceUnit),
+            compass: CompassViewOptions(position: .topLeft, margins: CGPoint(x: scaleCompassHOffset, y: compassVOffset), image: nil, visibility: .visible),
+            logo: LogoViewOptions(position: .bottomLeft, margins: CGPoint(x: logoAttrHOffset, y: logoAttrVOffset)),
+            attributionButton: AttributionButtonOptions(position: .bottomRight, margins: CGPoint(x: logoAttrHOffset, y: logoAttrVOffset), tintColor: nil)
         )
     }
     
