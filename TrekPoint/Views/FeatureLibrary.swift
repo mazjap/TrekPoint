@@ -182,11 +182,7 @@ struct FeatureLibrary: View {
                 CreateAnnotationView(onDismiss: onDismiss, onCancel: onCancel, commitError: commitError)
             case .workingPolyline:
                 CreatePolylineView(onDismiss: { isTracked in
-                    if isTracked {
-                        coordinator.onTrackedPolylineCreation?()
-                    } else {
-                        onDismiss()
-                    }
+                    coordinator.onPolylineCreation?(isTracked)
                 }, onCancel: onCancel, commitError: commitError)
             }
         }
