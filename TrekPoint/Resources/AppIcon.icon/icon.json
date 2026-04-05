@@ -1,0 +1,33 @@
+{
+  "fill" : {
+    "solid" : "srgb:0.54118,0.63137,0.66667,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "AppIcon_Marker.png",
+          "name" : "AppIcon_Marker"
+        },
+        {
+          "image-name" : "AppIcon_Mountains.png",
+          "name" : "AppIcon_Mountains"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
