@@ -185,6 +185,13 @@
 		0EE453062BAD5639007C40DE /* DraggablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePin.swift; sourceTree = "<group>"; };
 		0EE453082BAD5FF3007C40DE /* MapPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreview.swift; sourceTree = "<group>"; };
 		0EE4530A2BAD619E007C40DE /* MapFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeature.swift; sourceTree = "<group>"; };
+		0EFE3F532F84D02600D8681A /* 1. Launch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1. Launch.png"; sourceTree = "<group>"; };
+		0EFE3F542F84D02600D8681A /* 2. Tracked Paths.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "2. Tracked Paths.png"; sourceTree = "<group>"; };
+		0EFE3F552F84D02600D8681A /* 3. Drawn Paths.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "3. Drawn Paths.png"; sourceTree = "<group>"; };
+		0EFE3F562F84D02600D8681A /* 4. Markers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "4. Markers.png"; sourceTree = "<group>"; };
+		0EFE3F572F84D02600D8681A /* 5. Attachments.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "5. Attachments.png"; sourceTree = "<group>"; };
+		0EFE3F582F84D02600D8681A /* 6. Terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "6. Terrain.png"; sourceTree = "<group>"; };
+		0EFE3F592F84D02600D8681A /* 7. Contour.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "7. Contour.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,6 +258,7 @@
 		0E4E2ABE2DA1925900AABFDE /* src */ = {
 			isa = PBXGroup;
 			children = (
+				0EFE3F5A2F84D02600D8681A /* AppStoreConnect */,
 				0E4E2AB82DA1925900AABFDE /* creating_marker.gif */,
 				0E4E2AB92DA1925900AABFDE /* creating_path.gif */,
 				0E4E2ABA2DA1925900AABFDE /* error_handling.png */,
@@ -437,6 +445,20 @@
 				0EE453082BAD5FF3007C40DE /* MapPreview.swift */,
 			);
 			path = MapView;
+			sourceTree = "<group>";
+		};
+		0EFE3F5A2F84D02600D8681A /* AppStoreConnect */ = {
+			isa = PBXGroup;
+			children = (
+				0EFE3F532F84D02600D8681A /* 1. Launch.png */,
+				0EFE3F542F84D02600D8681A /* 2. Tracked Paths.png */,
+				0EFE3F552F84D02600D8681A /* 3. Drawn Paths.png */,
+				0EFE3F562F84D02600D8681A /* 4. Markers.png */,
+				0EFE3F572F84D02600D8681A /* 5. Attachments.png */,
+				0EFE3F582F84D02600D8681A /* 6. Terrain.png */,
+				0EFE3F592F84D02600D8681A /* 7. Contour.png */,
+			);
+			path = AppStoreConnect;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
