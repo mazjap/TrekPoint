@@ -13,8 +13,10 @@ struct ContentView: View {
                 .toolbarBackground(.thinMaterial, for: .navigationBar, .tabBar)
         }
         .overlay {
-            LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
-                .ignoresSafeArea()
+            if !isAnimationComplete {
+                LaunchAnimationView(isAnimationComplete: $isAnimationComplete)
+                    .ignoresSafeArea()
+            }
         }
         #if APP_STORE_PREVIEW_MODE // In Other Swift Flags in the current Target's build settings, change -DAPP_STORE_PREVIEW_MODE_false to -DAPP_STORE_PREVIEW_MODE (remove _false suffix)
         .statusBarHidden()
